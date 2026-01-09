@@ -1,7 +1,7 @@
 import {
   OrderBookRealTimeClient,
   OrderBookRealTimeClientEvent,
-} from '@katanaperps/katana-perps-sdk-ma';
+} from '@katanaperps/katana-perps-sdk';
 
 const isSandbox = true;
 const market = 'ETH-USD';

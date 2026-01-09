@@ -21,7 +21,7 @@ export interface RestRequestOrderBase
    *
    * @example
    * ```typescript
-   *  import { OrderType } from '@katanaperps/katana-perps-sdk-ma'
+   *  import { OrderType } from '@katanaperps/katana-perps-sdk'
    *
    *  const response = await client.createOrder({
    *    // whichever order type you are creating

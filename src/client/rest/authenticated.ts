@@ -43,7 +43,7 @@ import type {
  *
  * @example
  * ```typescript
- * import { RestAuthenticatedClient } from '@katanaperps/katana-perps-sdk-ma';
+ * import { RestAuthenticatedClient } from '@katanaperps/katana-perps-sdk';
  *
  * // Edit the values before for your environment
  * const authenticatedClient = new RestAuthenticatedClient({
@@ -163,7 +163,7 @@ export interface RestAuthenticatedClientOptions {
  *
  * @example
  * ```typescript
- * import { RestAuthenticatedClient } from '@katanaperps/katana-perps-sdk-ma';
+ * import { RestAuthenticatedClient } from '@katanaperps/katana-perps-sdk';
  *
  * // Edit the values before for your environment
  * const authenticatedClient = new RestAuthenticatedClient({
@@ -211,7 +211,7 @@ export class RestAuthenticatedClient {
    *
    * @example
    * ```typescript
-   * import { RestAuthenticatedClient } from '@katanaperps/katana-perps-sdk-ma';
+   * import { RestAuthenticatedClient } from '@katanaperps/katana-perps-sdk';
    *
    * // Edit the values before for your environment
    * const client = new RestAuthenticatedClient({
@@ -287,7 +287,7 @@ export class RestAuthenticatedClient {
    *
    * @example
    * ```typescript
-   * import { RestAuthenticatedClient } from '@katanaperps/katana-perps-sdk-ma';
+   * import { RestAuthenticatedClient } from '@katanaperps/katana-perps-sdk';
    *
    * // Edit the values before for your environment
    * const client = new RestAuthenticatedClient({
@@ -629,7 +629,7 @@ export class RestAuthenticatedClient {
    *
    * @example
    * ```typescript
-   * import { OrderType, OrderSide } from '@katanaperps/katana-perps-sdk-ma';
+   * import { OrderType, OrderSide } from '@katanaperps/katana-perps-sdk';
    *
    * try {
    *   const order = await client.createOrder({
@@ -894,7 +894,7 @@ export class RestAuthenticatedClient {
    *
    * @example
    * ```typescript
-   * import { PayoutProgram } from '@katanaperps/katana-perps-sdk-ma';
+   * import { PayoutProgram } from '@katanaperps/katana-perps-sdk';
    *
    * // create client
    *
@@ -936,7 +936,7 @@ export class RestAuthenticatedClient {
    *
    * @example
    * ```typescript
-   * import { PayoutProgram } from '@katanaperps/katana-perps-sdk-ma';
+   * import { PayoutProgram } from '@katanaperps/katana-perps-sdk';
    *
    * // create client
    *

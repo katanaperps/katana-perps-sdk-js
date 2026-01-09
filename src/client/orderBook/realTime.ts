@@ -69,7 +69,7 @@ export interface OrderBookRealTimeClientOptions {
  *  OrderBookRealTimeClient,
  *  OrderBookRealTimeClientEvent,
  *  type L2OrderBook
- * } from '@katanaperps/katana-perps-sdk-ma';
+ * } from '@katanaperps/katana-perps-sdk';
  *
  * // type is just to show it will match the form string-string.
  * // actual type will be typed as string

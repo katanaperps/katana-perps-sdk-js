@@ -8,7 +8,7 @@ import {
   type KatanaPerpsMessageEvent,
   type KatanaPerpsTickerEventData,
   type KatanaPerpsSubscribeType,
-} from '@katanaperps/katana-perps-sdk-ma';
+} from '@katanaperps/katana-perps-sdk';
 
 const client = new WebSocketClient();
 

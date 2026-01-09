@@ -35,7 +35,7 @@ npm install @katanaperps/katana-perps-sdk@beta
 ## Getting Started
 
 ```typescript
-import * as katanaPerps from '@katanaperps/katana-perps-sdk-ma';
+import * as katanaPerps from '@katanaperps/katana-perps-sdk';
 
 // const publicClient = new katanaPerps.RestPublicClient();
 // or, for sandbox API:
@@ -82,7 +82,7 @@ Typechain types and factories for contracts are available by importing them from
 exported from the main export.
 
 ```typescript
-import * as typechain from '@katanaperps/katana-perps-sdk-ma/typechain';
+import * as typechain from '@katanaperps/katana-perps-sdk/typechain';
 ```
 
 ## License

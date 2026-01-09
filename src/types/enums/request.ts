@@ -6,7 +6,7 @@ import type * as _types from '#index';
  *
  * @example
  * ```typescript
- * import { RestPublicClient } from '@katanaperps/katana-perps-sdk-ma';
+ * import { RestPublicClient } from '@katanaperps/katana-perps-sdk';
  *
  * const publicClient = new RestPublicClient();
  *
@@ -96,7 +96,7 @@ export const TimeInForce = Object.freeze({
    *
    * @example
    * ```typescript
-   * import { TimeInForce, OrderType } from '@katanaperps/katana-perps-sdk-ma';
+   * import { TimeInForce, OrderType } from '@katanaperps/katana-perps-sdk';
    *
    * authenticatedClient.createOrder({
    *   type: OrderType.limit,
@@ -126,7 +126,7 @@ export const TimeInForce = Object.freeze({
    *
    * @example
    * ```typescript
-   * import { TimeInForce, OrderType } from '@katanaperps/katana-perps-sdk-ma';
+   * import { TimeInForce, OrderType } from '@katanaperps/katana-perps-sdk';
    *
    * authenticatedClient.createOrder({
    *   type: OrderType.limit,
@@ -157,7 +157,7 @@ export const TimeInForce = Object.freeze({
    *
    * @example
    * ```typescript
-   * import { TimeInForce, OrderType } from '@katanaperps/katana-perps-sdk-ma';
+   * import { TimeInForce, OrderType } from '@katanaperps/katana-perps-sdk';
    *
    * authenticatedClient.createOrder({
    *   type: OrderType.limit,
@@ -190,7 +190,7 @@ export const TimeInForce = Object.freeze({
    *
    * @example
    * ```typescript
-   * import { TimeInForce, OrderType } from '@katanaperps/katana-perps-sdk-ma';
+   * import { TimeInForce, OrderType } from '@katanaperps/katana-perps-sdk';
    *
    * authenticatedClient.createOrder({
    *   type: OrderType.limit,
@@ -678,7 +678,7 @@ export type OrderBookRealTimeClientEvent =
  *  import {
  *    WebSocketClient,
  *    SubscriptionNameAuthenticated
- *  } from '@katanaperps/katana-perps-sdk-ma';
+ *  } from '@katanaperps/katana-perps-sdk';
  *
  *  const client = new WebSocketClient({
  *    auth: {
@@ -769,7 +769,7 @@ export type SubscriptionNameAuthenticated =
  *    WebSocketClient,
  *    SubscriptionNamePublic,
  *    CandleInterval
- *  } from '@katanaperps/katana-perps-sdk-ma';
+ *  } from '@katanaperps/katana-perps-sdk';
  *
  *  const client = new WebSocketClient();
  *
