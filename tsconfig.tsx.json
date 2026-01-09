@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@katanaperps/katana-perps-sdk": ["./src/index.ts"],
+      "#*": ["./src/*"]
+    }
+  }
+}
