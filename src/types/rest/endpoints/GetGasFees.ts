@@ -1,4 +1,4 @@
-import type { BridgeTarget } from '@katanaperps/katana-perps-sdk-ma/types';
+import type { BridgeTarget } from '@katanaperps/katana-perps-sdk/types';
 
 /**
  * Estimated gas fees by bridge and target chain

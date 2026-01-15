@@ -93,7 +93,7 @@ export type WebSocketHandlerMessage = (
  *    WebSocketClient,
  *    SubscriptionNameAuthenticated,
  *    SubscriptionNamePublic
- *   } from '@katanaperps/katana-perps-sdk-ma';
+ *   } from '@katanaperps/katana-perps-sdk';
  *
  *   const webSocketClientPublicOnly = new WebSocketClient();
  *
@@ -287,7 +287,7 @@ export class WebSocketClient {
    *    WebSocketClient,
    *    SubscriptionNameAuthenticated,
    *    SubscriptionNamePublic
-   *   } from '@katanaperps/katana-perps-sdk-ma';
+   *   } from '@katanaperps/katana-perps-sdk';
    *
    *   const webSocketClientPublicOnly = new WebSocketClient();
    *
@@ -656,7 +656,7 @@ export class WebSocketClient {
    *
    * @example
    * ```typescript
-   *  import { MessageEventType } from '@katanaperps/katana-perps-sdk-ma';
+   *  import { MessageEventType } from '@katanaperps/katana-perps-sdk';
    *
    *  // ... client setup
    *
@@ -734,7 +734,7 @@ export class WebSocketClient {
    *  import {
    *    WebSocketClient,
    *    SubscriptionNameAuthenticated,
-   *  } from '@katanaperps/katana-perps-sdk-ma';
+   *  } from '@katanaperps/katana-perps-sdk';
    *
    *  const client = new WebSocketClient({
    *    auth: {
@@ -826,7 +826,7 @@ export class WebSocketClient {
    *    WebSocketClient,
    *    SubscriptionNamePublic,
    *    CandleInterval
-   *  } from '@katanaperps/katana-perps-sdk-ma';
+   *  } from '@katanaperps/katana-perps-sdk';
    *
    *  const client = new WebSocketClient();
    *
@@ -1015,7 +1015,7 @@ export class WebSocketClient {
         this.#options.baseWebSocketURL,
         isNode ?
           {
-            headers: { 'User-Agent': 'katana-perps-sdk-js-ma' },
+            headers: { 'User-Agent': 'katana-perps-sdk-js' },
           }
         : undefined,
       );

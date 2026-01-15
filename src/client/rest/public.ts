@@ -70,7 +70,7 @@ export interface RestPublicClientOptions {
  *
  * @example
  * ```typescript
- * import { RestPublicClient } from '@katanaperps/katana-perps-sdk-ma';
+ * import { RestPublicClient } from '@katanaperps/katana-perps-sdk';
  *
  * // works without any options
  * // const publicClient = new RestPublicClient();
@@ -120,7 +120,7 @@ export class RestPublicClient {
    *
    * @example
    * ```typescript
-   * import { RestPublicClient } from '@katanaperps/katana-perps-sdk-ma';
+   * import { RestPublicClient } from '@katanaperps/katana-perps-sdk';
    *
    * // works without any options
    * // const publicClient = new RestPublicClient();
@@ -358,7 +358,7 @@ export class RestPublicClient {
    *
    * @example
    * ```typescript
-   * import { RestPublicClient, CandleInterval } from '@katanaperps/katana-perps-sdk-ma';
+   * import { RestPublicClient, CandleInterval } from '@katanaperps/katana-perps-sdk';
    *
    * const client = new RestPublicClient();
    *

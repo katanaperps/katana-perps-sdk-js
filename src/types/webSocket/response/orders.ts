@@ -30,7 +30,7 @@ export interface KatanaPerpsOrderEvent
    *
    * @example
    * ```typescript
-   *  import { OrderEventType } from '@katanaperps/katana-perps-sdk-ma';
+   *  import { OrderEventType } from '@katanaperps/katana-perps-sdk';
    *
    *  // ...
    *
@@ -140,7 +140,7 @@ export interface KatanaPerpsOrderEventDataGeneral
  *
  * @example
  * ```typescript
- *  import { OrderType } from '@katanaperps/katana-perps-sdk-ma';
+ *  import { OrderType } from '@katanaperps/katana-perps-sdk';
  *
  *  if (!orderEventData.type) {
  *    // orderLong is of type IKatanaPerpsOrderEventDataSystemFill

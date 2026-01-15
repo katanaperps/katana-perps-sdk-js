@@ -911,9 +911,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@katanaperps/katana-perps-sdk-ma@workspace:.":
+"@katanaperps/katana-perps-sdk@workspace:.":
   version: 0.0.0-use.local
-  resolution: "@katanaperps/katana-perps-sdk-ma@workspace:."
+  resolution: "@katanaperps/katana-perps-sdk@workspace:."
   dependencies:
     "@commitlint/config-conventional": "npm:^19.1.0"
     "@commitlint/types": "npm:^19.0.3"

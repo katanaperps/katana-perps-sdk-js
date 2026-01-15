@@ -1,4 +1,4 @@
-import type * as katanaPerps from '@katanaperps/katana-perps-sdk-ma/types';
+import type * as katanaPerps from '@katanaperps/katana-perps-sdk/types';
 
 /**
  * - Rest Request: `GET /candles`
@@ -25,7 +25,7 @@ export interface RestRequestGetCandles
    *
    * @example
    * ```typescript
-   * import { RestPublicClient, CandleInterval } from '@katanaperps/katana-perps-sdk-ma';
+   * import { RestPublicClient, CandleInterval } from '@katanaperps/katana-perps-sdk';
    *
    * const client = new RestPublicClient();
    *

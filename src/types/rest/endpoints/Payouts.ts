@@ -23,7 +23,7 @@ export interface KatanaPerpsPayoutDistribution {
  *
  * @example
  * ```typescript
- * import { PayoutProgram } from '@katanaperps/katana-perps-sdk-ma';
+ * import { PayoutProgram } from '@katanaperps/katana-perps-sdk';
  *
  * // create client
  *
@@ -52,7 +52,7 @@ export interface RestRequestGetPayouts extends RestRequestByWallet {
    *
    * @example
    * ```typescript
-   * import { PayoutProgram } from '@katanaperps/katana-perps-sdk-ma';
+   * import { PayoutProgram } from '@katanaperps/katana-perps-sdk';
    *
    * // create client
    *
@@ -73,7 +73,7 @@ export interface RestRequestGetPayouts extends RestRequestByWallet {
  *
  * @example
  * ```typescript
- * import { PayoutProgram } from '@katanaperps/katana-perps-sdk-ma';
+ * import { PayoutProgram } from '@katanaperps/katana-perps-sdk';
  *
  * // create client
  *
@@ -100,7 +100,7 @@ export interface RestRequestAuthorizePayout extends RestRequestByWallet {
    *
    * @example
    * ```typescript
-   * import { PayoutProgram } from '@katanaperps/katana-perps-sdk-ma';
+   * import { PayoutProgram } from '@katanaperps/katana-perps-sdk';
    *
    * // create client
    *

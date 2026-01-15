@@ -37,7 +37,7 @@ const config = {
   sidebarLinks: {
     'Katana Perps Home': 'https://perps.katana.network',
     'Katana Perps API Docs': 'https://api-docs-v1-perps.katana.network',
-    'SDK GitHub': 'https://github.com/katanaperps/katana-perps-sdk-js-ma',
+    'SDK GitHub': 'https://github.com/katanaperps/katana-perps-sdk-js',
     'Exchange Sandbox': 'https://perps-sandbox.katana.network',
   },
   visibilityFilters: {

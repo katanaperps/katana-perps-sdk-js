@@ -1,5 +1,5 @@
 import type { RestRequestWithSignature } from '#types/utils';
-import type * as katanaPerps from '@katanaperps/katana-perps-sdk-ma/types';
+import type * as katanaPerps from '@katanaperps/katana-perps-sdk/types';
 
 /**
  * [[include:unexported.md]]

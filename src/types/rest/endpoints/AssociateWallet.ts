@@ -2,7 +2,7 @@ import type { RestRequestWithSignature } from '#types/utils';
 import type {
   KatanaPerpsWallet,
   RestRequestByWallet,
-} from '@katanaperps/katana-perps-sdk-ma/types';
+} from '@katanaperps/katana-perps-sdk/types';
 
 /**
  * Associate a wallet with the authenticated account.
