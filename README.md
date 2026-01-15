@@ -1,5 +1,5 @@
 <!-- markdownlint-disable md033 -->
-# <img src="assets/katana-perps-logo.png" alt="katana perps" height="32px" valign="top"> typescript/javascript sdk
+# <img src="assets/katana-perps-logo.png" alt="katana perps" height="32px" valign="middle"> typescript/javascript sdk
 
 the official typescript/javascript sdk for <a href="https://perps.katana.network">katana perps v1</a> rest and websocket apis.
 
