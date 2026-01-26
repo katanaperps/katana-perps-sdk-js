@@ -23,13 +23,15 @@ import type {
   TypedContractMethod,
 } from './common';
 
-export interface KumaStargateForwarder_v1Interface extends Interface {
+export interface KatanaPerpsStargateForwarder_v1Interface extends Interface {
   getFunction(
     nameOrSignature:
       | 'MAX_MULTIPLIER'
       | 'MIN_MULTIPLIER'
       | 'acceptOwnership'
       | 'exchangeLayerZeroAdapter'
+      | 'katanaEndpointId'
+      | 'katanaOFT'
       | 'loadDepositGasFeeInAssetUnits'
       | 'loadEstimatedForwardedQuantityInAssetUnits'
       | 'loadWithdrawalGasFeesInAssetUnits'
@@ -45,9 +47,7 @@ export interface KumaStargateForwarder_v1Interface extends Interface {
       | 'stargate'
       | 'transferOwnership'
       | 'usdc'
-      | 'withdrawNativeAsset'
-      | 'xchainEndpointId'
-      | 'xchainOFT',
+      | 'withdrawNativeAsset',
   ): FunctionFragment;
 
   getEvent(
@@ -73,6 +73,11 @@ export interface KumaStargateForwarder_v1Interface extends Interface {
     functionFragment: 'exchangeLayerZeroAdapter',
     values?: undefined,
   ): string;
+  encodeFunctionData(
+    functionFragment: 'katanaEndpointId',
+    values?: undefined,
+  ): string;
+  encodeFunctionData(functionFragment: 'katanaOFT', values?: undefined): string;
   encodeFunctionData(
     functionFragment: 'loadDepositGasFeeInAssetUnits',
     values?: undefined,
@@ -128,11 +133,6 @@ export interface KumaStargateForwarder_v1Interface extends Interface {
     functionFragment: 'withdrawNativeAsset',
     values: [AddressLike, BigNumberish],
   ): string;
-  encodeFunctionData(
-    functionFragment: 'xchainEndpointId',
-    values?: undefined,
-  ): string;
-  encodeFunctionData(functionFragment: 'xchainOFT', values?: undefined): string;
 
   decodeFunctionResult(
     functionFragment: 'MAX_MULTIPLIER',
@@ -150,6 +150,11 @@ export interface KumaStargateForwarder_v1Interface extends Interface {
     functionFragment: 'exchangeLayerZeroAdapter',
     data: BytesLike,
   ): Result;
+  decodeFunctionResult(
+    functionFragment: 'katanaEndpointId',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(functionFragment: 'katanaOFT', data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: 'loadDepositGasFeeInAssetUnits',
     data: BytesLike,
@@ -199,11 +204,6 @@ export interface KumaStargateForwarder_v1Interface extends Interface {
     functionFragment: 'withdrawNativeAsset',
     data: BytesLike,
   ): Result;
-  decodeFunctionResult(
-    functionFragment: 'xchainEndpointId',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(functionFragment: 'xchainOFT', data: BytesLike): Result;
 }
 
 export namespace ForwardFailedEvent {
@@ -257,11 +257,11 @@ export namespace OwnershipTransferredEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export interface KumaStargateForwarder_v1 extends BaseContract {
-  connect(runner?: ContractRunner | null): KumaStargateForwarder_v1;
+export interface KatanaPerpsStargateForwarder_v1 extends BaseContract {
+  connect(runner?: ContractRunner | null): KatanaPerpsStargateForwarder_v1;
   waitForDeployment(): Promise<this>;
 
-  interface: KumaStargateForwarder_v1Interface;
+  interface: KatanaPerpsStargateForwarder_v1Interface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
@@ -307,6 +307,10 @@ export interface KumaStargateForwarder_v1 extends BaseContract {
   acceptOwnership: TypedContractMethod<[], [void], 'nonpayable'>;
 
   exchangeLayerZeroAdapter: TypedContractMethod<[], [string], 'view'>;
+
+  katanaEndpointId: TypedContractMethod<[], [bigint], 'view'>;
+
+  katanaOFT: TypedContractMethod<[], [string], 'view'>;
 
   loadDepositGasFeeInAssetUnits: TypedContractMethod<[], [bigint], 'view'>;
 
@@ -384,10 +388,6 @@ export interface KumaStargateForwarder_v1 extends BaseContract {
     'nonpayable'
   >;
 
-  xchainEndpointId: TypedContractMethod<[], [bigint], 'view'>;
-
-  xchainOFT: TypedContractMethod<[], [string], 'view'>;
-
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment,
   ): T;
@@ -403,6 +403,12 @@ export interface KumaStargateForwarder_v1 extends BaseContract {
   ): TypedContractMethod<[], [void], 'nonpayable'>;
   getFunction(
     nameOrSignature: 'exchangeLayerZeroAdapter',
+  ): TypedContractMethod<[], [string], 'view'>;
+  getFunction(
+    nameOrSignature: 'katanaEndpointId',
+  ): TypedContractMethod<[], [bigint], 'view'>;
+  getFunction(
+    nameOrSignature: 'katanaOFT',
   ): TypedContractMethod<[], [string], 'view'>;
   getFunction(
     nameOrSignature: 'loadDepositGasFeeInAssetUnits',
@@ -488,12 +494,6 @@ export interface KumaStargateForwarder_v1 extends BaseContract {
     [void],
     'nonpayable'
   >;
-  getFunction(
-    nameOrSignature: 'xchainEndpointId',
-  ): TypedContractMethod<[], [bigint], 'view'>;
-  getFunction(
-    nameOrSignature: 'xchainOFT',
-  ): TypedContractMethod<[], [string], 'view'>;
 
   getEvent(
     key: 'ForwardFailed',

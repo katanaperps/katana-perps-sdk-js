@@ -3,10 +3,14 @@
 
 export type { ERC20 } from './ERC20';
 export type { EarningsEscrow } from './EarningsEscrow';
+export type { ExchangeLayerZeroAdapter_v1 } from './ExchangeLayerZeroAdapter_v1';
 export type { Exchange_v1 } from './Exchange_v1';
 export type { IOFT } from './IOFT';
+export type { KatanaPerpsStargateForwarder_v1 } from './KatanaPerpsStargateForwarder_v1';
 export * as factories from './factories';
 export { EarningsEscrow__factory } from './factories/EarningsEscrow__factory';
 export { ERC20__factory } from './factories/ERC20__factory';
 export { Exchange_v1__factory } from './factories/Exchange_v1__factory';
+export { ExchangeLayerZeroAdapter_v1__factory } from './factories/ExchangeLayerZeroAdapter_v1__factory';
 export { IOFT__factory } from './factories/IOFT__factory';
+export { KatanaPerpsStargateForwarder_v1__factory } from './factories/KatanaPerpsStargateForwarder_v1__factory';

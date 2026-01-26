@@ -4,9 +4,9 @@
 
 import { Contract, Interface, type ContractRunner } from 'ethers';
 import type {
-  KumaStargateForwarder_v2,
-  KumaStargateForwarder_v2Interface,
-} from '../KumaStargateForwarder_v2';
+  KatanaPerpsStargateForwarder_v1,
+  KatanaPerpsStargateForwarder_v1Interface,
+} from '../KatanaPerpsStargateForwarder_v1';
 
 const _abi = [
   {
@@ -33,7 +33,7 @@ const _abi = [
       },
       {
         internalType: 'address',
-        name: 'xchainOFT_',
+        name: 'katanaOFT_',
         type: 'address',
       },
       {
@@ -48,7 +48,7 @@ const _abi = [
       },
       {
         internalType: 'uint32',
-        name: 'xchainEndpointId_',
+        name: 'katanaEndpointId_',
         type: 'uint32',
       },
     ],
@@ -185,6 +185,32 @@ const _abi = [
     outputs: [
       {
         internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'katanaEndpointId',
+    outputs: [
+      {
+        internalType: 'uint32',
+        name: '',
+        type: 'uint32',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'katanaOFT',
+    outputs: [
+      {
+        internalType: 'contract IOFT',
         name: '',
         type: 'address',
       },
@@ -447,50 +473,24 @@ const _abi = [
     type: 'function',
   },
   {
-    inputs: [],
-    name: 'xchainEndpointId',
-    outputs: [
-      {
-        internalType: 'uint32',
-        name: '',
-        type: 'uint32',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'xchainOFT',
-    outputs: [
-      {
-        internalType: 'contract IOFT',
-        name: '',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
     stateMutability: 'payable',
     type: 'receive',
   },
 ] as const;
 
-export class KumaStargateForwarder_v2__factory {
+export class KatanaPerpsStargateForwarder_v1__factory {
   static readonly abi = _abi;
-  static createInterface(): KumaStargateForwarder_v2Interface {
-    return new Interface(_abi) as KumaStargateForwarder_v2Interface;
+  static createInterface(): KatanaPerpsStargateForwarder_v1Interface {
+    return new Interface(_abi) as KatanaPerpsStargateForwarder_v1Interface;
   }
   static connect(
     address: string,
     runner?: ContractRunner | null,
-  ): KumaStargateForwarder_v2 {
+  ): KatanaPerpsStargateForwarder_v1 {
     return new Contract(
       address,
       _abi,
       runner,
-    ) as unknown as KumaStargateForwarder_v2;
+    ) as unknown as KatanaPerpsStargateForwarder_v1;
   }
 }

@@ -4,9 +4,9 @@
 
 import { Contract, Interface, type ContractRunner } from 'ethers';
 import type {
-  ExchangeLayerZeroAdapter_v3,
-  ExchangeLayerZeroAdapter_v3Interface,
-} from '../ExchangeLayerZeroAdapter_v3';
+  ExchangeLayerZeroAdapter_v1,
+  ExchangeLayerZeroAdapter_v1Interface,
+} from '../ExchangeLayerZeroAdapter_v1';
 
 const _abi = [
   {
@@ -23,7 +23,7 @@ const _abi = [
       },
       {
         internalType: 'uint32',
-        name: 'berachainEndpointId_',
+        name: 'ethereumEndpointId_',
         type: 'uint32',
       },
       {
@@ -280,19 +280,6 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'berachainEndpointId',
-    outputs: [
-      {
-        internalType: 'uint32',
-        name: '',
-        type: 'uint32',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
     name: 'depositToManagedAccountFeeQuantityInAssetUnits',
     outputs: [
       {
@@ -340,6 +327,19 @@ const _abi = [
   },
   {
     inputs: [],
+    name: 'ethereumEndpointId',
+    outputs: [
+      {
+        internalType: 'uint32',
+        name: '',
+        type: 'uint32',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
     name: 'exchange',
     outputs: [
       {
@@ -379,7 +379,7 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'loadBerachainWithdrawalGasFeesInAssetUnits',
+    name: 'loadEthereumWithdrawalGasFeesInAssetUnits',
     outputs: [
       {
         internalType: 'uint256',
@@ -702,19 +702,19 @@ const _abi = [
   },
 ] as const;
 
-export class ExchangeLayerZeroAdapter_v3__factory {
+export class ExchangeLayerZeroAdapter_v1__factory {
   static readonly abi = _abi;
-  static createInterface(): ExchangeLayerZeroAdapter_v3Interface {
-    return new Interface(_abi) as ExchangeLayerZeroAdapter_v3Interface;
+  static createInterface(): ExchangeLayerZeroAdapter_v1Interface {
+    return new Interface(_abi) as ExchangeLayerZeroAdapter_v1Interface;
   }
   static connect(
     address: string,
     runner?: ContractRunner | null,
-  ): ExchangeLayerZeroAdapter_v3 {
+  ): ExchangeLayerZeroAdapter_v1 {
     return new Contract(
       address,
       _abi,
       runner,
-    ) as unknown as ExchangeLayerZeroAdapter_v3;
+    ) as unknown as ExchangeLayerZeroAdapter_v1;
   }
 }

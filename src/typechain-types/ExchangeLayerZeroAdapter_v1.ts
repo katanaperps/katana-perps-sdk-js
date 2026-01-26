@@ -23,25 +23,33 @@ import type {
   TypedContractMethod,
 } from './common';
 
-export interface ExchangeLayerZeroAdapter_v2Interface extends Interface {
+export interface ExchangeLayerZeroAdapter_v1Interface extends Interface {
   getFunction(
     nameOrSignature:
+      | 'MAX_MINIMUM_WITHDRAW_QUANTITY_MULTIPLIER'
+      | 'MIN_MINIMUM_WITHDRAW_QUANTITY_MULTIPLIER'
       | 'PIP_PRICE_MULTIPLIER'
       | 'acceptOwnership'
-      | 'berachainEndpointId'
+      | 'addManagedAccountDepositFeeQuantityInAssetUnits'
+      | 'addManagedAccountManagerWalletNativeDropQuantity'
+      | 'depositToManagedAccountFeeQuantityInAssetUnits'
       | 'estimateWithdrawQuantityInAssetUnits'
+      | 'ethereumEndpointId'
       | 'exchange'
       | 'isDepositEnabled'
       | 'isWithdrawEnabled'
-      | 'loadBerachainWithdrawalGasFeesInAssetUnits'
+      | 'loadEthereumWithdrawalGasFeesInAssetUnits'
       | 'lzCompose'
       | 'lzEndpoint'
+      | 'minimumAddManagedAccountDepositQuantityInAssetUnits'
+      | 'minimumDepositToManagedAccountQuantityInAssetUnits'
       | 'minimumWithdrawQuantityMultiplier'
       | 'oft'
       | 'owner'
       | 'pendingOwner'
       | 'quoteAsset'
       | 'renounceOwnership'
+      | 'setComposeParameters'
       | 'setDepositEnabled'
       | 'setMinimumWithdrawQuantityMultiplier'
       | 'setStargateForwarder'
@@ -54,13 +62,21 @@ export interface ExchangeLayerZeroAdapter_v2Interface extends Interface {
 
   getEvent(
     nameOrSignatureOrTopic:
-      | 'LzComposeFailed'
-      | 'LzComposeSucceeded'
+      | 'ComposeFailed'
+      | 'ComposeSucceeded'
       | 'OwnershipTransferStarted'
       | 'OwnershipTransferred'
       | 'WithdrawQuoteAssetFailed',
   ): EventFragment;
 
+  encodeFunctionData(
+    functionFragment: 'MAX_MINIMUM_WITHDRAW_QUANTITY_MULTIPLIER',
+    values?: undefined,
+  ): string;
+  encodeFunctionData(
+    functionFragment: 'MIN_MINIMUM_WITHDRAW_QUANTITY_MULTIPLIER',
+    values?: undefined,
+  ): string;
   encodeFunctionData(
     functionFragment: 'PIP_PRICE_MULTIPLIER',
     values?: undefined,
@@ -70,12 +86,24 @@ export interface ExchangeLayerZeroAdapter_v2Interface extends Interface {
     values?: undefined,
   ): string;
   encodeFunctionData(
-    functionFragment: 'berachainEndpointId',
+    functionFragment: 'addManagedAccountDepositFeeQuantityInAssetUnits',
+    values?: undefined,
+  ): string;
+  encodeFunctionData(
+    functionFragment: 'addManagedAccountManagerWalletNativeDropQuantity',
+    values?: undefined,
+  ): string;
+  encodeFunctionData(
+    functionFragment: 'depositToManagedAccountFeeQuantityInAssetUnits',
     values?: undefined,
   ): string;
   encodeFunctionData(
     functionFragment: 'estimateWithdrawQuantityInAssetUnits',
     values: [BigNumberish, BigNumberish],
+  ): string;
+  encodeFunctionData(
+    functionFragment: 'ethereumEndpointId',
+    values?: undefined,
   ): string;
   encodeFunctionData(functionFragment: 'exchange', values?: undefined): string;
   encodeFunctionData(
@@ -87,7 +115,7 @@ export interface ExchangeLayerZeroAdapter_v2Interface extends Interface {
     values?: undefined,
   ): string;
   encodeFunctionData(
-    functionFragment: 'loadBerachainWithdrawalGasFeesInAssetUnits',
+    functionFragment: 'loadEthereumWithdrawalGasFeesInAssetUnits',
     values?: undefined,
   ): string;
   encodeFunctionData(
@@ -96,6 +124,14 @@ export interface ExchangeLayerZeroAdapter_v2Interface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: 'lzEndpoint',
+    values?: undefined,
+  ): string;
+  encodeFunctionData(
+    functionFragment: 'minimumAddManagedAccountDepositQuantityInAssetUnits',
+    values?: undefined,
+  ): string;
+  encodeFunctionData(
+    functionFragment: 'minimumDepositToManagedAccountQuantityInAssetUnits',
     values?: undefined,
   ): string;
   encodeFunctionData(
@@ -115,6 +151,17 @@ export interface ExchangeLayerZeroAdapter_v2Interface extends Interface {
   encodeFunctionData(
     functionFragment: 'renounceOwnership',
     values?: undefined,
+  ): string;
+  encodeFunctionData(
+    functionFragment: 'setComposeParameters',
+    values: [
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+    ],
   ): string;
   encodeFunctionData(
     functionFragment: 'setDepositEnabled',
@@ -150,6 +197,14 @@ export interface ExchangeLayerZeroAdapter_v2Interface extends Interface {
   ): string;
 
   decodeFunctionResult(
+    functionFragment: 'MAX_MINIMUM_WITHDRAW_QUANTITY_MULTIPLIER',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: 'MIN_MINIMUM_WITHDRAW_QUANTITY_MULTIPLIER',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
     functionFragment: 'PIP_PRICE_MULTIPLIER',
     data: BytesLike,
   ): Result;
@@ -158,11 +213,23 @@ export interface ExchangeLayerZeroAdapter_v2Interface extends Interface {
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'berachainEndpointId',
+    functionFragment: 'addManagedAccountDepositFeeQuantityInAssetUnits',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: 'addManagedAccountManagerWalletNativeDropQuantity',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: 'depositToManagedAccountFeeQuantityInAssetUnits',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: 'estimateWithdrawQuantityInAssetUnits',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: 'ethereumEndpointId',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(functionFragment: 'exchange', data: BytesLike): Result;
@@ -175,11 +242,19 @@ export interface ExchangeLayerZeroAdapter_v2Interface extends Interface {
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'loadBerachainWithdrawalGasFeesInAssetUnits',
+    functionFragment: 'loadEthereumWithdrawalGasFeesInAssetUnits',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(functionFragment: 'lzCompose', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'lzEndpoint', data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: 'minimumAddManagedAccountDepositQuantityInAssetUnits',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: 'minimumDepositToManagedAccountQuantityInAssetUnits',
+    data: BytesLike,
+  ): Result;
   decodeFunctionResult(
     functionFragment: 'minimumWithdrawQuantityMultiplier',
     data: BytesLike,
@@ -193,6 +268,10 @@ export interface ExchangeLayerZeroAdapter_v2Interface extends Interface {
   decodeFunctionResult(functionFragment: 'quoteAsset', data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: 'renounceOwnership',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: 'setComposeParameters',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
@@ -229,19 +308,19 @@ export interface ExchangeLayerZeroAdapter_v2Interface extends Interface {
   ): Result;
 }
 
-export namespace LzComposeFailedEvent {
+export namespace ComposeFailedEvent {
   export type InputTuple = [
-    destinationWallet: AddressLike,
+    depositorWallet: AddressLike,
     quantity: BigNumberish,
     errorData: BytesLike,
   ];
   export type OutputTuple = [
-    destinationWallet: string,
+    depositorWallet: string,
     quantity: bigint,
     errorData: string,
   ];
   export interface OutputObject {
-    destinationWallet: string;
+    depositorWallet: string;
     quantity: bigint;
     errorData: string;
   }
@@ -251,22 +330,19 @@ export namespace LzComposeFailedEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export namespace LzComposeSucceededEvent {
+export namespace ComposeSucceededEvent {
   export type InputTuple = [
     sourceEndpointId: BigNumberish,
-    composeFrom: AddressLike,
     destinationWallet: AddressLike,
     quantity: BigNumberish,
   ];
   export type OutputTuple = [
     sourceEndpointId: bigint,
-    composeFrom: string,
     destinationWallet: string,
     quantity: bigint,
   ];
   export interface OutputObject {
     sourceEndpointId: bigint;
-    composeFrom: string;
     destinationWallet: string;
     quantity: bigint;
   }
@@ -304,19 +380,19 @@ export namespace OwnershipTransferredEvent {
 
 export namespace WithdrawQuoteAssetFailedEvent {
   export type InputTuple = [
-    destinationWallet: AddressLike,
+    depositorWallet: AddressLike,
     quantity: BigNumberish,
     payload: BytesLike,
     errorData: BytesLike,
   ];
   export type OutputTuple = [
-    destinationWallet: string,
+    depositorWallet: string,
     quantity: bigint,
     payload: string,
     errorData: string,
   ];
   export interface OutputObject {
-    destinationWallet: string;
+    depositorWallet: string;
     quantity: bigint;
     payload: string;
     errorData: string;
@@ -327,11 +403,11 @@ export namespace WithdrawQuoteAssetFailedEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export interface ExchangeLayerZeroAdapter_v2 extends BaseContract {
-  connect(runner?: ContractRunner | null): ExchangeLayerZeroAdapter_v2;
+export interface ExchangeLayerZeroAdapter_v1 extends BaseContract {
+  connect(runner?: ContractRunner | null): ExchangeLayerZeroAdapter_v1;
   waitForDeployment(): Promise<this>;
 
-  interface: ExchangeLayerZeroAdapter_v2Interface;
+  interface: ExchangeLayerZeroAdapter_v1Interface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
@@ -370,11 +446,39 @@ export interface ExchangeLayerZeroAdapter_v2 extends BaseContract {
     event?: TCEvent,
   ): Promise<this>;
 
+  MAX_MINIMUM_WITHDRAW_QUANTITY_MULTIPLIER: TypedContractMethod<
+    [],
+    [bigint],
+    'view'
+  >;
+
+  MIN_MINIMUM_WITHDRAW_QUANTITY_MULTIPLIER: TypedContractMethod<
+    [],
+    [bigint],
+    'view'
+  >;
+
   PIP_PRICE_MULTIPLIER: TypedContractMethod<[], [bigint], 'view'>;
 
   acceptOwnership: TypedContractMethod<[], [void], 'nonpayable'>;
 
-  berachainEndpointId: TypedContractMethod<[], [bigint], 'view'>;
+  addManagedAccountDepositFeeQuantityInAssetUnits: TypedContractMethod<
+    [],
+    [bigint],
+    'view'
+  >;
+
+  addManagedAccountManagerWalletNativeDropQuantity: TypedContractMethod<
+    [],
+    [bigint],
+    'view'
+  >;
+
+  depositToManagedAccountFeeQuantityInAssetUnits: TypedContractMethod<
+    [],
+    [bigint],
+    'view'
+  >;
 
   estimateWithdrawQuantityInAssetUnits: TypedContractMethod<
     [destinationEndpointId: BigNumberish, quantity: BigNumberish],
@@ -388,13 +492,15 @@ export interface ExchangeLayerZeroAdapter_v2 extends BaseContract {
     'view'
   >;
 
+  ethereumEndpointId: TypedContractMethod<[], [bigint], 'view'>;
+
   exchange: TypedContractMethod<[], [string], 'view'>;
 
   isDepositEnabled: TypedContractMethod<[], [boolean], 'view'>;
 
   isWithdrawEnabled: TypedContractMethod<[], [boolean], 'view'>;
 
-  loadBerachainWithdrawalGasFeesInAssetUnits: TypedContractMethod<
+  loadEthereumWithdrawalGasFeesInAssetUnits: TypedContractMethod<
     [],
     [
       [bigint, bigint] & {
@@ -419,6 +525,18 @@ export interface ExchangeLayerZeroAdapter_v2 extends BaseContract {
 
   lzEndpoint: TypedContractMethod<[], [string], 'view'>;
 
+  minimumAddManagedAccountDepositQuantityInAssetUnits: TypedContractMethod<
+    [],
+    [bigint],
+    'view'
+  >;
+
+  minimumDepositToManagedAccountQuantityInAssetUnits: TypedContractMethod<
+    [],
+    [bigint],
+    'view'
+  >;
+
   minimumWithdrawQuantityMultiplier: TypedContractMethod<[], [bigint], 'view'>;
 
   oft: TypedContractMethod<[], [string], 'view'>;
@@ -430,6 +548,19 @@ export interface ExchangeLayerZeroAdapter_v2 extends BaseContract {
   quoteAsset: TypedContractMethod<[], [string], 'view'>;
 
   renounceOwnership: TypedContractMethod<[], [void], 'nonpayable'>;
+
+  setComposeParameters: TypedContractMethod<
+    [
+      addManagedAccountDepositFeeQuantityInAssetUnits_: BigNumberish,
+      addManagedAccountManagerWalletNativeDropQuantity_: BigNumberish,
+      depositToManagedAccountFeeQuantityInAssetUnits_: BigNumberish,
+      minimumAddManagedAccountDepositQuantityInAssetUnits_: BigNumberish,
+      minimumDepositToManagedAccountQuantityInAssetUnits_: BigNumberish,
+      minimumWithdrawQuantityMultiplier_: BigNumberish,
+    ],
+    [void],
+    'nonpayable'
+  >;
 
   setDepositEnabled: TypedContractMethod<
     [isEnabled: boolean],
@@ -470,11 +601,7 @@ export interface ExchangeLayerZeroAdapter_v2 extends BaseContract {
   >;
 
   withdrawQuoteAsset: TypedContractMethod<
-    [
-      destinationWallet: AddressLike,
-      quantity: BigNumberish,
-      payload: BytesLike,
-    ],
+    [depositorWallet: AddressLike, quantity: BigNumberish, payload: BytesLike],
     [void],
     'nonpayable'
   >;
@@ -484,13 +611,25 @@ export interface ExchangeLayerZeroAdapter_v2 extends BaseContract {
   ): T;
 
   getFunction(
+    nameOrSignature: 'MAX_MINIMUM_WITHDRAW_QUANTITY_MULTIPLIER',
+  ): TypedContractMethod<[], [bigint], 'view'>;
+  getFunction(
+    nameOrSignature: 'MIN_MINIMUM_WITHDRAW_QUANTITY_MULTIPLIER',
+  ): TypedContractMethod<[], [bigint], 'view'>;
+  getFunction(
     nameOrSignature: 'PIP_PRICE_MULTIPLIER',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
     nameOrSignature: 'acceptOwnership',
   ): TypedContractMethod<[], [void], 'nonpayable'>;
   getFunction(
-    nameOrSignature: 'berachainEndpointId',
+    nameOrSignature: 'addManagedAccountDepositFeeQuantityInAssetUnits',
+  ): TypedContractMethod<[], [bigint], 'view'>;
+  getFunction(
+    nameOrSignature: 'addManagedAccountManagerWalletNativeDropQuantity',
+  ): TypedContractMethod<[], [bigint], 'view'>;
+  getFunction(
+    nameOrSignature: 'depositToManagedAccountFeeQuantityInAssetUnits',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
     nameOrSignature: 'estimateWithdrawQuantityInAssetUnits',
@@ -506,6 +645,9 @@ export interface ExchangeLayerZeroAdapter_v2 extends BaseContract {
     'view'
   >;
   getFunction(
+    nameOrSignature: 'ethereumEndpointId',
+  ): TypedContractMethod<[], [bigint], 'view'>;
+  getFunction(
     nameOrSignature: 'exchange',
   ): TypedContractMethod<[], [string], 'view'>;
   getFunction(
@@ -515,7 +657,7 @@ export interface ExchangeLayerZeroAdapter_v2 extends BaseContract {
     nameOrSignature: 'isWithdrawEnabled',
   ): TypedContractMethod<[], [boolean], 'view'>;
   getFunction(
-    nameOrSignature: 'loadBerachainWithdrawalGasFeesInAssetUnits',
+    nameOrSignature: 'loadEthereumWithdrawalGasFeesInAssetUnits',
   ): TypedContractMethod<
     [],
     [
@@ -543,6 +685,12 @@ export interface ExchangeLayerZeroAdapter_v2 extends BaseContract {
     nameOrSignature: 'lzEndpoint',
   ): TypedContractMethod<[], [string], 'view'>;
   getFunction(
+    nameOrSignature: 'minimumAddManagedAccountDepositQuantityInAssetUnits',
+  ): TypedContractMethod<[], [bigint], 'view'>;
+  getFunction(
+    nameOrSignature: 'minimumDepositToManagedAccountQuantityInAssetUnits',
+  ): TypedContractMethod<[], [bigint], 'view'>;
+  getFunction(
     nameOrSignature: 'minimumWithdrawQuantityMultiplier',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
@@ -560,6 +708,20 @@ export interface ExchangeLayerZeroAdapter_v2 extends BaseContract {
   getFunction(
     nameOrSignature: 'renounceOwnership',
   ): TypedContractMethod<[], [void], 'nonpayable'>;
+  getFunction(
+    nameOrSignature: 'setComposeParameters',
+  ): TypedContractMethod<
+    [
+      addManagedAccountDepositFeeQuantityInAssetUnits_: BigNumberish,
+      addManagedAccountManagerWalletNativeDropQuantity_: BigNumberish,
+      depositToManagedAccountFeeQuantityInAssetUnits_: BigNumberish,
+      minimumAddManagedAccountDepositQuantityInAssetUnits_: BigNumberish,
+      minimumDepositToManagedAccountQuantityInAssetUnits_: BigNumberish,
+      minimumWithdrawQuantityMultiplier_: BigNumberish,
+    ],
+    [void],
+    'nonpayable'
+  >;
   getFunction(
     nameOrSignature: 'setDepositEnabled',
   ): TypedContractMethod<[isEnabled: boolean], [void], 'nonpayable'>;
@@ -596,28 +758,24 @@ export interface ExchangeLayerZeroAdapter_v2 extends BaseContract {
   getFunction(
     nameOrSignature: 'withdrawQuoteAsset',
   ): TypedContractMethod<
-    [
-      destinationWallet: AddressLike,
-      quantity: BigNumberish,
-      payload: BytesLike,
-    ],
+    [depositorWallet: AddressLike, quantity: BigNumberish, payload: BytesLike],
     [void],
     'nonpayable'
   >;
 
   getEvent(
-    key: 'LzComposeFailed',
+    key: 'ComposeFailed',
   ): TypedContractEvent<
-    LzComposeFailedEvent.InputTuple,
-    LzComposeFailedEvent.OutputTuple,
-    LzComposeFailedEvent.OutputObject
+    ComposeFailedEvent.InputTuple,
+    ComposeFailedEvent.OutputTuple,
+    ComposeFailedEvent.OutputObject
   >;
   getEvent(
-    key: 'LzComposeSucceeded',
+    key: 'ComposeSucceeded',
   ): TypedContractEvent<
-    LzComposeSucceededEvent.InputTuple,
-    LzComposeSucceededEvent.OutputTuple,
-    LzComposeSucceededEvent.OutputObject
+    ComposeSucceededEvent.InputTuple,
+    ComposeSucceededEvent.OutputTuple,
+    ComposeSucceededEvent.OutputObject
   >;
   getEvent(
     key: 'OwnershipTransferStarted',
@@ -642,26 +800,26 @@ export interface ExchangeLayerZeroAdapter_v2 extends BaseContract {
   >;
 
   filters: {
-    'LzComposeFailed(address,uint256,bytes)': TypedContractEvent<
-      LzComposeFailedEvent.InputTuple,
-      LzComposeFailedEvent.OutputTuple,
-      LzComposeFailedEvent.OutputObject
+    'ComposeFailed(address,uint256,bytes)': TypedContractEvent<
+      ComposeFailedEvent.InputTuple,
+      ComposeFailedEvent.OutputTuple,
+      ComposeFailedEvent.OutputObject
     >;
-    LzComposeFailed: TypedContractEvent<
-      LzComposeFailedEvent.InputTuple,
-      LzComposeFailedEvent.OutputTuple,
-      LzComposeFailedEvent.OutputObject
+    ComposeFailed: TypedContractEvent<
+      ComposeFailedEvent.InputTuple,
+      ComposeFailedEvent.OutputTuple,
+      ComposeFailedEvent.OutputObject
     >;
 
-    'LzComposeSucceeded(uint32,address,address,uint256)': TypedContractEvent<
-      LzComposeSucceededEvent.InputTuple,
-      LzComposeSucceededEvent.OutputTuple,
-      LzComposeSucceededEvent.OutputObject
+    'ComposeSucceeded(uint32,address,uint256)': TypedContractEvent<
+      ComposeSucceededEvent.InputTuple,
+      ComposeSucceededEvent.OutputTuple,
+      ComposeSucceededEvent.OutputObject
     >;
-    LzComposeSucceeded: TypedContractEvent<
-      LzComposeSucceededEvent.InputTuple,
-      LzComposeSucceededEvent.OutputTuple,
-      LzComposeSucceededEvent.OutputObject
+    ComposeSucceeded: TypedContractEvent<
+      ComposeSucceededEvent.InputTuple,
+      ComposeSucceededEvent.OutputTuple,
+      ComposeSucceededEvent.OutputObject
     >;
 
     'OwnershipTransferStarted(address,address)': TypedContractEvent<
