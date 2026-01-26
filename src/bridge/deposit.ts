@@ -185,9 +185,9 @@ export async function depositViaBridge(
     | DepositToManagedAccountParameters
     | DepositToWalletParameters,
   providers: {
-    // If the source chain is Berachain then both these params should be for
+    // If the source chain is Ethereum then both these params should be for
     // the same provider
-    berachain: ethers.Provider;
+    ethereum: ethers.Provider;
     sourceChain: ethers.Provider;
   },
   sourceSigner: ethers.Signer,
@@ -195,10 +195,10 @@ export async function depositViaBridge(
   extraRequestParams?: Pick<TransactionRequest, 'nonce'>,
 ): Promise<string> {
   const [{ sendParam, sourceConfig }, { gasFee }] = await Promise.all(
-    parameters.sourceBridgeTarget === BridgeTarget.LAYERZERO_BERACHAIN ?
+    parameters.sourceBridgeTarget === BridgeTarget.STARGATE_ETHEREUM ?
       [
-        getDepositFromBerachainSendParamAndSourceConfig(parameters, sandbox),
-        estimateDepositFromBerachainFees(parameters, providers, sandbox),
+        getDepositFromEthereumSendParamAndSourceConfig(parameters, sandbox),
+        estimateDepositFromEthereumFees(parameters, providers, sandbox),
       ]
     : [
         getDepositViaForwarderSendParamAndSourceConfig(
@@ -356,9 +356,9 @@ export async function estimateDepositFees(
     | DepositToManagedAccountParameters
     | DepositToWalletParameters,
   providers: {
-    // If the source chain is Berachain then both these params should be for
+    // If the source chain is Ethereum then both these params should be for
     // the same provider
-    berachain: ethers.Provider;
+    ethereum: ethers.Provider;
     sourceChain: ethers.Provider;
   },
   sandbox: boolean,
@@ -366,8 +366,8 @@ export async function estimateDepositFees(
   gasFee: bigint;
   quantityDeliveredInAssetUnits: bigint;
 }> {
-  if (parameters.sourceBridgeTarget === BridgeTarget.LAYERZERO_BERACHAIN) {
-    return estimateDepositFromBerachainFees(parameters, providers, sandbox);
+  if (parameters.sourceBridgeTarget === BridgeTarget.STARGATE_ETHEREUM) {
+    return estimateDepositFromEthereumFees(parameters, providers, sandbox);
   }
 
   return estimateDepositViaForwarderFees(parameters, providers, sandbox);
@@ -402,15 +402,15 @@ export function getDestinationWallet(
 
 /**
  * Estimate native gas fee needed to deposit USDC cross-chain into the Exchange
- * from Berachain using the OFT pathway
+ * from Ethereum using the OFT pathway
  */
-async function estimateDepositFromBerachainFees(
+async function estimateDepositFromEthereumFees(
   parameters:
     | AddManagedAccountParameters
     | DepositToManagedAccountParameters
     | DepositToWalletParameters,
   providers: {
-    berachain: ethers.Provider;
+    ethereum: ethers.Provider;
   },
   sandbox: boolean,
 ): Promise<{
@@ -418,11 +418,11 @@ async function estimateDepositFromBerachainFees(
   quantityDeliveredInAssetUnits: bigint;
 }> {
   const { sendParam, sourceConfig } =
-    await getDepositFromBerachainSendParamAndSourceConfig(parameters, sandbox);
+    await getDepositFromEthereumSendParamAndSourceConfig(parameters, sandbox);
 
   const oft = IOFT__factory.connect(
     sourceConfig.layerzeroOFTAddress,
-    providers.berachain,
+    providers.ethereum,
   );
   const [[gasFee], [, , receipt]] = await Promise.all([
     oft.quoteSend(sendParam, false, {
@@ -443,7 +443,7 @@ async function estimateDepositViaForwarderFees(
     | DepositToManagedAccountParameters
     | DepositToWalletParameters,
   providers: {
-    berachain: ethers.Provider;
+    ethereum: ethers.Provider;
     sourceChain: ethers.Provider;
   },
   sandbox: boolean,
@@ -469,10 +469,10 @@ async function estimateDepositViaForwarderFees(
     ioft.quoteOFT(sendParam),
   ]);
 
-  // Once we obtain the quantity delivered after slippage to Berachain, calculate
+  // Once we obtain the quantity delivered after slippage to Ethereum, calculate
   // the quantity subsequently delivered to Katana after any additional slippage
   const { quantityDeliveredInAssetUnits } =
-    await estimateDepositFromBerachainFees(
+    await estimateDepositFromEthereumFees(
       { ...parameters, quantityInAssetUnits: receipt.amountReceivedLD },
       providers,
       sandbox,
@@ -484,7 +484,7 @@ async function estimateDepositViaForwarderFees(
   };
 }
 
-async function getDepositFromBerachainSendParamAndSourceConfig(
+async function getDepositFromEthereumSendParamAndSourceConfig(
   parameters:
     | AddManagedAccountParameters
     | DepositToManagedAccountParameters
@@ -492,7 +492,7 @@ async function getDepositFromBerachainSendParamAndSourceConfig(
   sandbox: boolean,
 ) {
   const { sourceConfig, destinationConfig } = getSourceAndDestinationConfigs(
-    BridgeTarget.LAYERZERO_BERACHAIN,
+    BridgeTarget.STARGATE_ETHEREUM,
     BridgeTarget.KATANA_KATANA,
     sandbox,
   );
@@ -539,24 +539,24 @@ async function getDepositViaForwarderSendParamAndSourceConfig(
     | DepositToManagedAccountParameters
     | DepositToWalletParameters,
   providers: {
-    berachain: ethers.Provider;
+    ethereum: ethers.Provider;
   },
   sandbox: boolean,
 ) {
-  const { sourceConfig, destinationConfig: berachainConfig } =
+  const { sourceConfig, destinationConfig: ethereumConfig } =
     getSourceAndDestinationConfigs(
       parameters.sourceBridgeTarget,
-      BridgeTarget.LAYERZERO_BERACHAIN,
+      BridgeTarget.STARGATE_ETHEREUM,
       sandbox,
     );
 
-  const { gasFee: berachainGasFee } = await estimateDepositFromBerachainFees(
+  const { gasFee: ethereumGasFee } = await estimateDepositFromEthereumFees(
     parameters,
     providers,
     sandbox,
   );
   // Add 20% buffer for safety
-  const additionalNativeDrop = new BigNumber(berachainGasFee.toString())
+  const additionalNativeDrop = new BigNumber(ethereumGasFee.toString())
     .times(new BigNumber(1.2))
     .toFixed(0);
 
@@ -568,7 +568,7 @@ async function getDepositViaForwarderSendParamAndSourceConfig(
   // FIXME CJS dynamic import
   const { Options } = await import('@layerzerolabs/lz-v2-utilities');
   const extraOptions = Options.newOptions()
-    // Native drop is specified in BERA wei
+    // Native drop is specified in ETH wei
     .addExecutorComposeOption(
       0,
       BridgeConfig.settings.stargateBridgeForwarderGasLimit,
@@ -577,7 +577,7 @@ async function getDepositViaForwarderSendParamAndSourceConfig(
     .toHex();
 
   const sendParam = {
-    dstEid: berachainConfig.layerZeroEndpointId, // Destination endpoint ID
+    dstEid: ethereumConfig.layerZeroEndpointId, // Destination endpoint ID
     to: ethers.zeroPadValue(stargateBridgeForwarderContractAddress, 32), // Recipient address
     amountLD: parameters.quantityInAssetUnits, // Amount to send in local decimals
     minAmountLD: multiplyPips(

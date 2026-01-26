@@ -586,7 +586,6 @@ export type PayoutProgram = (typeof PayoutProgram)[keyof typeof PayoutProgram];
  */
 export const BridgeTarget = {
   KATANA_KATANA: 'katana.katana',
-  LAYERZERO_BERACHAIN: 'stargate.berachain',
   STARGATE_ARBITRUM: 'stargate.arbitrum',
   STARGATE_AURORA: 'stargate.aurora',
   STARGATE_AVALANCHE: 'stargate.avalanche',
