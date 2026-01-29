@@ -88,8 +88,8 @@ export const BridgeConfig = {
       // https://docs.layerzero.network/v2/deployments/deployed-contracts?chains=ethereum
       evmChainId: 1,
       layerZeroEndpointId: 30101,
-      // https://stargateprotocol.gitbook.io/stargate/v2-developer-docs/technical-reference/mainnet-contracts#ethereum
-      layerzeroOFTAddress: '0xc026395860Db2d07ee33e05fE50ed7bD583189C7',
+      // vbUSDC OFTAdapter https://github.com/agglayer/vault-bridge/tree/main/broadcast#mainnet
+      layerzeroOFTAddress: '0xb5bADA33542a05395d504a25885e02503A957Bb3',
       // https://stargateprotocol.gitbook.io/stargate/v2-developer-docs/technical-reference/v2-supported-networks-and-assets#ethereum
       tokenDecimals: 6,
       usdcAddress: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
