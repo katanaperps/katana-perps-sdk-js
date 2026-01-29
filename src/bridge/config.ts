@@ -72,17 +72,6 @@ export const BridgeConfig = {
       tokenDecimals: 6,
       usdcAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
     },
-    [BridgeTarget.STARGATE_BNB]: {
-      target: BridgeTarget.STARGATE_BNB,
-      // https://docs.layerzero.network/v2/deployments/deployed-contracts?chains=bnb
-      evmChainId: 56,
-      layerZeroEndpointId: 30102,
-      // https://stargateprotocol.gitbook.io/stargate/v/v2-developer-docs/technical-reference/mainnet-contracts#bnb-chain
-      layerzeroOFTAddress: '0x962Bd449E630b0d928f308Ce63f1A21F02576057',
-      // https://stargateprotocol.gitbook.io/stargate/v2-developer-docs/technical-reference/v2-supported-networks-and-assets#bnb
-      tokenDecimals: 18,
-      usdcAddress: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
-    },
     [BridgeTarget.STARGATE_ETHEREUM]: {
       target: BridgeTarget.STARGATE_ETHEREUM,
       // https://docs.layerzero.network/v2/deployments/deployed-contracts?chains=ethereum
@@ -184,8 +173,6 @@ export const BridgeConfigByLayerZeroEndpointId = {
       BridgeConfig.mainnet[BridgeTarget.STARGATE_AVALANCHE],
     [BridgeConfig.mainnet[BridgeTarget.STARGATE_BASE].layerZeroEndpointId]:
       BridgeConfig.mainnet[BridgeTarget.STARGATE_BASE],
-    [BridgeConfig.mainnet[BridgeTarget.STARGATE_BNB].layerZeroEndpointId]:
-      BridgeConfig.mainnet[BridgeTarget.STARGATE_BNB],
     [BridgeConfig.mainnet[BridgeTarget.STARGATE_ETHEREUM].layerZeroEndpointId]:
       BridgeConfig.mainnet[BridgeTarget.STARGATE_ETHEREUM],
     [BridgeConfig.mainnet[BridgeTarget.STARGATE_OPTIMISM].layerZeroEndpointId]:
