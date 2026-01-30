@@ -4,7 +4,10 @@ import { ethers, type TransactionRequest } from 'ethers';
 import { multiplyPips } from '#pipmath';
 
 import { BridgeConfig } from '#bridge/config';
-import { IOFT__factory } from '#typechain-types/index';
+import {
+  IOFT__factory,
+  IVaultComposerSync__factory,
+} from '#typechain-types/index';
 import { BridgeTarget } from '#types/enums/request';
 
 import {
@@ -194,21 +197,126 @@ export async function depositViaBridge(
   sandbox: boolean,
   extraRequestParams?: Pick<TransactionRequest, 'nonce'>,
 ): Promise<string> {
-  const [{ sendParam, sourceConfig }, { gasFee }] = await Promise.all(
-    parameters.sourceBridgeTarget === BridgeTarget.STARGATE_ETHEREUM ?
-      [
-        getDepositFromEthereumSendParamAndSourceConfig(parameters, sandbox),
-        estimateDepositFromEthereumFees(parameters, providers, sandbox),
-      ]
-    : [
-        getDepositViaForwarderSendParamAndSourceConfig(
-          parameters,
-          providers,
-          sandbox,
-        ),
-        estimateDepositViaForwarderFees(parameters, providers, sandbox),
-      ],
+  return parameters.sourceBridgeTarget === BridgeTarget.STARGATE_ETHEREUM ?
+      depositViaVaultComposerSync(
+        parameters,
+        providers,
+        sourceSigner,
+        sandbox,
+        extraRequestParams,
+      )
+    : depositViaForwarder(
+        parameters,
+        providers,
+        sourceSigner,
+        sandbox,
+        extraRequestParams,
+      );
+}
+
+/**
+ * Deposit funds cross-chain into the Exchange using a LayerZero OFT or Stargate
+ */
+export async function depositViaVaultComposerSync(
+  parameters:
+    | AddManagedAccountParameters
+    | DepositToManagedAccountParameters
+    | DepositToWalletParameters,
+  providers: {
+    // If the source chain is Ethereum then both these params should be for
+    // the same provider
+    ethereum: ethers.Provider;
+    sourceChain: ethers.Provider;
+  },
+  sourceSigner: ethers.Signer,
+  sandbox: boolean,
+  extraRequestParams?: Pick<TransactionRequest, 'nonce'>,
+): Promise<string> {
+  const [{ sendParam, sourceConfig }, { gasFee }] = await Promise.all([
+    getDepositFromEthereumSendParamAndSourceConfig(parameters, sandbox),
+    estimateDepositFromEthereumFees(parameters, providers, sandbox),
+  ]);
+
+  let gasLimit: number = BridgeConfig.settings.depositSourceChainGasLimit;
+  const vaultComposerSync = IVaultComposerSync__factory.connect(
+    sourceConfig.layerZeroVaultComposerSyncAddress,
+    sourceSigner,
   );
+  const wallet = getDestinationWallet(parameters);
+
+  try {
+    // Estimate gas
+    const estimatedGasLimit =
+      await vaultComposerSync.depositAndSend.estimateGas(
+        parameters.quantityInAssetUnits,
+        sendParam,
+        wallet, // Refund address - extra gas (if any) is returned to this address
+        {
+          ...extraRequestParams,
+          from: wallet,
+          // Native gas to pay for the cross chain message fee
+          value: gasFee,
+        },
+      );
+    // Add 20% buffer for safety
+    gasLimit = Number(
+      new BigNumber(estimatedGasLimit.toString())
+        .times(new BigNumber(1.2))
+        .toFixed(0),
+    );
+  } catch (error) {
+    // ethers.js will perform the estimation at the block gas limit, which is much higher than the
+    // gas actually needed by the tx. If the wallet does not have the funds to cover the tx at this
+    // high gas limit then the RPC will throw an INSUFFICIENT_FUNDS error; however the wallet may
+    // still have enough funds to successfully bridge at the actual gas limit. In this case simply
+    // fall through and use the configured default gas limit. The wallet software in use should
+    // still show if that limit is insufficient, which is only an issue for blockchains with
+    // variable gas costs such as Arbitrum One
+    if (!error.code || error.code !== 'INSUFFICIENT_FUNDS') {
+      throw error;
+    }
+  }
+
+  const response = await vaultComposerSync.depositAndSend.send(
+    parameters.quantityInAssetUnits,
+    sendParam,
+    wallet, // Refund address - extra gas (if any) is returned to this address
+    {
+      from: wallet,
+      gasLimit,
+      value: gasFee,
+    }, // Native gas to pay for the cross chain message fee
+  );
+
+  return response.hash;
+}
+
+/**
+ * Deposit funds cross-chain into the Exchange using a LayerZero OFT or Stargate
+ */
+export async function depositViaForwarder(
+  parameters:
+    | AddManagedAccountParameters
+    | DepositToManagedAccountParameters
+    | DepositToWalletParameters,
+  providers: {
+    // If the source chain is Ethereum then both these params should be for
+    // the same provider
+    ethereum: ethers.Provider;
+    sourceChain: ethers.Provider;
+  },
+  sourceSigner: ethers.Signer,
+  sandbox: boolean,
+  extraRequestParams?: Pick<TransactionRequest, 'nonce'>,
+): Promise<string> {
+  const [{ sendParam, sourceConfig }, { gasFee }] = await Promise.all([
+    getDepositViaForwarderSendParamAndSourceConfig(
+      parameters,
+      providers,
+      sandbox,
+    ),
+    estimateDepositViaForwarderFees(parameters, providers, sandbox),
+  ]);
 
   let gasLimit: number = BridgeConfig.settings.depositSourceChainGasLimit;
   const oft = IOFT__factory.connect(
@@ -502,20 +610,19 @@ async function getDepositFromEthereumSendParamAndSourceConfig(
       parameters.exchangeLayerZeroAdapterAddress,
     );
 
-  let extraOptions = new Uint8Array();
-  if (
-    parameters.bridgePayloadType ===
-    DepositBridgeAdapterPayloadType.addManagedAccount
-  ) {
-    const { Options } = await import('@layerzerolabs/lz-v2-utilities');
-    extraOptions = Options.newOptions()
-      .addExecutorComposeOption(
-        0,
-        BridgeConfig.settings.addManagedAccountExtraGas,
-        0,
-      )
-      .toBytes();
-  }
+  const { Options } = await import('@layerzerolabs/lz-v2-utilities');
+  const extraOptions = Options.newOptions()
+    .addExecutorComposeOption(
+      0,
+      (
+        parameters.bridgePayloadType ===
+          DepositBridgeAdapterPayloadType.addManagedAccount
+      ) ?
+        BridgeConfig.settings.addManagedAccountComposeGasLimit
+      : BridgeConfig.settings.depositComposeGasLimit,
+      0,
+    )
+    .toBytes();
 
   const sendParam = {
     dstEid: destinationConfig.layerZeroEndpointId, // Destination endpoint ID
@@ -530,7 +637,11 @@ async function getDepositFromEthereumSendParamAndSourceConfig(
     oftCmd: '0x', // The OFT command to be executed, unused in default OFT implementations
   };
 
-  return { sendParam, sourceConfig };
+  return {
+    sendParam,
+    sourceConfig:
+      sourceConfig as (typeof BridgeConfig.mainnet)['stargate.ethereum'],
+  };
 }
 
 async function getDepositViaForwarderSendParamAndSourceConfig(

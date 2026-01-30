@@ -11,7 +11,8 @@ export const BridgeTargetsArray = Object.values(BridgeTarget);
  */
 export const BridgeConfig = {
   settings: {
-    addManagedAccountExtraGas: 300_000,
+    addManagedAccountComposeGasLimit: 650_000,
+    depositComposeGasLimit: 350_000,
     depositSourceChainGasLimit: 450_000,
     stargateBridgeForwarderGasLimit: 450_000,
     localBridgeTarget: BridgeTarget.KATANA_KATANA,
@@ -79,6 +80,8 @@ export const BridgeConfig = {
       layerZeroEndpointId: 30101,
       // vbUSDC OFTAdapter https://github.com/agglayer/vault-bridge/tree/main/broadcast#mainnet
       layerzeroOFTAddress: '0xb5bADA33542a05395d504a25885e02503A957Bb3',
+      layerZeroVaultComposerSyncAddress:
+        '0x8A35897fda9E024d2aC20a937193e099679eC477',
       // https://stargateprotocol.gitbook.io/stargate/v2-developer-docs/technical-reference/v2-supported-networks-and-assets#ethereum
       tokenDecimals: 6,
       usdcAddress: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
@@ -156,7 +159,9 @@ export const BridgeConfig = {
       // https://docs.layerzero.network/v2/deployments/deployed-contracts?chains=sepolia
       evmChainId: 11155111,
       layerZeroEndpointId: 40161,
-      layerzeroOFTAddress: '0x21F1caDDBED3Cd50e6B30644459BFB80c367076c',
+      // No OFT currently supported on Sepolia testnet
+      layerzeroOFTAddress: '0x0000000000000000000000000000000000000000',
+      layerZeroVaultComposerSync: '0x0000000000000000000000000000000000000000',
       tokenDecimals: 6,
       usdcAddress: '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590',
     },
