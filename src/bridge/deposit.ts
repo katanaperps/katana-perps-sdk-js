@@ -242,7 +242,7 @@ export async function depositViaVaultComposerSync(
     sourceConfig.layerZeroVaultComposerSyncAddress,
     sourceSigner,
   );
-  const wallet = getDestinationWallet(parameters);
+  const sourceWallet = await sourceSigner.getAddress();
 
   try {
     // Estimate gas
@@ -250,10 +250,10 @@ export async function depositViaVaultComposerSync(
       await vaultComposerSync.depositAndSend.estimateGas(
         parameters.quantityInAssetUnits,
         sendParam,
-        wallet, // Refund address - extra gas (if any) is returned to this address
+        sourceWallet, // Refund address - extra gas (if any) is returned to this address
         {
           ...extraRequestParams,
-          from: wallet,
+          from: sourceWallet,
           // Native gas to pay for the cross chain message fee
           value: gasFee,
         },
@@ -280,9 +280,9 @@ export async function depositViaVaultComposerSync(
   const response = await vaultComposerSync.depositAndSend.send(
     parameters.quantityInAssetUnits,
     sendParam,
-    wallet, // Refund address - extra gas (if any) is returned to this address
+    sourceWallet, // Refund address - extra gas (if any) is returned to this address
     {
-      from: wallet,
+      from: sourceWallet,
       gasLimit,
       value: gasFee,
     }, // Native gas to pay for the cross chain message fee
@@ -323,17 +323,17 @@ export async function depositViaForwarder(
     sourceConfig.layerzeroOFTAddress,
     sourceSigner,
   );
-  const wallet = getDestinationWallet(parameters);
+  const sourceWallet = await sourceSigner.getAddress();
 
   try {
     // Estimate gas
     const estimatedGasLimit = await oft.send.estimateGas(
       sendParam,
       { nativeFee: gasFee, lzTokenFee: 0 },
-      wallet, // Refund address - extra gas (if any) is returned to this address
+      sourceWallet, // Refund address - extra gas (if any) is returned to this address
       {
         ...extraRequestParams,
-        from: wallet,
+        from: sourceWallet,
         // Native gas to pay for the cross chain message fee
         value: gasFee,
       },
@@ -360,9 +360,9 @@ export async function depositViaForwarder(
   const response = await oft.send(
     sendParam,
     { nativeFee: gasFee, lzTokenFee: 0 },
-    wallet, // Refund address - extra gas (if any) is returned to this address
+    sourceWallet, // Refund address - extra gas (if any) is returned to this address
     {
-      from: wallet,
+      from: sourceWallet,
       gasLimit,
       value: gasFee,
     }, // Native gas to pay for the cross chain message fee

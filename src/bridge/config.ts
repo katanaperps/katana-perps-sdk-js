@@ -14,7 +14,7 @@ export const BridgeConfig = {
     addManagedAccountComposeGasLimit: 650_000,
     depositComposeGasLimit: 350_000,
     depositSourceChainGasLimit: 450_000,
-    stargateBridgeForwarderGasLimit: 450_000,
+    stargateBridgeForwarderGasLimit: 1_200_000,
     localBridgeTarget: BridgeTarget.KATANA_KATANA,
   },
   mainnet: {
@@ -72,6 +72,17 @@ export const BridgeConfig = {
       // https://stargateprotocol.gitbook.io/stargate/v2-developer-docs/technical-reference/v2-supported-networks-and-assets#base
       tokenDecimals: 6,
       usdcAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+    },
+    [BridgeTarget.STARGATE_BERACHAIN]: {
+      target: BridgeTarget.STARGATE_BERACHAIN,
+      evmChainId: 80094,
+      // https://docs.layerzero.network/v2/developers/evm/technical-reference/deployed-contracts#bera
+      layerZeroEndpointId: 30362,
+      // https://stargateprotocol.gitbook.io/stargate/v/v2-developer-docs/technical-reference/mainnet-contracts#berachain
+      layerzeroOFTAddress: '0xAF54BE5B6eEc24d6BFACf1cce4eaF680A8239398',
+      // https://stargateprotocol.gitbook.io/stargate/v2-developer-docs/technical-reference/v2-supported-networks-and-assets#bera
+      tokenDecimals: 6,
+      usdcAddress: '0x549943e04f40284185054145c6E4e9568C1D3241',
     },
     [BridgeTarget.STARGATE_ETHEREUM]: {
       target: BridgeTarget.STARGATE_ETHEREUM,
