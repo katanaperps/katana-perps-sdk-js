@@ -189,6 +189,8 @@ export const BridgeConfigByLayerZeroEndpointId = {
       BridgeConfig.mainnet[BridgeTarget.STARGATE_AVALANCHE],
     [BridgeConfig.mainnet[BridgeTarget.STARGATE_BASE].layerZeroEndpointId]:
       BridgeConfig.mainnet[BridgeTarget.STARGATE_BASE],
+    [BridgeConfig.mainnet[BridgeTarget.STARGATE_BERACHAIN].layerZeroEndpointId]:
+      BridgeConfig.mainnet[BridgeTarget.STARGATE_BERACHAIN],
     [BridgeConfig.mainnet[BridgeTarget.STARGATE_ETHEREUM].layerZeroEndpointId]:
       BridgeConfig.mainnet[BridgeTarget.STARGATE_ETHEREUM],
     [BridgeConfig.mainnet[BridgeTarget.STARGATE_OPTIMISM].layerZeroEndpointId]:
