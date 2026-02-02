@@ -12,9 +12,19 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: 'uint32',
+        name: 'ethereumEndpointId_',
+        type: 'uint32',
+      },
+      {
         internalType: 'address',
         name: 'exchangeLayerZeroAdapter_',
         type: 'address',
+      },
+      {
+        internalType: 'uint32',
+        name: 'katanaEndpointId_',
+        type: 'uint32',
       },
       {
         internalType: 'address',
@@ -23,18 +33,13 @@ const _abi = [
       },
       {
         internalType: 'uint64',
-        name: 'minimumForwardQuantityMultiplier_',
-        type: 'uint64',
-      },
-      {
-        internalType: 'uint64',
         name: 'minimumDepositNativeDropQuantityMultiplier_',
         type: 'uint64',
       },
       {
-        internalType: 'address',
-        name: 'katanaOFT_',
-        type: 'address',
+        internalType: 'uint64',
+        name: 'minimumForwardQuantityMultiplier_',
+        type: 'uint64',
       },
       {
         internalType: 'address',
@@ -47,9 +52,14 @@ const _abi = [
         type: 'address',
       },
       {
-        internalType: 'uint32',
-        name: 'katanaEndpointId_',
-        type: 'uint32',
+        internalType: 'address',
+        name: 'vbUSDC_',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: 'vbUSDCOFTAdapter_',
+        type: 'address',
       },
     ],
     stateMutability: 'nonpayable',
@@ -181,6 +191,19 @@ const _abi = [
   },
   {
     inputs: [],
+    name: 'ethereumEndpointId',
+    outputs: [
+      {
+        internalType: 'uint32',
+        name: '',
+        type: 'uint32',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
     name: 'exchangeLayerZeroAdapter',
     outputs: [
       {
@@ -200,19 +223,6 @@ const _abi = [
         internalType: 'uint32',
         name: '',
         type: 'uint32',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'katanaOFT',
-    outputs: [
-      {
-        internalType: 'contract IOFT',
-        name: '',
-        type: 'address',
       },
     ],
     stateMutability: 'view',
@@ -447,6 +457,32 @@ const _abi = [
     outputs: [
       {
         internalType: 'contract IERC20',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'vbUSDC',
+    outputs: [
+      {
+        internalType: 'contract IERC4626',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'vbUSDCOFTAdapter',
+    outputs: [
+      {
+        internalType: 'contract IOFT',
         name: '',
         type: 'address',
       },

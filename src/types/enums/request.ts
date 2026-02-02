@@ -590,6 +590,7 @@ export const BridgeTarget = {
   STARGATE_AURORA: 'stargate.aurora',
   STARGATE_AVALANCHE: 'stargate.avalanche',
   STARGATE_BASE: 'stargate.base',
+  STARGATE_BERACHAIN: 'stargate.berachain',
   STARGATE_ETHEREUM: 'stargate.ethereum',
   STARGATE_OPTIMISM: 'stargate.optimism',
   STARGATE_RARI: 'stargate.rari',

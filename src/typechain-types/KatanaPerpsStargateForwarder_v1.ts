@@ -29,9 +29,9 @@ export interface KatanaPerpsStargateForwarder_v1Interface extends Interface {
       | 'MAX_MULTIPLIER'
       | 'MIN_MULTIPLIER'
       | 'acceptOwnership'
+      | 'ethereumEndpointId'
       | 'exchangeLayerZeroAdapter'
       | 'katanaEndpointId'
-      | 'katanaOFT'
       | 'loadDepositGasFeeInAssetUnits'
       | 'loadEstimatedForwardedQuantityInAssetUnits'
       | 'loadWithdrawalGasFeesInAssetUnits'
@@ -47,6 +47,8 @@ export interface KatanaPerpsStargateForwarder_v1Interface extends Interface {
       | 'stargate'
       | 'transferOwnership'
       | 'usdc'
+      | 'vbUSDC'
+      | 'vbUSDCOFTAdapter'
       | 'withdrawNativeAsset',
   ): FunctionFragment;
 
@@ -70,6 +72,10 @@ export interface KatanaPerpsStargateForwarder_v1Interface extends Interface {
     values?: undefined,
   ): string;
   encodeFunctionData(
+    functionFragment: 'ethereumEndpointId',
+    values?: undefined,
+  ): string;
+  encodeFunctionData(
     functionFragment: 'exchangeLayerZeroAdapter',
     values?: undefined,
   ): string;
@@ -77,7 +83,6 @@ export interface KatanaPerpsStargateForwarder_v1Interface extends Interface {
     functionFragment: 'katanaEndpointId',
     values?: undefined,
   ): string;
-  encodeFunctionData(functionFragment: 'katanaOFT', values?: undefined): string;
   encodeFunctionData(
     functionFragment: 'loadDepositGasFeeInAssetUnits',
     values?: undefined,
@@ -129,6 +134,11 @@ export interface KatanaPerpsStargateForwarder_v1Interface extends Interface {
     values: [AddressLike],
   ): string;
   encodeFunctionData(functionFragment: 'usdc', values?: undefined): string;
+  encodeFunctionData(functionFragment: 'vbUSDC', values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: 'vbUSDCOFTAdapter',
+    values?: undefined,
+  ): string;
   encodeFunctionData(
     functionFragment: 'withdrawNativeAsset',
     values: [AddressLike, BigNumberish],
@@ -147,6 +157,10 @@ export interface KatanaPerpsStargateForwarder_v1Interface extends Interface {
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
+    functionFragment: 'ethereumEndpointId',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
     functionFragment: 'exchangeLayerZeroAdapter',
     data: BytesLike,
   ): Result;
@@ -154,7 +168,6 @@ export interface KatanaPerpsStargateForwarder_v1Interface extends Interface {
     functionFragment: 'katanaEndpointId',
     data: BytesLike,
   ): Result;
-  decodeFunctionResult(functionFragment: 'katanaOFT', data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: 'loadDepositGasFeeInAssetUnits',
     data: BytesLike,
@@ -200,6 +213,11 @@ export interface KatanaPerpsStargateForwarder_v1Interface extends Interface {
     data: BytesLike,
   ): Result;
   decodeFunctionResult(functionFragment: 'usdc', data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: 'vbUSDC', data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: 'vbUSDCOFTAdapter',
+    data: BytesLike,
+  ): Result;
   decodeFunctionResult(
     functionFragment: 'withdrawNativeAsset',
     data: BytesLike,
@@ -306,11 +324,11 @@ export interface KatanaPerpsStargateForwarder_v1 extends BaseContract {
 
   acceptOwnership: TypedContractMethod<[], [void], 'nonpayable'>;
 
+  ethereumEndpointId: TypedContractMethod<[], [bigint], 'view'>;
+
   exchangeLayerZeroAdapter: TypedContractMethod<[], [string], 'view'>;
 
   katanaEndpointId: TypedContractMethod<[], [bigint], 'view'>;
-
-  katanaOFT: TypedContractMethod<[], [string], 'view'>;
 
   loadDepositGasFeeInAssetUnits: TypedContractMethod<[], [bigint], 'view'>;
 
@@ -382,6 +400,10 @@ export interface KatanaPerpsStargateForwarder_v1 extends BaseContract {
 
   usdc: TypedContractMethod<[], [string], 'view'>;
 
+  vbUSDC: TypedContractMethod<[], [string], 'view'>;
+
+  vbUSDCOFTAdapter: TypedContractMethod<[], [string], 'view'>;
+
   withdrawNativeAsset: TypedContractMethod<
     [destinationWallet: AddressLike, quantity: BigNumberish],
     [void],
@@ -402,14 +424,14 @@ export interface KatanaPerpsStargateForwarder_v1 extends BaseContract {
     nameOrSignature: 'acceptOwnership',
   ): TypedContractMethod<[], [void], 'nonpayable'>;
   getFunction(
+    nameOrSignature: 'ethereumEndpointId',
+  ): TypedContractMethod<[], [bigint], 'view'>;
+  getFunction(
     nameOrSignature: 'exchangeLayerZeroAdapter',
   ): TypedContractMethod<[], [string], 'view'>;
   getFunction(
     nameOrSignature: 'katanaEndpointId',
   ): TypedContractMethod<[], [bigint], 'view'>;
-  getFunction(
-    nameOrSignature: 'katanaOFT',
-  ): TypedContractMethod<[], [string], 'view'>;
   getFunction(
     nameOrSignature: 'loadDepositGasFeeInAssetUnits',
   ): TypedContractMethod<[], [bigint], 'view'>;
@@ -486,6 +508,12 @@ export interface KatanaPerpsStargateForwarder_v1 extends BaseContract {
   ): TypedContractMethod<[newOwner: AddressLike], [void], 'nonpayable'>;
   getFunction(
     nameOrSignature: 'usdc',
+  ): TypedContractMethod<[], [string], 'view'>;
+  getFunction(
+    nameOrSignature: 'vbUSDC',
+  ): TypedContractMethod<[], [string], 'view'>;
+  getFunction(
+    nameOrSignature: 'vbUSDCOFTAdapter',
   ): TypedContractMethod<[], [string], 'view'>;
   getFunction(
     nameOrSignature: 'withdrawNativeAsset',

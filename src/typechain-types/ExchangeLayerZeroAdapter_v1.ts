@@ -28,7 +28,6 @@ export interface ExchangeLayerZeroAdapter_v1Interface extends Interface {
     nameOrSignature:
       | 'MAX_MINIMUM_WITHDRAW_QUANTITY_MULTIPLIER'
       | 'MIN_MINIMUM_WITHDRAW_QUANTITY_MULTIPLIER'
-      | 'PIP_PRICE_MULTIPLIER'
       | 'acceptOwnership'
       | 'addManagedAccountDepositFeeQuantityInAssetUnits'
       | 'addManagedAccountManagerWalletNativeDropQuantity'
@@ -38,7 +37,7 @@ export interface ExchangeLayerZeroAdapter_v1Interface extends Interface {
       | 'exchange'
       | 'isDepositEnabled'
       | 'isWithdrawEnabled'
-      | 'loadEthereumWithdrawalGasFeesInAssetUnits'
+      | 'loadEthereumWithdrawalGasFeeInAssetUnits'
       | 'lzCompose'
       | 'lzEndpoint'
       | 'minimumAddManagedAccountDepositQuantityInAssetUnits'
@@ -78,10 +77,6 @@ export interface ExchangeLayerZeroAdapter_v1Interface extends Interface {
     values?: undefined,
   ): string;
   encodeFunctionData(
-    functionFragment: 'PIP_PRICE_MULTIPLIER',
-    values?: undefined,
-  ): string;
-  encodeFunctionData(
     functionFragment: 'acceptOwnership',
     values?: undefined,
   ): string;
@@ -115,7 +110,7 @@ export interface ExchangeLayerZeroAdapter_v1Interface extends Interface {
     values?: undefined,
   ): string;
   encodeFunctionData(
-    functionFragment: 'loadEthereumWithdrawalGasFeesInAssetUnits',
+    functionFragment: 'loadEthereumWithdrawalGasFeeInAssetUnits',
     values?: undefined,
   ): string;
   encodeFunctionData(
@@ -205,10 +200,6 @@ export interface ExchangeLayerZeroAdapter_v1Interface extends Interface {
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'PIP_PRICE_MULTIPLIER',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
     functionFragment: 'acceptOwnership',
     data: BytesLike,
   ): Result;
@@ -242,7 +233,7 @@ export interface ExchangeLayerZeroAdapter_v1Interface extends Interface {
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'loadEthereumWithdrawalGasFeesInAssetUnits',
+    functionFragment: 'loadEthereumWithdrawalGasFeeInAssetUnits',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(functionFragment: 'lzCompose', data: BytesLike): Result;
@@ -458,8 +449,6 @@ export interface ExchangeLayerZeroAdapter_v1 extends BaseContract {
     'view'
   >;
 
-  PIP_PRICE_MULTIPLIER: TypedContractMethod<[], [bigint], 'view'>;
-
   acceptOwnership: TypedContractMethod<[], [void], 'nonpayable'>;
 
   addManagedAccountDepositFeeQuantityInAssetUnits: TypedContractMethod<
@@ -500,14 +489,9 @@ export interface ExchangeLayerZeroAdapter_v1 extends BaseContract {
 
   isWithdrawEnabled: TypedContractMethod<[], [boolean], 'view'>;
 
-  loadEthereumWithdrawalGasFeesInAssetUnits: TypedContractMethod<
+  loadEthereumWithdrawalGasFeeInAssetUnits: TypedContractMethod<
     [],
-    [
-      [bigint, bigint] & {
-        gasFeeWithoutForwardInAssetUnits: bigint;
-        gasFeeWithForwardInAssetUnits: bigint;
-      },
-    ],
+    [bigint],
     'view'
   >;
 
@@ -617,9 +601,6 @@ export interface ExchangeLayerZeroAdapter_v1 extends BaseContract {
     nameOrSignature: 'MIN_MINIMUM_WITHDRAW_QUANTITY_MULTIPLIER',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
-    nameOrSignature: 'PIP_PRICE_MULTIPLIER',
-  ): TypedContractMethod<[], [bigint], 'view'>;
-  getFunction(
     nameOrSignature: 'acceptOwnership',
   ): TypedContractMethod<[], [void], 'nonpayable'>;
   getFunction(
@@ -657,17 +638,8 @@ export interface ExchangeLayerZeroAdapter_v1 extends BaseContract {
     nameOrSignature: 'isWithdrawEnabled',
   ): TypedContractMethod<[], [boolean], 'view'>;
   getFunction(
-    nameOrSignature: 'loadEthereumWithdrawalGasFeesInAssetUnits',
-  ): TypedContractMethod<
-    [],
-    [
-      [bigint, bigint] & {
-        gasFeeWithoutForwardInAssetUnits: bigint;
-        gasFeeWithForwardInAssetUnits: bigint;
-      },
-    ],
-    'view'
-  >;
+    nameOrSignature: 'loadEthereumWithdrawalGasFeeInAssetUnits',
+  ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
     nameOrSignature: 'lzCompose',
   ): TypedContractMethod<

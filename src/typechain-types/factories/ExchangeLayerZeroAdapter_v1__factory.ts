@@ -234,19 +234,6 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'PIP_PRICE_MULTIPLIER',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
     name: 'acceptOwnership',
     outputs: [],
     stateMutability: 'nonpayable',
@@ -379,16 +366,11 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'loadEthereumWithdrawalGasFeesInAssetUnits',
+    name: 'loadEthereumWithdrawalGasFeeInAssetUnits',
     outputs: [
       {
         internalType: 'uint256',
-        name: 'gasFeeWithoutForwardInAssetUnits',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'gasFeeWithForwardInAssetUnits',
+        name: '',
         type: 'uint256',
       },
     ],

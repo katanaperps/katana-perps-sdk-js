@@ -11,9 +11,10 @@ export const BridgeTargetsArray = Object.values(BridgeTarget);
  */
 export const BridgeConfig = {
   settings: {
-    addManagedAccountExtraGas: 300_000,
+    addManagedAccountComposeGasLimit: 650_000,
+    depositComposeGasLimit: 350_000,
     depositSourceChainGasLimit: 450_000,
-    stargateBridgeForwarderGasLimit: 450_000,
+    stargateBridgeForwarderGasLimit: 1_200_000,
     localBridgeTarget: BridgeTarget.KATANA_KATANA,
   },
   mainnet: {
@@ -72,6 +73,17 @@ export const BridgeConfig = {
       tokenDecimals: 6,
       usdcAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
     },
+    [BridgeTarget.STARGATE_BERACHAIN]: {
+      target: BridgeTarget.STARGATE_BERACHAIN,
+      evmChainId: 80094,
+      // https://docs.layerzero.network/v2/developers/evm/technical-reference/deployed-contracts#bera
+      layerZeroEndpointId: 30362,
+      // https://stargateprotocol.gitbook.io/stargate/v/v2-developer-docs/technical-reference/mainnet-contracts#berachain
+      layerzeroOFTAddress: '0xAF54BE5B6eEc24d6BFACf1cce4eaF680A8239398',
+      // https://stargateprotocol.gitbook.io/stargate/v2-developer-docs/technical-reference/v2-supported-networks-and-assets#bera
+      tokenDecimals: 6,
+      usdcAddress: '0x549943e04f40284185054145c6E4e9568C1D3241',
+    },
     [BridgeTarget.STARGATE_ETHEREUM]: {
       target: BridgeTarget.STARGATE_ETHEREUM,
       // https://docs.layerzero.network/v2/deployments/deployed-contracts?chains=ethereum
@@ -79,6 +91,8 @@ export const BridgeConfig = {
       layerZeroEndpointId: 30101,
       // vbUSDC OFTAdapter https://github.com/agglayer/vault-bridge/tree/main/broadcast#mainnet
       layerzeroOFTAddress: '0xb5bADA33542a05395d504a25885e02503A957Bb3',
+      layerZeroVaultComposerSyncAddress:
+        '0x8A35897fda9E024d2aC20a937193e099679eC477',
       // https://stargateprotocol.gitbook.io/stargate/v2-developer-docs/technical-reference/v2-supported-networks-and-assets#ethereum
       tokenDecimals: 6,
       usdcAddress: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
@@ -156,7 +170,9 @@ export const BridgeConfig = {
       // https://docs.layerzero.network/v2/deployments/deployed-contracts?chains=sepolia
       evmChainId: 11155111,
       layerZeroEndpointId: 40161,
-      layerzeroOFTAddress: '0x21F1caDDBED3Cd50e6B30644459BFB80c367076c',
+      // No OFT currently supported on Sepolia testnet
+      layerzeroOFTAddress: '0x0000000000000000000000000000000000000000',
+      layerZeroVaultComposerSync: '0x0000000000000000000000000000000000000000',
       tokenDecimals: 6,
       usdcAddress: '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590',
     },
