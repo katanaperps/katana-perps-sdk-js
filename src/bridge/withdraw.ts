@@ -6,7 +6,6 @@ import { ExchangeLayerZeroAdapter_v1__factory } from '#typechain-types/factories
 import { KatanaPerpsStargateForwarder_v1__factory } from '#typechain-types/factories/KatanaPerpsStargateForwarder_v1__factory';
 import { BridgeTarget } from '#types/enums/request';
 
-import { BridgeConfig } from './config';
 import {
   getBridgeTargetConfig,
   bridgeTargetForLayerZeroEndpointId,
@@ -101,9 +100,6 @@ export async function estimateBridgeWithdrawQuantity(
     poolDecimals,
   ] = await exchangeBridgeAdapter.estimateWithdrawQuantityInAssetUnits(
     // Funds must always be withdrawn to Ethereum first regardless of final target
-    (sandbox ? BridgeConfig.testnet : BridgeConfig.mainnet)[
-      BridgeTarget.STARGATE_ETHEREUM
-    ].layerZeroEndpointId,
     decimalToPip(parameters.quantityInDecimal),
   );
   let estimatedWithdrawQuantityInDecimal = assetUnitsToDecimal(

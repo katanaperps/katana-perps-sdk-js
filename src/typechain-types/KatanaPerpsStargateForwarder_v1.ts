@@ -31,6 +31,7 @@ export interface KatanaPerpsStargateForwarder_v1Interface extends Interface {
       | 'acceptOwnership'
       | 'ethereumEndpointId'
       | 'exchangeLayerZeroAdapter'
+      | 'katanaComposeGasLimit'
       | 'katanaEndpointId'
       | 'loadDepositGasFeeInAssetUnits'
       | 'loadEstimatedForwardedQuantityInAssetUnits'
@@ -42,6 +43,7 @@ export interface KatanaPerpsStargateForwarder_v1Interface extends Interface {
       | 'owner'
       | 'pendingOwner'
       | 'renounceOwnership'
+      | 'setKatanaComposeGasLimit'
       | 'setMinimumDepositNativeDropQuantityMultiplier'
       | 'setMinimumForwardQuantityMultiplier'
       | 'stargate'
@@ -77,6 +79,10 @@ export interface KatanaPerpsStargateForwarder_v1Interface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: 'exchangeLayerZeroAdapter',
+    values?: undefined,
+  ): string;
+  encodeFunctionData(
+    functionFragment: 'katanaComposeGasLimit',
     values?: undefined,
   ): string;
   encodeFunctionData(
@@ -119,6 +125,10 @@ export interface KatanaPerpsStargateForwarder_v1Interface extends Interface {
   encodeFunctionData(
     functionFragment: 'renounceOwnership',
     values?: undefined,
+  ): string;
+  encodeFunctionData(
+    functionFragment: 'setKatanaComposeGasLimit',
+    values: [BigNumberish],
   ): string;
   encodeFunctionData(
     functionFragment: 'setMinimumDepositNativeDropQuantityMultiplier',
@@ -165,6 +175,10 @@ export interface KatanaPerpsStargateForwarder_v1Interface extends Interface {
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
+    functionFragment: 'katanaComposeGasLimit',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
     functionFragment: 'katanaEndpointId',
     data: BytesLike,
   ): Result;
@@ -197,6 +211,10 @@ export interface KatanaPerpsStargateForwarder_v1Interface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: 'renounceOwnership',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: 'setKatanaComposeGasLimit',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
@@ -328,6 +346,8 @@ export interface KatanaPerpsStargateForwarder_v1 extends BaseContract {
 
   exchangeLayerZeroAdapter: TypedContractMethod<[], [string], 'view'>;
 
+  katanaComposeGasLimit: TypedContractMethod<[], [bigint], 'view'>;
+
   katanaEndpointId: TypedContractMethod<[], [bigint], 'view'>;
 
   loadDepositGasFeeInAssetUnits: TypedContractMethod<[], [bigint], 'view'>;
@@ -377,6 +397,12 @@ export interface KatanaPerpsStargateForwarder_v1 extends BaseContract {
   pendingOwner: TypedContractMethod<[], [string], 'view'>;
 
   renounceOwnership: TypedContractMethod<[], [void], 'nonpayable'>;
+
+  setKatanaComposeGasLimit: TypedContractMethod<
+    [newKatanaComposeGasLimit: BigNumberish],
+    [void],
+    'nonpayable'
+  >;
 
   setMinimumDepositNativeDropQuantityMultiplier: TypedContractMethod<
     [newMinimumDepositNativeDropQuantityMultiplier: BigNumberish],
@@ -429,6 +455,9 @@ export interface KatanaPerpsStargateForwarder_v1 extends BaseContract {
   getFunction(
     nameOrSignature: 'exchangeLayerZeroAdapter',
   ): TypedContractMethod<[], [string], 'view'>;
+  getFunction(
+    nameOrSignature: 'katanaComposeGasLimit',
+  ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
     nameOrSignature: 'katanaEndpointId',
   ): TypedContractMethod<[], [bigint], 'view'>;
@@ -486,6 +515,13 @@ export interface KatanaPerpsStargateForwarder_v1 extends BaseContract {
   getFunction(
     nameOrSignature: 'renounceOwnership',
   ): TypedContractMethod<[], [void], 'nonpayable'>;
+  getFunction(
+    nameOrSignature: 'setKatanaComposeGasLimit',
+  ): TypedContractMethod<
+    [newKatanaComposeGasLimit: BigNumberish],
+    [void],
+    'nonpayable'
+  >;
   getFunction(
     nameOrSignature: 'setMinimumDepositNativeDropQuantityMultiplier',
   ): TypedContractMethod<
