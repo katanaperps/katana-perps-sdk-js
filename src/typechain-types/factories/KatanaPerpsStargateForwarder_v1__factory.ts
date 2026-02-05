@@ -22,6 +22,11 @@ const _abi = [
         type: 'address',
       },
       {
+        internalType: 'uint128',
+        name: 'katanaComposeGasLimit_',
+        type: 'uint128',
+      },
+      {
         internalType: 'uint32',
         name: 'katanaEndpointId_',
         type: 'uint32',
@@ -68,6 +73,17 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: 'uint16',
+        name: 'optionType',
+        type: 'uint16',
+      },
+    ],
+    name: 'InvalidOptionType',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
         internalType: 'address',
         name: 'owner',
         type: 'address',
@@ -85,6 +101,22 @@ const _abi = [
       },
     ],
     name: 'OwnableUnauthorizedAccount',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint8',
+        name: 'bits',
+        type: 'uint8',
+      },
+      {
+        internalType: 'uint256',
+        name: 'value',
+        type: 'uint256',
+      },
+    ],
+    name: 'SafeCastOverflowedUintDowncast',
     type: 'error',
   },
   {
@@ -210,6 +242,19 @@ const _abi = [
         internalType: 'address',
         name: '',
         type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'katanaComposeGasLimit',
+    outputs: [
+      {
+        internalType: 'uint128',
+        name: '',
+        type: 'uint128',
       },
     ],
     stateMutability: 'view',
@@ -395,6 +440,19 @@ const _abi = [
   {
     inputs: [],
     name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint128',
+        name: 'newKatanaComposeGasLimit',
+        type: 'uint128',
+      },
+    ],
+    name: 'setKatanaComposeGasLimit',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',

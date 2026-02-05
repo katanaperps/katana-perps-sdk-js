@@ -33,6 +33,7 @@ export interface ExchangeLayerZeroAdapter_v1Interface extends Interface {
       | 'addManagedAccountManagerWalletNativeDropQuantity'
       | 'depositToManagedAccountFeeQuantityInAssetUnits'
       | 'estimateWithdrawQuantityInAssetUnits'
+      | 'ethereumComposeGasLimit'
       | 'ethereumEndpointId'
       | 'exchange'
       | 'isDepositEnabled'
@@ -50,6 +51,7 @@ export interface ExchangeLayerZeroAdapter_v1Interface extends Interface {
       | 'renounceOwnership'
       | 'setComposeParameters'
       | 'setDepositEnabled'
+      | 'setEthereumComposeGasLimit'
       | 'setMinimumWithdrawQuantityMultiplier'
       | 'setStargateForwarder'
       | 'setWithdrawEnabled'
@@ -94,7 +96,11 @@ export interface ExchangeLayerZeroAdapter_v1Interface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: 'estimateWithdrawQuantityInAssetUnits',
-    values: [BigNumberish, BigNumberish],
+    values: [BigNumberish],
+  ): string;
+  encodeFunctionData(
+    functionFragment: 'ethereumComposeGasLimit',
+    values?: undefined,
   ): string;
   encodeFunctionData(
     functionFragment: 'ethereumEndpointId',
@@ -163,6 +169,10 @@ export interface ExchangeLayerZeroAdapter_v1Interface extends Interface {
     values: [boolean],
   ): string;
   encodeFunctionData(
+    functionFragment: 'setEthereumComposeGasLimit',
+    values: [BigNumberish],
+  ): string;
+  encodeFunctionData(
     functionFragment: 'setMinimumWithdrawQuantityMultiplier',
     values: [BigNumberish],
   ): string;
@@ -220,6 +230,10 @@ export interface ExchangeLayerZeroAdapter_v1Interface extends Interface {
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
+    functionFragment: 'ethereumComposeGasLimit',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
     functionFragment: 'ethereumEndpointId',
     data: BytesLike,
   ): Result;
@@ -267,6 +281,10 @@ export interface ExchangeLayerZeroAdapter_v1Interface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: 'setDepositEnabled',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: 'setEthereumComposeGasLimit',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
@@ -470,7 +488,7 @@ export interface ExchangeLayerZeroAdapter_v1 extends BaseContract {
   >;
 
   estimateWithdrawQuantityInAssetUnits: TypedContractMethod<
-    [destinationEndpointId: BigNumberish, quantity: BigNumberish],
+    [quantity: BigNumberish],
     [
       [bigint, bigint, bigint] & {
         estimatedWithdrawQuantityInAssetUnits: bigint;
@@ -480,6 +498,8 @@ export interface ExchangeLayerZeroAdapter_v1 extends BaseContract {
     ],
     'view'
   >;
+
+  ethereumComposeGasLimit: TypedContractMethod<[], [bigint], 'view'>;
 
   ethereumEndpointId: TypedContractMethod<[], [bigint], 'view'>;
 
@@ -552,6 +572,12 @@ export interface ExchangeLayerZeroAdapter_v1 extends BaseContract {
     'nonpayable'
   >;
 
+  setEthereumComposeGasLimit: TypedContractMethod<
+    [newEthereumComposeGasLimit: BigNumberish],
+    [void],
+    'nonpayable'
+  >;
+
   setMinimumWithdrawQuantityMultiplier: TypedContractMethod<
     [newMinimumWithdrawQuantityMultiplier: BigNumberish],
     [void],
@@ -615,7 +641,7 @@ export interface ExchangeLayerZeroAdapter_v1 extends BaseContract {
   getFunction(
     nameOrSignature: 'estimateWithdrawQuantityInAssetUnits',
   ): TypedContractMethod<
-    [destinationEndpointId: BigNumberish, quantity: BigNumberish],
+    [quantity: BigNumberish],
     [
       [bigint, bigint, bigint] & {
         estimatedWithdrawQuantityInAssetUnits: bigint;
@@ -625,6 +651,9 @@ export interface ExchangeLayerZeroAdapter_v1 extends BaseContract {
     ],
     'view'
   >;
+  getFunction(
+    nameOrSignature: 'ethereumComposeGasLimit',
+  ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
     nameOrSignature: 'ethereumEndpointId',
   ): TypedContractMethod<[], [bigint], 'view'>;
@@ -697,6 +726,13 @@ export interface ExchangeLayerZeroAdapter_v1 extends BaseContract {
   getFunction(
     nameOrSignature: 'setDepositEnabled',
   ): TypedContractMethod<[isEnabled: boolean], [void], 'nonpayable'>;
+  getFunction(
+    nameOrSignature: 'setEthereumComposeGasLimit',
+  ): TypedContractMethod<
+    [newEthereumComposeGasLimit: BigNumberish],
+    [void],
+    'nonpayable'
+  >;
   getFunction(
     nameOrSignature: 'setMinimumWithdrawQuantityMultiplier',
   ): TypedContractMethod<

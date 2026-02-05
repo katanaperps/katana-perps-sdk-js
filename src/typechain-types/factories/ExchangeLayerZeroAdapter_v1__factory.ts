@@ -22,6 +22,11 @@ const _abi = [
         type: 'uint64',
       },
       {
+        internalType: 'uint128',
+        name: 'ethereumComposeGasLimit_',
+        type: 'uint128',
+      },
+      {
         internalType: 'uint32',
         name: 'ethereumEndpointId_',
         type: 'uint32',
@@ -68,6 +73,17 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: 'uint16',
+        name: 'optionType',
+        type: 'uint16',
+      },
+    ],
+    name: 'InvalidOptionType',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
         internalType: 'address',
         name: 'owner',
         type: 'address',
@@ -85,6 +101,22 @@ const _abi = [
       },
     ],
     name: 'OwnableUnauthorizedAccount',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint8',
+        name: 'bits',
+        type: 'uint8',
+      },
+      {
+        internalType: 'uint256',
+        name: 'value',
+        type: 'uint256',
+      },
+    ],
+    name: 'SafeCastOverflowedUintDowncast',
     type: 'error',
   },
   {
@@ -281,11 +313,6 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: 'uint32',
-        name: 'destinationEndpointId',
-        type: 'uint32',
-      },
-      {
         internalType: 'uint64',
         name: 'quantity',
         type: 'uint64',
@@ -307,6 +334,19 @@ const _abi = [
         internalType: 'uint8',
         name: 'poolDecimals',
         type: 'uint8',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'ethereumComposeGasLimit',
+    outputs: [
+      {
+        internalType: 'uint128',
+        name: '',
+        type: 'uint128',
       },
     ],
     stateMutability: 'view',
@@ -568,6 +608,19 @@ const _abi = [
       },
     ],
     name: 'setDepositEnabled',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint128',
+        name: 'newEthereumComposeGasLimit',
+        type: 'uint128',
+      },
+    ],
+    name: 'setEthereumComposeGasLimit',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
