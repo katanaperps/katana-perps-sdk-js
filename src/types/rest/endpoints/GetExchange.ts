@@ -68,6 +68,12 @@ export interface KatanaPerpsExchange {
    * @internal
    */
   withdrawEnabled?: boolean;
+  bridgeAdapters: {
+    /** Address of the v1 Stargate bridge adapter contract on Katana */
+    stargateBridgeAdapterV1ContractAddress: string;
+    /** Address of the v1 Stargate cross-chain forwarder contract on Ethereum */
+    stargateBridgeForwarderV1ContractAddress: string;
+  };
 }
 
 /**
