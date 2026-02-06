@@ -70,9 +70,13 @@ export interface KatanaPerpsExchange {
   withdrawEnabled?: boolean;
   bridgeAdapters: {
     /** Address of the v1 Stargate bridge adapter contract on Katana */
-    stargateBridgeAdapterV1ContractAddress: string;
+    stargateBridgeAdapterV1KatanaContractAddress: string;
     /** Address of the v1 Stargate cross-chain forwarder contract on Ethereum */
-    stargateBridgeForwarderV1ContractAddress: string;
+    stargateBridgeForwarderV1EthereumContractAddress: string;
+    /** Address of the vbUSDC OFT adapter contract on Ethereum */
+    vbUsdcOFTAdapterEthereumContractAddress: string;
+    /** Address of the vbUSDC OVault composer contract on Ethereum */
+    vbUsdcVaultComposerSyncEthereumContractAddress: string;
   };
 }
 
