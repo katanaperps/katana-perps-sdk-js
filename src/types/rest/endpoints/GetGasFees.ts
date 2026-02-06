@@ -13,6 +13,7 @@ export interface KatanaPerpsGasFees {
   withdrawal: {
     [K in BridgeTarget]?: string;
   };
+  ['stargate.maximumWithdrawal']: string;
 }
 
 /**
