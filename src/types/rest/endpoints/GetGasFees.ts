@@ -12,8 +12,9 @@ import type { BridgeTarget } from '@katanaperps/katana-perps-sdk/types';
 export interface KatanaPerpsGasFees {
   withdrawal: {
     [K in BridgeTarget]?: string;
+  } & {
+    ['stargate.maximumWithdrawal']: string;
   };
-  ['stargate.maximumWithdrawal']: string;
 }
 
 /**
