@@ -27,7 +27,7 @@ export const BridgeConfig = {
       layerzeroOFTAddress: '0x807275727Dd3E640c5F2b5DE7d1eC72B4Dd293C0',
       // vbUSDC
       tokenDecimals: 6,
-      usdcAddress: '0x203a662b0bd271a6ed5a60edfbd04bfce608fd36',
+      usdcAddress: '0x203A662b0BD271A6ed5a60EdFbd04bFce608FD36',
     },
     [BridgeTarget.STARGATE_ARBITRUM]: {
       target: BridgeTarget.STARGATE_ARBITRUM,
