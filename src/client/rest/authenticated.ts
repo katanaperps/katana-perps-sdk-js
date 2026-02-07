@@ -28,7 +28,9 @@ import {
   sanitizeSearchParams,
 } from '#utils';
 
+import { getEncodedWithdrawalPayloadForBridgeTarget } from '#bridge/withdraw';
 import { RestPublicClient } from '#client/rest/public';
+import { BridgeTarget } from '#types/enums/request';
 
 import type * as katanaPerps from '#index';
 import type { AnyObj, Paginated } from '#types/utils';
@@ -1190,7 +1192,7 @@ export class RestAuthenticatedClient {
   ) {
     ensureSigner(signer);
 
-    const { chainId, exchangeContractAddress } =
+    const { chainId, exchangeContractAddress, bridgeAdapterContractAddress } =
       await this.getContractAndChainId();
 
     let params: katanaPerps.RestRequestWithdrawFunds;
@@ -1199,7 +1201,11 @@ export class RestAuthenticatedClient {
       const { bridgeTarget, ...rest } = $params;
       params = {
         ...rest,
-        ...getWithdrawalRequestBridgeAdapterParametersForTarget(),
+        ...getWithdrawalRequestBridgeAdapterParametersForTarget(
+          bridgeTarget,
+          bridgeAdapterContractAddress,
+          this.#config.sandbox,
+        ),
       };
     } else {
       params = $params;
@@ -1709,7 +1715,7 @@ export class RestAuthenticatedClient {
     ) => {
       ensureSigner(signer);
 
-      const { chainId, exchangeContractAddress } =
+      const { chainId, exchangeContractAddress, bridgeAdapterContractAddress } =
         await this.getContractAndChainId();
 
       let params: katanaPerps.RestRequestWithdrawFundsFromManagedAccountByQuantity;
@@ -1718,7 +1724,11 @@ export class RestAuthenticatedClient {
         const { bridgeTarget, ...rest } = $params;
         params = {
           ...rest,
-          ...getWithdrawalRequestBridgeAdapterParametersForTarget(),
+          ...getWithdrawalRequestBridgeAdapterParametersForTarget(
+            bridgeTarget,
+            bridgeAdapterContractAddress,
+            this.#config.sandbox,
+          ),
         };
       } else {
         params = $params;
@@ -1748,7 +1758,7 @@ export class RestAuthenticatedClient {
     ) => {
       ensureSigner(signer);
 
-      const { chainId, exchangeContractAddress } =
+      const { chainId, exchangeContractAddress, bridgeAdapterContractAddress } =
         await this.getContractAndChainId();
 
       let params: katanaPerps.RestRequestWithdrawFundsFromManagedAccountByShares;
@@ -1757,7 +1767,11 @@ export class RestAuthenticatedClient {
         const { bridgeTarget, ...rest } = $params;
         params = {
           ...rest,
-          ...getWithdrawalRequestBridgeAdapterParametersForTarget(),
+          ...getWithdrawalRequestBridgeAdapterParametersForTarget(
+            bridgeTarget,
+            bridgeAdapterContractAddress,
+            this.#config.sandbox,
+          ),
         };
       } else {
         params = $params;
@@ -1785,10 +1799,12 @@ export class RestAuthenticatedClient {
   protected async getContractAndChainId(): Promise<{
     chainId: number;
     exchangeContractAddress: string;
+    bridgeAdapterContractAddress: string;
   }> {
-    let { chainId, exchangeContractAddress } = this.#config;
+    let { chainId, exchangeContractAddress, bridgeAdapterContractAddress } =
+      this.#config;
 
-    if (!chainId || !exchangeContractAddress) {
+    if (!chainId || !exchangeContractAddress || !bridgeAdapterContractAddress) {
       if (!this.#exchange) {
         this.#exchange = await this.public.getExchange();
       }
@@ -1801,17 +1817,23 @@ export class RestAuthenticatedClient {
           this.#exchange.exchangeContractAddress;
         exchangeContractAddress ??= this.#config.exchangeContractAddress;
       }
+
+      this.#config.bridgeAdapterContractAddress ??=
+        this.#exchange.bridgeAdapters.stargateBridgeAdapterV1KatanaContractAddress;
+      bridgeAdapterContractAddress ??=
+        this.#config.bridgeAdapterContractAddress;
     }
 
-    if (!chainId || !exchangeContractAddress) {
+    if (!chainId || !exchangeContractAddress || !bridgeAdapterContractAddress) {
       throw new Error(
-        `Could not determine chainId (${typeof chainId}) or exchangeContractAddress (${typeof exchangeContractAddress})`,
+        `Could not determine chainId (${typeof chainId}) or exchangeContractAddress (${typeof exchangeContractAddress}) or bridgeAdapterContractAddress (${typeof bridgeAdapterContractAddress})`,
       );
     }
 
     return {
       chainId,
       exchangeContractAddress,
+      bridgeAdapterContractAddress,
     } as const;
   }
 
@@ -1995,12 +2017,22 @@ function ensureSigner(
 /**
  * @internal
  */
-function getWithdrawalRequestBridgeAdapterParametersForTarget(): {
+function getWithdrawalRequestBridgeAdapterParametersForTarget(
+  bridgeTarget: BridgeTarget,
+  bridgeAdapterContractAddress: string,
+  sandbox: boolean,
+): {
   bridgeAdapterAddress: string;
   bridgeAdapterPayload: string;
 } {
   return {
-    bridgeAdapterAddress: ethers.ZeroAddress,
-    bridgeAdapterPayload: '0x',
+    bridgeAdapterAddress:
+      bridgeTarget === BridgeTarget.KATANA_KATANA ?
+        ethers.ZeroAddress
+      : bridgeAdapterContractAddress,
+    bridgeAdapterPayload:
+      bridgeTarget === BridgeTarget.KATANA_KATANA ?
+        '0x'
+      : getEncodedWithdrawalPayloadForBridgeTarget(bridgeTarget, sandbox),
   };
 }
