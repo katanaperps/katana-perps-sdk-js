@@ -308,6 +308,8 @@ export async function depositViaForwarder(
   sourceSigner: ethers.Signer,
   sandbox: boolean,
   extraRequestParams?: Pick<TransactionRequest, 'nonce'>,
+  /** Let software wallet show estimate to the user. Even on expected TX failure. */
+  ignoreEstimateError?: boolean,
 ): Promise<string> {
   const [{ sendParam, sourceConfig }, { gasFee }] = await Promise.all([
     getDepositViaForwarderSendParamAndSourceConfig(
@@ -352,7 +354,18 @@ export async function depositViaForwarder(
     // fall through and use the configured default gas limit. The wallet software in use should
     // still show if that limit is insufficient, which is only an issue for blockchains with
     // variable gas costs such as Arbitrum One
-    if (!error.code || error.code !== 'INSUFFICIENT_FUNDS') {
+    if (error?.code === 'INSUFFICIENT_FUNDS') {
+      console.log(
+        '[depositViaForwarder] Insufficient funds - continue with default gas',
+      );
+      // Exit without throwing
+    } else if (ignoreEstimateError) {
+      // TODO: In latest contract it throws 'CALL_EXCEPTION' instead of 'INSUFFICIENT_FUNDS'
+      console.log(
+        '[depositViaForwarder] Estimate failed - continue with default gas',
+        error,
+      );
+    } else {
       throw error;
     }
   }
