@@ -196,6 +196,8 @@ export async function depositViaBridge(
   sourceSigner: ethers.Signer,
   sandbox: boolean,
   extraRequestParams?: Pick<TransactionRequest, 'nonce'>,
+  /** Let software wallet show estimate to the user. Even on expected TX failure. */
+  ignoreEstimateError?: boolean,
 ): Promise<string> {
   return parameters.sourceBridgeTarget === BridgeTarget.STARGATE_ETHEREUM ?
       depositViaVaultComposerSync(
@@ -204,6 +206,7 @@ export async function depositViaBridge(
         sourceSigner,
         sandbox,
         extraRequestParams,
+        ignoreEstimateError,
       )
     : depositViaForwarder(
         parameters,
@@ -211,6 +214,7 @@ export async function depositViaBridge(
         sourceSigner,
         sandbox,
         extraRequestParams,
+        ignoreEstimateError,
       );
 }
 
@@ -231,6 +235,8 @@ export async function depositViaVaultComposerSync(
   sourceSigner: ethers.Signer,
   sandbox: boolean,
   extraRequestParams?: Pick<TransactionRequest, 'nonce'>,
+  /** Let software wallet show estimate to the user. Even on expected TX failure. */
+  ignoreEstimateError?: boolean,
 ): Promise<string> {
   const [{ sendParam, sourceConfig }, { gasFee }] = await Promise.all([
     getDepositFromEthereumSendParamAndSourceConfig(parameters, sandbox),
@@ -272,7 +278,17 @@ export async function depositViaVaultComposerSync(
     // fall through and use the configured default gas limit. The wallet software in use should
     // still show if that limit is insufficient, which is only an issue for blockchains with
     // variable gas costs such as Arbitrum One
-    if (!error.code || error.code !== 'INSUFFICIENT_FUNDS') {
+    if (error?.code === 'INSUFFICIENT_FUNDS') {
+      console.log(
+        '[depositViaVaultComposerSync] Insufficient funds - continue with default gas',
+      );
+    } else if (ignoreEstimateError) {
+      // TODO: In latest contract it throws 'CALL_EXCEPTION' instead of 'INSUFFICIENT_FUNDS'
+      console.log(
+        '[depositViaVaultComposerSync] Estimate failed - continue with default gas',
+        error,
+      );
+    } else {
       throw error;
     }
   }
@@ -358,7 +374,6 @@ export async function depositViaForwarder(
       console.log(
         '[depositViaForwarder] Insufficient funds - continue with default gas',
       );
-      // Exit without throwing
     } else if (ignoreEstimateError) {
       // TODO: In latest contract it throws 'CALL_EXCEPTION' instead of 'INSUFFICIENT_FUNDS'
       console.log(
