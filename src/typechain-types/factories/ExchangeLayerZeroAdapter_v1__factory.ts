@@ -4,9 +4,9 @@
 
 import { Contract, Interface, type ContractRunner } from 'ethers';
 import type {
-  ExchangeLayerZeroAdapter_v3,
-  ExchangeLayerZeroAdapter_v3Interface,
-} from '../ExchangeLayerZeroAdapter_v3';
+  ExchangeLayerZeroAdapter_v1,
+  ExchangeLayerZeroAdapter_v1Interface,
+} from '../ExchangeLayerZeroAdapter_v1';
 
 const _abi = [
   {
@@ -22,8 +22,13 @@ const _abi = [
         type: 'uint64',
       },
       {
+        internalType: 'uint128',
+        name: 'ethereumComposeGasLimit_',
+        type: 'uint128',
+      },
+      {
         internalType: 'uint32',
-        name: 'berachainEndpointId_',
+        name: 'ethereumEndpointId_',
         type: 'uint32',
       },
       {
@@ -68,6 +73,17 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: 'uint16',
+        name: 'optionType',
+        type: 'uint16',
+      },
+    ],
+    name: 'InvalidOptionType',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
         internalType: 'address',
         name: 'owner',
         type: 'address',
@@ -85,6 +101,22 @@ const _abi = [
       },
     ],
     name: 'OwnableUnauthorizedAccount',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint8',
+        name: 'bits',
+        type: 'uint8',
+      },
+      {
+        internalType: 'uint256',
+        name: 'value',
+        type: 'uint256',
+      },
+    ],
+    name: 'SafeCastOverflowedUintDowncast',
     type: 'error',
   },
   {
@@ -234,19 +266,6 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'PIP_PRICE_MULTIPLIER',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
     name: 'acceptOwnership',
     outputs: [],
     stateMutability: 'nonpayable',
@@ -280,19 +299,6 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'berachainEndpointId',
-    outputs: [
-      {
-        internalType: 'uint32',
-        name: '',
-        type: 'uint32',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
     name: 'depositToManagedAccountFeeQuantityInAssetUnits',
     outputs: [
       {
@@ -306,11 +312,6 @@ const _abi = [
   },
   {
     inputs: [
-      {
-        internalType: 'uint32',
-        name: 'destinationEndpointId',
-        type: 'uint32',
-      },
       {
         internalType: 'uint64',
         name: 'quantity',
@@ -333,6 +334,32 @@ const _abi = [
         internalType: 'uint8',
         name: 'poolDecimals',
         type: 'uint8',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'ethereumComposeGasLimit',
+    outputs: [
+      {
+        internalType: 'uint128',
+        name: '',
+        type: 'uint128',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'ethereumEndpointId',
+    outputs: [
+      {
+        internalType: 'uint32',
+        name: '',
+        type: 'uint32',
       },
     ],
     stateMutability: 'view',
@@ -379,16 +406,11 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'loadBerachainWithdrawalGasFeesInAssetUnits',
+    name: 'loadEthereumWithdrawalGasFeeInAssetUnits',
     outputs: [
       {
         internalType: 'uint256',
-        name: 'gasFeeWithoutForwardInAssetUnits',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'gasFeeWithForwardInAssetUnits',
+        name: '',
         type: 'uint256',
       },
     ],
@@ -593,6 +615,19 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: 'uint128',
+        name: 'newEthereumComposeGasLimit',
+        type: 'uint128',
+      },
+    ],
+    name: 'setEthereumComposeGasLimit',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
         internalType: 'uint64',
         name: 'newMinimumWithdrawQuantityMultiplier',
         type: 'uint64',
@@ -702,19 +737,19 @@ const _abi = [
   },
 ] as const;
 
-export class ExchangeLayerZeroAdapter_v3__factory {
+export class ExchangeLayerZeroAdapter_v1__factory {
   static readonly abi = _abi;
-  static createInterface(): ExchangeLayerZeroAdapter_v3Interface {
-    return new Interface(_abi) as ExchangeLayerZeroAdapter_v3Interface;
+  static createInterface(): ExchangeLayerZeroAdapter_v1Interface {
+    return new Interface(_abi) as ExchangeLayerZeroAdapter_v1Interface;
   }
   static connect(
     address: string,
     runner?: ContractRunner | null,
-  ): ExchangeLayerZeroAdapter_v3 {
+  ): ExchangeLayerZeroAdapter_v1 {
     return new Contract(
       address,
       _abi,
       runner,
-    ) as unknown as ExchangeLayerZeroAdapter_v3;
+    ) as unknown as ExchangeLayerZeroAdapter_v1;
   }
 }

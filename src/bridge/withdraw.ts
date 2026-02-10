@@ -2,10 +2,10 @@ import { ethers } from 'ethers';
 
 import { assetUnitsToDecimal, decimalToPip } from '#pipmath';
 
-import { ExchangeLayerZeroAdapter_v3__factory } from '#typechain-types/factories/ExchangeLayerZeroAdapter_v3__factory';
+import { ExchangeLayerZeroAdapter_v1__factory } from '#typechain-types/factories/ExchangeLayerZeroAdapter_v1__factory';
+import { KatanaPerpsStargateForwarder_v1__factory } from '#typechain-types/factories/KatanaPerpsStargateForwarder_v1__factory';
 import { BridgeTarget } from '#types/enums/request';
 
-import { BridgeConfig } from './config';
 import {
   getBridgeTargetConfig,
   bridgeTargetForLayerZeroEndpointId,
@@ -77,7 +77,7 @@ export async function estimateBridgeWithdrawQuantity(
   },
 
   providers: {
-    berachain: ethers.Provider;
+    ethereum: ethers.Provider;
     katana: ethers.Provider;
   },
   sandbox: boolean,
@@ -89,7 +89,7 @@ export async function estimateBridgeWithdrawQuantity(
   const { layerZeroEndpointId: targetEndpointId } =
     decodeWithdrawalBridgeAdapterPayload(parameters.payload);
 
-  const exchangeBridgeAdapter = ExchangeLayerZeroAdapter_v3__factory.connect(
+  const exchangeBridgeAdapter = ExchangeLayerZeroAdapter_v1__factory.connect(
     parameters.exchangeLayerZeroAdapterAddress,
     providers.katana,
   );
@@ -99,17 +99,14 @@ export async function estimateBridgeWithdrawQuantity(
     minimumWithdrawQuantityInAssetUnits,
     poolDecimals,
   ] = await exchangeBridgeAdapter.estimateWithdrawQuantityInAssetUnits(
-    // Funds must always be withdrawn to Berachain first regardless of final target
-    (sandbox ? BridgeConfig.testnet : BridgeConfig.mainnet)[
-      BridgeTarget.LAYERZERO_BERACHAIN
-    ].layerZeroEndpointId,
+    // Funds must always be withdrawn to Ethereum first regardless of final target
     decimalToPip(parameters.quantityInDecimal),
   );
-  const estimatedWithdrawQuantityInDecimal = assetUnitsToDecimal(
+  let estimatedWithdrawQuantityInDecimal = assetUnitsToDecimal(
     estimatedWithdrawQuantityInAssetUnits,
     Number(poolDecimals),
   );
-  const minimumWithdrawQuantityInDecimal = assetUnitsToDecimal(
+  let minimumWithdrawQuantityInDecimal = assetUnitsToDecimal(
     minimumWithdrawQuantityInAssetUnits,
     Number(poolDecimals),
   );
@@ -119,12 +116,11 @@ export async function estimateBridgeWithdrawQuantity(
     throw new Error(`Unsupported Layerzero Endpoint ID ${targetEndpointId}`);
   }
 
-  /*
-  // If the final target is not Berachain, an bridge tx is needed via the forwarder
-  if (target !== BridgeTarget.LAYERZERO_BERACHAIN) {
-    const stargateForwarder = StargateForwarder_v2__factory.connect(
+  // If the final target is not Ethereum, a bridge tx is needed via the forwarder
+  if (target !== BridgeTarget.STARGATE_ETHEREUM) {
+    const stargateForwarder = KatanaPerpsStargateForwarder_v1__factory.connect(
       parameters.stargateForwarderAddress,
-      providers.berachain,
+      providers.ethereum,
     );
 
     const [
@@ -144,7 +140,6 @@ export async function estimateBridgeWithdrawQuantity(
       Number(forwardedPoolDecimals),
     );
   }
- */
 
   const willSucceed =
     BigInt(estimatedWithdrawQuantityInAssetUnits) >=

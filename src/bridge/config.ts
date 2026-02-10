@@ -11,9 +11,10 @@ export const BridgeTargetsArray = Object.values(BridgeTarget);
  */
 export const BridgeConfig = {
   settings: {
-    addManagedAccountExtraGas: 300_000,
+    addManagedAccountComposeGasLimit: 650_000,
+    depositComposeGasLimit: 350_000,
     depositSourceChainGasLimit: 450_000,
-    stargateBridgeForwarderGasLimit: 450_000,
+    stargateBridgeForwarderGasLimit: 1_200_000,
     localBridgeTarget: BridgeTarget.KATANA_KATANA,
   },
   mainnet: {
@@ -22,22 +23,11 @@ export const BridgeConfig = {
       // https://docs.layerzero.network/v2/deployments/deployed-contracts?chains=katana
       evmChainId: 747474,
       layerZeroEndpointId: 30375,
-      // No USDC OFT currently supported on Katana
-      layerzeroOFTAddress: '0x0000000000000000000000000000000000000000',
+      // OFTAdapter https://github.com/agglayer/vault-bridge/tree/ab1c49f1ba3a8632657856e4be6a6b351043ed69/broadcast#mainnet
+      layerzeroOFTAddress: '0x807275727Dd3E640c5F2b5DE7d1eC72B4Dd293C0',
       // vbUSDC
       tokenDecimals: 6,
-      usdcAddress: '0x203a662b0bd271a6ed5a60edfbd04bfce608fd36',
-    },
-    [BridgeTarget.LAYERZERO_BERACHAIN]: {
-      target: BridgeTarget.LAYERZERO_BERACHAIN,
-      // https://docs.layerzero.network/v2/deployments/deployed-contracts?chains=bera
-      evmChainId: 80094,
-      layerZeroEndpointId: 30362,
-      // https://stargateprotocol.gitbook.io/stargate/v2-developer-docs/technical-reference/mainnet-contracts#berachain
-      layerzeroOFTAddress: '0xAF54BE5B6eEc24d6BFACf1cce4eaF680A8239398',
-      // https://stargateprotocol.gitbook.io/stargate/v2-developer-docs/technical-reference/v2-supported-networks-and-assets#bera
-      tokenDecimals: 6,
-      usdcAddress: '0x549943e04f40284185054145c6E4e9568C1D3241',
+      usdcAddress: '0x203A662b0BD271A6ed5a60EdFbd04bFce608FD36',
     },
     [BridgeTarget.STARGATE_ARBITRUM]: {
       target: BridgeTarget.STARGATE_ARBITRUM,
@@ -83,24 +73,26 @@ export const BridgeConfig = {
       tokenDecimals: 6,
       usdcAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
     },
-    [BridgeTarget.STARGATE_BNB]: {
-      target: BridgeTarget.STARGATE_BNB,
-      // https://docs.layerzero.network/v2/deployments/deployed-contracts?chains=bnb
-      evmChainId: 56,
-      layerZeroEndpointId: 30102,
-      // https://stargateprotocol.gitbook.io/stargate/v/v2-developer-docs/technical-reference/mainnet-contracts#bnb-chain
-      layerzeroOFTAddress: '0x962Bd449E630b0d928f308Ce63f1A21F02576057',
-      // https://stargateprotocol.gitbook.io/stargate/v2-developer-docs/technical-reference/v2-supported-networks-and-assets#bnb
-      tokenDecimals: 18,
-      usdcAddress: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
+    [BridgeTarget.STARGATE_BERACHAIN]: {
+      target: BridgeTarget.STARGATE_BERACHAIN,
+      evmChainId: 80094,
+      // https://docs.layerzero.network/v2/developers/evm/technical-reference/deployed-contracts#bera
+      layerZeroEndpointId: 30362,
+      // https://stargateprotocol.gitbook.io/stargate/v/v2-developer-docs/technical-reference/mainnet-contracts#berachain
+      layerzeroOFTAddress: '0xAF54BE5B6eEc24d6BFACf1cce4eaF680A8239398',
+      // https://stargateprotocol.gitbook.io/stargate/v2-developer-docs/technical-reference/v2-supported-networks-and-assets#bera
+      tokenDecimals: 6,
+      usdcAddress: '0x549943e04f40284185054145c6E4e9568C1D3241',
     },
     [BridgeTarget.STARGATE_ETHEREUM]: {
       target: BridgeTarget.STARGATE_ETHEREUM,
       // https://docs.layerzero.network/v2/deployments/deployed-contracts?chains=ethereum
       evmChainId: 1,
       layerZeroEndpointId: 30101,
-      // https://stargateprotocol.gitbook.io/stargate/v2-developer-docs/technical-reference/mainnet-contracts#ethereum
-      layerzeroOFTAddress: '0xc026395860Db2d07ee33e05fE50ed7bD583189C7',
+      // vbUSDC OFTAdapter https://github.com/agglayer/vault-bridge/tree/main/broadcast#mainnet
+      layerzeroOFTAddress: '0xb5bADA33542a05395d504a25885e02503A957Bb3',
+      layerZeroVaultComposerSyncAddress:
+        '0x8A35897fda9E024d2aC20a937193e099679eC477',
       // https://stargateprotocol.gitbook.io/stargate/v2-developer-docs/technical-reference/v2-supported-networks-and-assets#ethereum
       tokenDecimals: 6,
       usdcAddress: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
@@ -154,22 +146,14 @@ export const BridgeConfig = {
     [BridgeTarget.KATANA_KATANA]: {
       target: BridgeTarget.KATANA_KATANA,
       isSupported: true,
-      evmChainId: 64002,
-      layerZeroEndpointId: 40282,
-      layerzeroOFTAddress: '0x54a04EfABCBd81A0488E4a9Ad22264E04A48329B',
+      evmChainId: 737373,
+      // No LZ connection yet on Bokuto testnet
+      layerZeroEndpointId: -1,
+      // No OFT currently supported on Bokuto testnet
+      layerzeroOFTAddress: '0x0000000000000000000000000000000000000000',
       tokenDecimals: 6,
-      usdcAddress: '0x54a04EfABCBd81A0488E4a9Ad22264E04A48329B',
-    },
-    [BridgeTarget.LAYERZERO_BERACHAIN]: {
-      target: BridgeTarget.LAYERZERO_BERACHAIN,
-      // TODO There is currently no testnet for Berachain so we are using
-      // Sepolia as a substitute for testing purposes
-      // https://docs.layerzero.network/v2/deployments/deployed-contracts?chains=sepolia
-      evmChainId: 11155111,
-      layerZeroEndpointId: 40161,
-      layerzeroOFTAddress: '0x21F1caDDBED3Cd50e6B30644459BFB80c367076c',
-      tokenDecimals: 6,
-      usdcAddress: '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590',
+      // vbUSDC
+      usdcAddress: '0xc2a4C310F2512A17Ac0047cf871aCAed3E62bB4B',
     },
     [BridgeTarget.STARGATE_ARBITRUM]: {
       target: BridgeTarget.STARGATE_ARBITRUM,
@@ -181,14 +165,22 @@ export const BridgeConfig = {
       tokenDecimals: 6,
       usdcAddress: '0x3253a335E7bFfB4790Aa4C25C4250d206E9b9773',
     },
+    [BridgeTarget.STARGATE_ETHEREUM]: {
+      target: BridgeTarget.STARGATE_ETHEREUM,
+      // https://docs.layerzero.network/v2/deployments/deployed-contracts?chains=sepolia
+      evmChainId: 11155111,
+      layerZeroEndpointId: 40161,
+      // No OFT currently supported on Sepolia testnet
+      layerzeroOFTAddress: '0x0000000000000000000000000000000000000000',
+      layerZeroVaultComposerSync: '0x0000000000000000000000000000000000000000',
+      tokenDecimals: 6,
+      usdcAddress: '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590',
+    },
   } as const,
 } as const;
 
 export const BridgeConfigByLayerZeroEndpointId = {
   mainnet: {
-    [BridgeConfig.mainnet[BridgeTarget.LAYERZERO_BERACHAIN]
-      .layerZeroEndpointId]:
-      BridgeConfig.mainnet[BridgeTarget.LAYERZERO_BERACHAIN],
     [BridgeConfig.mainnet[BridgeTarget.STARGATE_ARBITRUM].layerZeroEndpointId]:
       BridgeConfig.mainnet[BridgeTarget.STARGATE_ARBITRUM],
     [BridgeConfig.mainnet[BridgeTarget.STARGATE_AURORA].layerZeroEndpointId]:
@@ -197,8 +189,8 @@ export const BridgeConfigByLayerZeroEndpointId = {
       BridgeConfig.mainnet[BridgeTarget.STARGATE_AVALANCHE],
     [BridgeConfig.mainnet[BridgeTarget.STARGATE_BASE].layerZeroEndpointId]:
       BridgeConfig.mainnet[BridgeTarget.STARGATE_BASE],
-    [BridgeConfig.mainnet[BridgeTarget.STARGATE_BNB].layerZeroEndpointId]:
-      BridgeConfig.mainnet[BridgeTarget.STARGATE_BNB],
+    [BridgeConfig.mainnet[BridgeTarget.STARGATE_BERACHAIN].layerZeroEndpointId]:
+      BridgeConfig.mainnet[BridgeTarget.STARGATE_BERACHAIN],
     [BridgeConfig.mainnet[BridgeTarget.STARGATE_ETHEREUM].layerZeroEndpointId]:
       BridgeConfig.mainnet[BridgeTarget.STARGATE_ETHEREUM],
     [BridgeConfig.mainnet[BridgeTarget.STARGATE_OPTIMISM].layerZeroEndpointId]:
@@ -211,11 +203,10 @@ export const BridgeConfigByLayerZeroEndpointId = {
       BridgeConfig.mainnet[BridgeTarget.STARGATE_TAIKO],
   },
   testnet: {
-    [BridgeConfig.testnet[BridgeTarget.LAYERZERO_BERACHAIN]
-      .layerZeroEndpointId]:
-      BridgeConfig.testnet[BridgeTarget.LAYERZERO_BERACHAIN],
     [BridgeConfig.testnet[BridgeTarget.STARGATE_ARBITRUM].layerZeroEndpointId]:
       BridgeConfig.testnet[BridgeTarget.STARGATE_ARBITRUM],
+    [BridgeConfig.mainnet[BridgeTarget.STARGATE_ETHEREUM].layerZeroEndpointId]:
+      BridgeConfig.mainnet[BridgeTarget.STARGATE_ETHEREUM],
   },
 };
 
