@@ -4,6 +4,7 @@
 export { ERC20__factory } from './ERC20__factory';
 export { EarningsEscrow__factory } from './EarningsEscrow__factory';
 export { ExchangeLayerZeroAdapter_v1__factory } from './ExchangeLayerZeroAdapter_v1__factory';
+export { ExchangeLocalDepositAdapter_v1__factory } from './ExchangeLocalDepositAdapter_v1__factory';
 export { Exchange_v1__factory } from './Exchange_v1__factory';
 export { IOFT__factory } from './IOFT__factory';
 export { IVaultComposerSync__factory } from './IVaultComposerSync__factory';
