@@ -80,6 +80,46 @@ export interface KatanaPerpsExchange {
     /** Address of the vbUSDC OVault composer contract on Ethereum */
     vbUsdcVaultComposerSyncEthereumContractAddress: string;
   };
+  vaults: {
+    /**
+     * Vault creation fee
+     * @internal
+     */
+    vaultCreationFee: string;
+    /**
+     * Vault deposit fee
+     * @internal
+     */
+    vaultDepositFee: string;
+    /**
+     * Vault withdrawal fee
+     * @internal
+     */
+    vaultWithdrawalFee: string;
+    /**
+     * Minimum deposit required to create a vault
+     * @internal
+     */
+    vaultCreationMinimum: string;
+    /**
+     * Minimum deposit quantity
+     * @internal
+     */
+    vaultDepositMinimum: string;
+    /**
+     * Minimum withdrawal and withdrawal dust quantity
+     * @internal
+     */
+    vaultWithdrawalMinimum: string;
+    /**
+     * Address of Fixed Income Vault Provider V1 contract
+     */
+    fixedIncomeVaultProviderV1ContractAddress: string;
+    /**
+     * Address of Fixed Income Vault Provider aggregator V1 contract
+     */
+    fixedIncomeVaultProviderStateAggregatorV1ContractAddress: string;
+  };
 }
 
 /**
