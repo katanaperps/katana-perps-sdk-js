@@ -1113,6 +1113,8 @@ export class RestAuthenticatedClient {
     }
 
     const gasFees = await this.public.getGasFees();
+    console.log(gasFees.withdrawal);
+    console.log(bridgeTarget);
     const fees = gasFees.withdrawal[bridgeTarget];
 
     if (!fees) {
