@@ -45,7 +45,7 @@ export type DepositToWalletBridgePayloadParameters = {
 export type DepositBaseParameters = {
   exchangeLayerZeroAdapterAddress?: string;
   exchangeLocalDepositAdapterAddress?: string;
-  minimumForwardQuantityMultiplierInPips: bigint;
+  minimumForwardQuantityMultiplierInPips?: bigint;
   quantityInAssetUnits: bigint;
   sourceBridgeTarget: BridgeTarget;
   stargateBridgeForwarderContractAddress?: string;
@@ -725,6 +725,12 @@ async function getDepositFromEthereumSendParamAndSourceConfig(
     | DepositToWalletParameters,
   sandbox: boolean,
 ) {
+  if (!parameters.minimumForwardQuantityMultiplierInPips) {
+    throw new Error(
+      'minimumForwardQuantityMultiplierInPips is required for deposit via forwarder',
+    );
+  }
+
   const { sourceConfig, destinationConfig } = getSourceAndDestinationConfigs(
     BridgeTarget.STARGATE_ETHEREUM,
     BridgeTarget.KATANA_KATANA,
@@ -780,6 +786,12 @@ async function getDepositViaForwarderSendParamAndSourceConfig(
   },
   sandbox: boolean,
 ) {
+  if (!parameters.minimumForwardQuantityMultiplierInPips) {
+    throw new Error(
+      'minimumForwardQuantityMultiplierInPips is required for deposit via forwarder',
+    );
+  }
+
   const { sourceConfig, destinationConfig: ethereumConfig } =
     getSourceAndDestinationConfigs(
       parameters.sourceBridgeTarget,
