@@ -6,6 +6,8 @@ export { EarningsEscrow__factory } from './EarningsEscrow__factory';
 export { ExchangeLayerZeroAdapter_v1__factory } from './ExchangeLayerZeroAdapter_v1__factory';
 export { ExchangeLocalDepositAdapter_v1__factory } from './ExchangeLocalDepositAdapter_v1__factory';
 export { Exchange_v1__factory } from './Exchange_v1__factory';
+export { FixedIncomeVaultProviderStateAggregator_v1__factory } from './FixedIncomeVaultProviderStateAggregator_v1__factory';
+export { FixedIncomeVaultProvider_v1__factory } from './FixedIncomeVaultProvider_v1__factory';
 export { IOFT__factory } from './IOFT__factory';
 export { IVaultComposerSync__factory } from './IVaultComposerSync__factory';
 export { KatanaPerpsStargateForwarder_v1__factory } from './KatanaPerpsStargateForwarder_v1__factory';

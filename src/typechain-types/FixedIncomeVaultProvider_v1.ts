@@ -276,21 +276,21 @@ export interface FixedIncomeVaultProvider_v1Interface extends Interface {
     nameOrSignature:
       | 'INTEREST_PERIOD_IN_S'
       | 'MAX_INTEREST_MULTIPLIER'
+      | 'MAX_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S'
       | 'MAX_MAXIMUM_NET_DEPOSITS'
       | 'MAX_MAXIMUM_TOTAL_OWED_QUANTITY_AVAILABLE_MULTIPLIER_TO_INITIATE_EXIT'
       | 'MAX_MINIMUM_TOTAL_OWED_QUANTITY_AVAILABLE_MULTIPLIER_TO_ALLOW_MANAGER_WALLET_WITHDRAWAL'
       | 'MAX_MINIMUM_UNAPPLIED_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT'
-      | 'MAX_MINIMUM_WITHDRAWAL_QUANTITY'
       | 'MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS'
       | 'MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT'
       | 'MAX_WITHDRAWAL_LIMIT_WINDOW_SIZE_IN_S'
       | 'MINIMUM_WITHDRAWAL_MAXIMUM_GAS_FEE'
       | 'MIN_INTEREST_MULTIPLIER'
+      | 'MIN_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S'
       | 'MIN_MAXIMUM_NET_DEPOSITS'
       | 'MIN_MAXIMUM_TOTAL_OWED_QUANTITY_AVAILABLE_MULTIPLIER_TO_INITIATE_EXIT'
       | 'MIN_MINIMUM_TOTAL_OWED_QUANTITY_AVAILABLE_MULTIPLIER_TO_ALLOW_MANAGER_WALLET_WITHDRAWAL'
       | 'MIN_MINIMUM_UNAPPLIED_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT'
-      | 'MIN_MINIMUM_WITHDRAWAL_QUANTITY'
       | 'MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS'
       | 'MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT'
       | 'MIN_WITHDRAWAL_LIMIT_WINDOW_SIZE_IN_S'
@@ -320,7 +320,6 @@ export interface FixedIncomeVaultProvider_v1Interface extends Interface {
       | 'loadVaultWithdrawQueueItem'
       | 'loadVaultWithdrawQueueLength'
       | 'managedAccountUpgradeBlockTimestampDelayInS'
-      | 'minimumWithdrawalQuantity'
       | 'ownerWallet'
       | 'removeAdmin'
       | 'removeOwner'
@@ -331,7 +330,6 @@ export interface FixedIncomeVaultProvider_v1Interface extends Interface {
       | 'setDepositEnabled'
       | 'setDepositEnabledAdmin'
       | 'setManagedAccountUpgradeBlockTimestampDelay'
-      | 'setMinimumWithdrawalQuantity'
       | 'setOwner'
       | 'setWithdrawalDispatcher'
       | 'skim'
@@ -347,6 +345,7 @@ export interface FixedIncomeVaultProvider_v1Interface extends Interface {
     nameOrSignatureOrTopic:
       | 'AddManagedAccountsDisabledAdmin'
       | 'AddManagedAccountsEnabledAdmin'
+      | 'DepositToManagedAccountApplied'
       | 'DepositToManagedAccountReadyToApply'
       | 'DepositsDisabled'
       | 'DepositsDisabledAdmin'
@@ -358,9 +357,7 @@ export interface FixedIncomeVaultProvider_v1Interface extends Interface {
       | 'ManagedAccountUpgradeCanceled'
       | 'ManagedAccountUpgradeFinalized'
       | 'ManagedAccountUpgradeInitiated'
-      | 'MinimumWithdrawalQuantityChanged'
-      | 'VaultDeposited'
-      | 'VaultLiquidated'
+      | 'ManagerWalletLiquidated'
       | 'WithdrawalDispatcherChanged'
       | 'WithdrawalFromManagedAccountApplied'
       | 'WithdrawalFromManagedAccountCanceled'
@@ -373,6 +370,10 @@ export interface FixedIncomeVaultProvider_v1Interface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: 'MAX_INTEREST_MULTIPLIER',
+    values?: undefined,
+  ): string;
+  encodeFunctionData(
+    functionFragment: 'MAX_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
     values?: undefined,
   ): string;
   encodeFunctionData(
@@ -389,10 +390,6 @@ export interface FixedIncomeVaultProvider_v1Interface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: 'MAX_MINIMUM_UNAPPLIED_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
-    values?: undefined,
-  ): string;
-  encodeFunctionData(
-    functionFragment: 'MAX_MINIMUM_WITHDRAWAL_QUANTITY',
     values?: undefined,
   ): string;
   encodeFunctionData(
@@ -416,6 +413,10 @@ export interface FixedIncomeVaultProvider_v1Interface extends Interface {
     values?: undefined,
   ): string;
   encodeFunctionData(
+    functionFragment: 'MIN_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
+    values?: undefined,
+  ): string;
+  encodeFunctionData(
     functionFragment: 'MIN_MAXIMUM_NET_DEPOSITS',
     values?: undefined,
   ): string;
@@ -429,10 +430,6 @@ export interface FixedIncomeVaultProvider_v1Interface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: 'MIN_MINIMUM_UNAPPLIED_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
-    values?: undefined,
-  ): string;
-  encodeFunctionData(
-    functionFragment: 'MIN_MINIMUM_WITHDRAWAL_QUANTITY',
     values?: undefined,
   ): string;
   encodeFunctionData(
@@ -556,10 +553,6 @@ export interface FixedIncomeVaultProvider_v1Interface extends Interface {
     values?: undefined,
   ): string;
   encodeFunctionData(
-    functionFragment: 'minimumWithdrawalQuantity',
-    values?: undefined,
-  ): string;
-  encodeFunctionData(
     functionFragment: 'ownerWallet',
     values?: undefined,
   ): string;
@@ -597,10 +590,6 @@ export interface FixedIncomeVaultProvider_v1Interface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: 'setManagedAccountUpgradeBlockTimestampDelay',
-    values: [BigNumberish],
-  ): string;
-  encodeFunctionData(
-    functionFragment: 'setMinimumWithdrawalQuantity',
     values: [BigNumberish],
   ): string;
   encodeFunctionData(
@@ -646,6 +635,10 @@ export interface FixedIncomeVaultProvider_v1Interface extends Interface {
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
+    functionFragment: 'MAX_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
     functionFragment: 'MAX_MAXIMUM_NET_DEPOSITS',
     data: BytesLike,
   ): Result;
@@ -659,10 +652,6 @@ export interface FixedIncomeVaultProvider_v1Interface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: 'MAX_MINIMUM_UNAPPLIED_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: 'MAX_MINIMUM_WITHDRAWAL_QUANTITY',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
@@ -686,6 +675,10 @@ export interface FixedIncomeVaultProvider_v1Interface extends Interface {
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
+    functionFragment: 'MIN_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
     functionFragment: 'MIN_MAXIMUM_NET_DEPOSITS',
     data: BytesLike,
   ): Result;
@@ -699,10 +692,6 @@ export interface FixedIncomeVaultProvider_v1Interface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: 'MIN_MINIMUM_UNAPPLIED_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: 'MIN_MINIMUM_WITHDRAWAL_QUANTITY',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
@@ -813,10 +802,6 @@ export interface FixedIncomeVaultProvider_v1Interface extends Interface {
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'minimumWithdrawalQuantity',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
     functionFragment: 'ownerWallet',
     data: BytesLike,
   ): Result;
@@ -851,10 +836,6 @@ export interface FixedIncomeVaultProvider_v1Interface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: 'setManagedAccountUpgradeBlockTimestampDelay',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: 'setMinimumWithdrawalQuantity',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(functionFragment: 'setOwner', data: BytesLike): Result;
@@ -903,6 +884,34 @@ export namespace AddManagedAccountsEnabledAdminEvent {
   export type InputTuple = [];
   export type OutputTuple = [];
   export interface OutputObject {}
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace DepositToManagedAccountAppliedEvent {
+  export type InputTuple = [
+    managerWallet: AddressLike,
+    depositorWallet: AddressLike,
+    quantity: BigNumberish,
+    newWalletOwedQuantity: BigNumberish,
+    newVaultTotalOwedQuantity: BigNumberish,
+  ];
+  export type OutputTuple = [
+    managerWallet: string,
+    depositorWallet: string,
+    quantity: bigint,
+    newWalletOwedQuantity: bigint,
+    newVaultTotalOwedQuantity: bigint,
+  ];
+  export interface OutputObject {
+    managerWallet: string;
+    depositorWallet: string;
+    quantity: bigint;
+    newWalletOwedQuantity: bigint;
+    newVaultTotalOwedQuantity: bigint;
+  }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
   export type Log = TypedEventLog<Event>;
@@ -1083,51 +1092,7 @@ export namespace ManagedAccountUpgradeInitiatedEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export namespace MinimumWithdrawalQuantityChangedEvent {
-  export type InputTuple = [
-    previousValue: BigNumberish,
-    newValue: BigNumberish,
-  ];
-  export type OutputTuple = [previousValue: bigint, newValue: bigint];
-  export interface OutputObject {
-    previousValue: bigint;
-    newValue: bigint;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
-
-export namespace VaultDepositedEvent {
-  export type InputTuple = [
-    managerWallet: AddressLike,
-    depositorWallet: AddressLike,
-    quantity: BigNumberish,
-    newWalletOwedQuantity: BigNumberish,
-    newVaultTotalOwedQuantity: BigNumberish,
-  ];
-  export type OutputTuple = [
-    managerWallet: string,
-    depositorWallet: string,
-    quantity: bigint,
-    newWalletOwedQuantity: bigint,
-    newVaultTotalOwedQuantity: bigint,
-  ];
-  export interface OutputObject {
-    managerWallet: string;
-    depositorWallet: string;
-    quantity: bigint;
-    newWalletOwedQuantity: bigint;
-    newVaultTotalOwedQuantity: bigint;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
-
-export namespace VaultLiquidatedEvent {
+export namespace ManagerWalletLiquidatedEvent {
   export type InputTuple = [managerWallet: AddressLike];
   export type OutputTuple = [managerWallet: string];
   export interface OutputObject {
@@ -1271,6 +1236,12 @@ export interface FixedIncomeVaultProvider_v1 extends BaseContract {
 
   MAX_INTEREST_MULTIPLIER: TypedContractMethod<[], [bigint], 'view'>;
 
+  MAX_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S: TypedContractMethod<
+    [],
+    [bigint],
+    'view'
+  >;
+
   MAX_MAXIMUM_NET_DEPOSITS: TypedContractMethod<[], [bigint], 'view'>;
 
   MAX_MAXIMUM_TOTAL_OWED_QUANTITY_AVAILABLE_MULTIPLIER_TO_INITIATE_EXIT: TypedContractMethod<
@@ -1290,8 +1261,6 @@ export interface FixedIncomeVaultProvider_v1 extends BaseContract {
     [bigint],
     'view'
   >;
-
-  MAX_MINIMUM_WITHDRAWAL_QUANTITY: TypedContractMethod<[], [bigint], 'view'>;
 
   MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS: TypedContractMethod<
     [],
@@ -1315,6 +1284,12 @@ export interface FixedIncomeVaultProvider_v1 extends BaseContract {
 
   MIN_INTEREST_MULTIPLIER: TypedContractMethod<[], [bigint], 'view'>;
 
+  MIN_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S: TypedContractMethod<
+    [],
+    [bigint],
+    'view'
+  >;
+
   MIN_MAXIMUM_NET_DEPOSITS: TypedContractMethod<[], [bigint], 'view'>;
 
   MIN_MAXIMUM_TOTAL_OWED_QUANTITY_AVAILABLE_MULTIPLIER_TO_INITIATE_EXIT: TypedContractMethod<
@@ -1334,8 +1309,6 @@ export interface FixedIncomeVaultProvider_v1 extends BaseContract {
     [bigint],
     'view'
   >;
-
-  MIN_MINIMUM_WITHDRAWAL_QUANTITY: TypedContractMethod<[], [bigint], 'view'>;
 
   MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS: TypedContractMethod<
     [],
@@ -1507,8 +1480,6 @@ export interface FixedIncomeVaultProvider_v1 extends BaseContract {
     'view'
   >;
 
-  minimumWithdrawalQuantity: TypedContractMethod<[], [bigint], 'view'>;
-
   ownerWallet: TypedContractMethod<[], [string], 'view'>;
 
   removeAdmin: TypedContractMethod<[], [void], 'nonpayable'>;
@@ -1549,12 +1520,6 @@ export interface FixedIncomeVaultProvider_v1 extends BaseContract {
 
   setManagedAccountUpgradeBlockTimestampDelay: TypedContractMethod<
     [newManagedAccountUpgradeBlockTimestampDelayInS: BigNumberish],
-    [void],
-    'nonpayable'
-  >;
-
-  setMinimumWithdrawalQuantity: TypedContractMethod<
-    [newMinimumWithdrawalQuantity: BigNumberish],
     [void],
     'nonpayable'
   >;
@@ -1618,6 +1583,9 @@ export interface FixedIncomeVaultProvider_v1 extends BaseContract {
     nameOrSignature: 'MAX_INTEREST_MULTIPLIER',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
+    nameOrSignature: 'MAX_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
+  ): TypedContractMethod<[], [bigint], 'view'>;
+  getFunction(
     nameOrSignature: 'MAX_MAXIMUM_NET_DEPOSITS',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
@@ -1628,9 +1596,6 @@ export interface FixedIncomeVaultProvider_v1 extends BaseContract {
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
     nameOrSignature: 'MAX_MINIMUM_UNAPPLIED_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
-  ): TypedContractMethod<[], [bigint], 'view'>;
-  getFunction(
-    nameOrSignature: 'MAX_MINIMUM_WITHDRAWAL_QUANTITY',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
     nameOrSignature: 'MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS',
@@ -1648,6 +1613,9 @@ export interface FixedIncomeVaultProvider_v1 extends BaseContract {
     nameOrSignature: 'MIN_INTEREST_MULTIPLIER',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
+    nameOrSignature: 'MIN_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
+  ): TypedContractMethod<[], [bigint], 'view'>;
+  getFunction(
     nameOrSignature: 'MIN_MAXIMUM_NET_DEPOSITS',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
@@ -1658,9 +1626,6 @@ export interface FixedIncomeVaultProvider_v1 extends BaseContract {
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
     nameOrSignature: 'MIN_MINIMUM_UNAPPLIED_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
-  ): TypedContractMethod<[], [bigint], 'view'>;
-  getFunction(
-    nameOrSignature: 'MIN_MINIMUM_WITHDRAWAL_QUANTITY',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
     nameOrSignature: 'MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS',
@@ -1810,9 +1775,6 @@ export interface FixedIncomeVaultProvider_v1 extends BaseContract {
     nameOrSignature: 'managedAccountUpgradeBlockTimestampDelayInS',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
-    nameOrSignature: 'minimumWithdrawalQuantity',
-  ): TypedContractMethod<[], [bigint], 'view'>;
-  getFunction(
     nameOrSignature: 'ownerWallet',
   ): TypedContractMethod<[], [string], 'view'>;
   getFunction(
@@ -1851,13 +1813,6 @@ export interface FixedIncomeVaultProvider_v1 extends BaseContract {
     nameOrSignature: 'setManagedAccountUpgradeBlockTimestampDelay',
   ): TypedContractMethod<
     [newManagedAccountUpgradeBlockTimestampDelayInS: BigNumberish],
-    [void],
-    'nonpayable'
-  >;
-  getFunction(
-    nameOrSignature: 'setMinimumWithdrawalQuantity',
-  ): TypedContractMethod<
-    [newMinimumWithdrawalQuantity: BigNumberish],
     [void],
     'nonpayable'
   >;
@@ -1932,6 +1887,13 @@ export interface FixedIncomeVaultProvider_v1 extends BaseContract {
     AddManagedAccountsEnabledAdminEvent.InputTuple,
     AddManagedAccountsEnabledAdminEvent.OutputTuple,
     AddManagedAccountsEnabledAdminEvent.OutputObject
+  >;
+  getEvent(
+    key: 'DepositToManagedAccountApplied',
+  ): TypedContractEvent<
+    DepositToManagedAccountAppliedEvent.InputTuple,
+    DepositToManagedAccountAppliedEvent.OutputTuple,
+    DepositToManagedAccountAppliedEvent.OutputObject
   >;
   getEvent(
     key: 'DepositToManagedAccountReadyToApply',
@@ -2011,25 +1973,11 @@ export interface FixedIncomeVaultProvider_v1 extends BaseContract {
     ManagedAccountUpgradeInitiatedEvent.OutputObject
   >;
   getEvent(
-    key: 'MinimumWithdrawalQuantityChanged',
+    key: 'ManagerWalletLiquidated',
   ): TypedContractEvent<
-    MinimumWithdrawalQuantityChangedEvent.InputTuple,
-    MinimumWithdrawalQuantityChangedEvent.OutputTuple,
-    MinimumWithdrawalQuantityChangedEvent.OutputObject
-  >;
-  getEvent(
-    key: 'VaultDeposited',
-  ): TypedContractEvent<
-    VaultDepositedEvent.InputTuple,
-    VaultDepositedEvent.OutputTuple,
-    VaultDepositedEvent.OutputObject
-  >;
-  getEvent(
-    key: 'VaultLiquidated',
-  ): TypedContractEvent<
-    VaultLiquidatedEvent.InputTuple,
-    VaultLiquidatedEvent.OutputTuple,
-    VaultLiquidatedEvent.OutputObject
+    ManagerWalletLiquidatedEvent.InputTuple,
+    ManagerWalletLiquidatedEvent.OutputTuple,
+    ManagerWalletLiquidatedEvent.OutputObject
   >;
   getEvent(
     key: 'WithdrawalDispatcherChanged',
@@ -2081,6 +2029,17 @@ export interface FixedIncomeVaultProvider_v1 extends BaseContract {
       AddManagedAccountsEnabledAdminEvent.InputTuple,
       AddManagedAccountsEnabledAdminEvent.OutputTuple,
       AddManagedAccountsEnabledAdminEvent.OutputObject
+    >;
+
+    'DepositToManagedAccountApplied(address,address,uint64,uint64,uint64)': TypedContractEvent<
+      DepositToManagedAccountAppliedEvent.InputTuple,
+      DepositToManagedAccountAppliedEvent.OutputTuple,
+      DepositToManagedAccountAppliedEvent.OutputObject
+    >;
+    DepositToManagedAccountApplied: TypedContractEvent<
+      DepositToManagedAccountAppliedEvent.InputTuple,
+      DepositToManagedAccountAppliedEvent.OutputTuple,
+      DepositToManagedAccountAppliedEvent.OutputObject
     >;
 
     'DepositToManagedAccountReadyToApply(uint64,uint64,address,address,address)': TypedContractEvent<
@@ -2204,37 +2163,15 @@ export interface FixedIncomeVaultProvider_v1 extends BaseContract {
       ManagedAccountUpgradeInitiatedEvent.OutputObject
     >;
 
-    'MinimumWithdrawalQuantityChanged(uint256,uint256)': TypedContractEvent<
-      MinimumWithdrawalQuantityChangedEvent.InputTuple,
-      MinimumWithdrawalQuantityChangedEvent.OutputTuple,
-      MinimumWithdrawalQuantityChangedEvent.OutputObject
+    'ManagerWalletLiquidated(address)': TypedContractEvent<
+      ManagerWalletLiquidatedEvent.InputTuple,
+      ManagerWalletLiquidatedEvent.OutputTuple,
+      ManagerWalletLiquidatedEvent.OutputObject
     >;
-    MinimumWithdrawalQuantityChanged: TypedContractEvent<
-      MinimumWithdrawalQuantityChangedEvent.InputTuple,
-      MinimumWithdrawalQuantityChangedEvent.OutputTuple,
-      MinimumWithdrawalQuantityChangedEvent.OutputObject
-    >;
-
-    'VaultDeposited(address,address,uint64,uint64,uint64)': TypedContractEvent<
-      VaultDepositedEvent.InputTuple,
-      VaultDepositedEvent.OutputTuple,
-      VaultDepositedEvent.OutputObject
-    >;
-    VaultDeposited: TypedContractEvent<
-      VaultDepositedEvent.InputTuple,
-      VaultDepositedEvent.OutputTuple,
-      VaultDepositedEvent.OutputObject
-    >;
-
-    'VaultLiquidated(address)': TypedContractEvent<
-      VaultLiquidatedEvent.InputTuple,
-      VaultLiquidatedEvent.OutputTuple,
-      VaultLiquidatedEvent.OutputObject
-    >;
-    VaultLiquidated: TypedContractEvent<
-      VaultLiquidatedEvent.InputTuple,
-      VaultLiquidatedEvent.OutputTuple,
-      VaultLiquidatedEvent.OutputObject
+    ManagerWalletLiquidated: TypedContractEvent<
+      ManagerWalletLiquidatedEvent.InputTuple,
+      ManagerWalletLiquidatedEvent.OutputTuple,
+      ManagerWalletLiquidatedEvent.OutputObject
     >;
 
     'WithdrawalDispatcherChanged(address,address)': TypedContractEvent<
