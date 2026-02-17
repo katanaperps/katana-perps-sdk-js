@@ -71,6 +71,8 @@ export interface KatanaPerpsExchange {
   bridgeAdapters: {
     /** Address of the v1 local deposit adapter contract on Katana */
     localDepositAdapterV1KatanaContractAddress: string;
+    /** Address of the v1 loopback adapter contract on Katana */
+    loopbackBridgeAdapterV1KatanaContractAddress: string;
     /** Address of the v1 Stargate bridge adapter contract on Katana */
     stargateBridgeAdapterV1KatanaContractAddress: string;
     /** Address of the v1 Stargate cross-chain forwarder contract on Ethereum */
