@@ -534,6 +534,37 @@ export class RestPublicClient {
   }
 
   /**
+   * Get Funding Rate Samples
+   *
+   * ---
+   * **Endpoint Parameters**
+   *
+   * > - **HTTP Request**:      `GET /v1/fundingRateSamples`
+   * > - **Endpoint Security:** [Public](https://api-docs-v1-perps.katana.network/#endpointSecurityPublic)
+   * > - **API Key Scope:**     [None](https://api-docs-v1-perps.katana.network/#api-keys)
+   * > - **Pagination:**
+   * > {@link katanaperps.RestRequestPaginationWithFromId.start start},
+   * > {@link katanaperps.RestRequestPaginationWithFromId.end end},
+   * > {@link katanaperps.RestRequestPaginationWithFromId.limit limit}
+   * ---
+   *
+   * @see typedoc  [Reference Documentation](https://sdk-js-docs-v1-perps.katana.network/classes/RestPublicClient.html#getFundingRateSamples)
+   * @see request  {@link katanaperps.RestRequestGetFundingRateSamples RestRequestGetFundingRateSamples}
+   * @see response {@link katanaperps.RestResponseGetFundingRateSamples RestResponseGetFundingRateSamples}
+   * @see type     {@link katanaperps.KatanaPerpsFundingRateSample KatanaPerpsFundingRateSample}
+   *
+   * @category Exchange Data
+   */
+  public async getFundingRateSamples(
+    params: katanaPerps.RestRequestGetFundingRateSamples,
+  ) {
+    return this.get<katanaPerps.RestResponseGetFundingRateSamples>(
+      '/fundingRateSamples',
+      params,
+    );
+  }
+
+  /**
    * - All requests within the internal symbol are undocumented internal methods which may change or be removed without notice.
    * - API handling of the parameters used within these methods is likely to change without notice without changes to the SDK to match.
    * - These methods or parameters may require additional permissions to use and result in errors or blocking of your request if used.
