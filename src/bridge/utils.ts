@@ -1,9 +1,8 @@
-import { ethers } from 'ethers';
-
 import {
   BridgeConfig,
   BridgeConfigByLayerZeroEndpointId,
 } from '#bridge/config';
+import { loadExchangeResponseFromApiIfNeeded } from '#client/rest/public';
 
 import type { BridgeTarget } from '#types/enums/request';
 
@@ -90,8 +89,21 @@ export async function loadExchangeLayerZeroAddressFromApiIfNeeded(
     return exchangeLayerZeroAdapterAddress;
   }
 
-  // No bridge adapters currently supported
-  return ethers.ZeroAddress;
+  const [exchangeResponse] = await loadExchangeResponseFromApiIfNeeded();
+  return exchangeResponse.bridgeAdapters
+    .stargateBridgeAdapterV1KatanaContractAddress;
+}
+
+export async function loadExchangeLocalDepositAddressFromApiIfNeeded(
+  exchangeLocalDepositAdapterAddress?: string,
+): Promise<string> {
+  if (exchangeLocalDepositAdapterAddress) {
+    return exchangeLocalDepositAdapterAddress;
+  }
+
+  const [exchangeResponse] = await loadExchangeResponseFromApiIfNeeded();
+  return exchangeResponse.bridgeAdapters
+    .localDepositAdapterV1KatanaContractAddress;
 }
 
 export async function loadStargateBridgeForwarderContractAddressFromApiIfNeeded(
@@ -101,6 +113,7 @@ export async function loadStargateBridgeForwarderContractAddressFromApiIfNeeded(
     return stargateBridgeForwarderContractAddress;
   }
 
-  // No bridge adapters currently supported
-  return ethers.ZeroAddress;
+  const [exchangeResponse] = await loadExchangeResponseFromApiIfNeeded();
+  return exchangeResponse.bridgeAdapters
+    .stargateBridgeForwarderV1EthereumContractAddress;
 }
