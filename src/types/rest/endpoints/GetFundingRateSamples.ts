@@ -23,13 +23,13 @@ export interface KatanaPerpsFundingRateSample {
   /** Funding rate computed for the sample */
   fundingRate: string;
   /** Index price of the market at the sample time */
-  indexPrice: string;
+  indexPrice: string | null;
   /** Impact bid price of the market at the sample time */
-  impactBidPrice: string;
+  impactBidPrice: string | null;
   /** Impact ask price of the market at the sample time */
-  impactAskPrice: string;
+  impactAskPrice: string | null;
   /** Premium index component of the funding rate sample */
-  premiumIndex: string;
+  premiumIndex: string | null;
   /** Minute-aligned timestamp of the sample */
   time: number;
 }
