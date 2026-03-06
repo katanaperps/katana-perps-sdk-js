@@ -12,7 +12,6 @@ import {
   getInitialMarginFractionOverrideSettingsSignatureTypedData,
   getOrderCancellationSignatureTypedData,
   getOrderSignatureTypedData,
-  getRemoveVaultXConnectionSignatureTypedData,
   getSetVaultDetailsSignatureTypedData,
   getSetVaultXConnectionSignatureTypedData,
   getWalletAssociationSignatureTypedData,
@@ -1680,24 +1679,8 @@ export class RestAuthenticatedClient {
 
     removeVaultXConnection: async (
       params: katanaPerps.RestRequestRemoveVaultXConnection,
-      signer: undefined | katanaPerps.SignTypedData = this.#signer,
     ) => {
-      ensureSigner(signer);
-
-      const { chainId, exchangeContractAddress } =
-        await this.getContractAndChainId();
-
-      await this.delete('/internal/vaults/xconnection', {
-        parameters: params,
-        signature: await signer(
-          ...getRemoveVaultXConnectionSignatureTypedData(
-            params,
-            exchangeContractAddress,
-            chainId,
-            this.#config.sandbox,
-          ),
-        ),
-      });
+      await this.delete('/internal/vaults/xconnection', params);
     },
 
     setVaultXConnection: async (
