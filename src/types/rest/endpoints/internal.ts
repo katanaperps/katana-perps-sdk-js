@@ -86,14 +86,6 @@ export interface KatanaPerpsVault {
    */
   manager: string;
   /**
-   * true if vault was exited on-chain
-   */
-  isExited: boolean;
-  /**
-   * true if vault manager wallet was liquidated
-   */
-  isLiquidated: boolean;
-  /**
    * true if a new configuration is awaiting application
    */
   pendingConfiguration: boolean;

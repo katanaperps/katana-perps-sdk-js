@@ -7,14 +7,12 @@ import { BridgeConfig } from '#bridge/config';
 import {
   IOFT__factory,
   IVaultComposerSync__factory,
-  ExchangeLocalDepositAdapter_v1__factory,
 } from '#typechain-types/index';
 import { BridgeTarget } from '#types/enums/request';
 
 import {
   getBridgeTargetConfig,
   loadExchangeLayerZeroAddressFromApiIfNeeded,
-  loadExchangeLocalDepositAddressFromApiIfNeeded,
   loadStargateBridgeForwarderContractAddressFromApiIfNeeded,
 } from './utils';
 
@@ -44,8 +42,7 @@ export type DepositToWalletBridgePayloadParameters = {
 
 export type DepositBaseParameters = {
   exchangeLayerZeroAdapterAddress?: string;
-  exchangeLocalDepositAdapterAddress?: string;
-  minimumForwardQuantityMultiplierInPips?: bigint;
+  minimumForwardQuantityMultiplierInPips: bigint;
   quantityInAssetUnits: bigint;
   sourceBridgeTarget: BridgeTarget;
   stargateBridgeForwarderContractAddress?: string;
@@ -301,11 +298,10 @@ export async function depositViaVaultComposerSync(
     sendParam,
     sourceWallet, // Refund address - extra gas (if any) is returned to this address
     {
-      ...extraRequestParams,
       from: sourceWallet,
       gasLimit,
-      value: gasFee, // Native gas to pay for the cross chain message fee
-    },
+      value: gasFee,
+    }, // Native gas to pay for the cross chain message fee
   );
 
   return response.hash;
@@ -355,7 +351,8 @@ export async function depositViaForwarder(
       sourceWallet, // Refund address - extra gas (if any) is returned to this address
       {
         ...extraRequestParams,
-        from: sourceWallet, // Native gas to pay for the cross chain message fee
+        from: sourceWallet,
+        // Native gas to pay for the cross chain message fee
         value: gasFee,
       },
     );
@@ -393,7 +390,6 @@ export async function depositViaForwarder(
     { nativeFee: gasFee, lzTokenFee: 0 },
     sourceWallet, // Refund address - extra gas (if any) is returned to this address
     {
-      ...extraRequestParams,
       from: sourceWallet,
       gasLimit,
       value: gasFee,
@@ -403,106 +399,12 @@ export async function depositViaForwarder(
   return response.hash;
 }
 
-/**
- * Deposit funds locally on Katana
- */
-export async function depositLocally(
+export function encodeDepositBridgeAdapterPayload(
+  sourceConfig: ReturnType<typeof getBridgeTargetConfig>,
   parameters:
     | AddManagedAccountParameters
     | DepositToManagedAccountParameters
     | DepositToWalletParameters,
-  signer: ethers.Signer,
-  sandbox: boolean,
-  extraRequestParams?: Pick<TransactionRequest, 'nonce'>,
-  /** Let software wallet show estimate to the user. Even on expected TX failure. */
-  ignoreEstimateError?: boolean,
-): Promise<string> {
-  const sourceConfig = getBridgeTargetConfig(
-    BridgeTarget.KATANA_KATANA,
-    sandbox,
-  );
-  const exchangeLocalDepositAdapterAddress =
-    await loadExchangeLocalDepositAddressFromApiIfNeeded(
-      parameters.exchangeLocalDepositAdapterAddress,
-    );
-
-  let gasLimit: number = BridgeConfig.settings.depositSourceChainGasLimit;
-  const localDepositAdapter = ExchangeLocalDepositAdapter_v1__factory.connect(
-    exchangeLocalDepositAdapterAddress,
-    signer,
-  );
-  const wallet = await signer.getAddress();
-
-  try {
-    // Estimate gas
-    const estimatedGasLimit = await localDepositAdapter.deposit.estimateGas(
-      parameters.quantityInAssetUnits,
-      encodeDepositBridgeAdapterPayload(sourceConfig, parameters),
-      {
-        ...extraRequestParams,
-        from: wallet,
-      },
-    );
-    // Add 20% buffer for safety
-    gasLimit = Number(
-      new BigNumber(estimatedGasLimit.toString())
-        .times(new BigNumber(1.2))
-        .toFixed(0),
-    );
-  } catch (error) {
-    // ethers.js will perform the estimation at the block gas limit, which is much higher than the
-    // gas actually needed by the tx. If the wallet does not have the funds to cover the tx at this
-    // high gas limit then the RPC will throw an INSUFFICIENT_FUNDS error; however the wallet may
-    // still have enough funds to successfully bridge at the actual gas limit. In this case simply
-    // fall through and use the configured default gas limit. The wallet software in use should
-    // still show if that limit is insufficient, which is only an issue for blockchains with
-    // variable gas costs such as Arbitrum One
-    if (error?.code === 'INSUFFICIENT_FUNDS') {
-      console.log(
-        '[depositViaForwarder] Insufficient funds - continue with default gas',
-      );
-    } else if (ignoreEstimateError) {
-      // TODO: In latest contract it throws 'CALL_EXCEPTION' instead of 'INSUFFICIENT_FUNDS'
-      console.log(
-        '[depositViaForwarder] Estimate failed - continue with default gas',
-        error,
-      );
-    } else {
-      throw error;
-    }
-  }
-
-  const response = await localDepositAdapter.deposit(
-    parameters.quantityInAssetUnits,
-    encodeDepositBridgeAdapterPayload(sourceConfig, parameters),
-    {
-      ...extraRequestParams,
-      gasLimit,
-      from: wallet,
-    },
-  );
-
-  return response.hash;
-}
-
-export function encodeDepositBridgeAdapterPayload(
-  sourceConfig: ReturnType<typeof getBridgeTargetConfig>,
-  parameters:
-    | Pick<
-        AddManagedAccountParameters,
-        | 'bridgePayloadType'
-        | 'fixedIncomeVaultProviderAddress'
-        | 'managerWallet'
-        | 'addManagedAccountPayload'
-      >
-    | Pick<
-        DepositToManagedAccountParameters,
-        | 'bridgePayloadType'
-        | 'depositorWallet'
-        | 'fixedIncomeVaultProviderAddress'
-        | 'managerWallet'
-      >
-    | Pick<DepositToWalletParameters, 'bridgePayloadType' | 'depositorWallet'>,
 ): EncodedDepositBridgeAdapterPayload {
   if (
     parameters.bridgePayloadType ===
@@ -725,12 +627,6 @@ async function getDepositFromEthereumSendParamAndSourceConfig(
     | DepositToWalletParameters,
   sandbox: boolean,
 ) {
-  if (!parameters.minimumForwardQuantityMultiplierInPips) {
-    throw new Error(
-      'minimumForwardQuantityMultiplierInPips is required for deposit via forwarder',
-    );
-  }
-
   const { sourceConfig, destinationConfig } = getSourceAndDestinationConfigs(
     BridgeTarget.STARGATE_ETHEREUM,
     BridgeTarget.KATANA_KATANA,
@@ -786,12 +682,6 @@ async function getDepositViaForwarderSendParamAndSourceConfig(
   },
   sandbox: boolean,
 ) {
-  if (!parameters.minimumForwardQuantityMultiplierInPips) {
-    throw new Error(
-      'minimumForwardQuantityMultiplierInPips is required for deposit via forwarder',
-    );
-  }
-
   const { sourceConfig, destinationConfig: ethereumConfig } =
     getSourceAndDestinationConfigs(
       parameters.sourceBridgeTarget,

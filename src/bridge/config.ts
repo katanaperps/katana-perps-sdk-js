@@ -145,11 +145,12 @@ export const BridgeConfig = {
   testnet: {
     [BridgeTarget.KATANA_KATANA]: {
       target: BridgeTarget.KATANA_KATANA,
+      isSupported: true,
       evmChainId: 737373,
-      // https://stargateprotocol.gitbook.io/stargate/v/v2-developer-docs/technical-reference/testnet-contracts#bokuto-testnet
-      layerZeroEndpointId: 40448,
+      // No LZ connection yet on Bokuto testnet
+      layerZeroEndpointId: -1,
       // No OFT currently supported on Bokuto testnet
-      layerzeroOFTAddress: '0x3aCAAf60502791D199a5a5F0B173D78229eBFe32',
+      layerzeroOFTAddress: '0x0000000000000000000000000000000000000000',
       tokenDecimals: 6,
       // vbUSDC
       usdcAddress: '0xc2a4C310F2512A17Ac0047cf871aCAed3E62bB4B',

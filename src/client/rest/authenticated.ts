@@ -125,9 +125,9 @@ export interface RestAuthenticatedClientOptions {
    */
   chainId?: number;
   /**
-   * Optionally provide the `stargateBridgeAdapterV1KatanaContractAddress` as returned by the public clients
+   * Optionally provide the `bridgeAdapterContractAddress` as returned by the public clients
    * {@link RestPublicClient.getExchange getExchange} response's
-   * {@link katanaperps.KatanaPerpsExchange.bridgeAdapters.stargateBridgeAdapterV1KatanaContractAddress stargateBridgeAdapterV1KatanaContractAddress}
+   * {@link katanaperps.KatanaPerpsExchange.bridgeAdapterContractAddress bridgeAdapterContractAddress}
    * property.
    *
    * - If not provided, this will be fetched and cached automatically from the public client before
@@ -136,18 +136,6 @@ export interface RestAuthenticatedClientOptions {
    * @internal
    */
   bridgeAdapterContractAddress?: string;
-  /**
-   * Optionally provide the `localDepositAdapterV1KatanaContractAddress` as returned by the public clients
-   * {@link RestPublicClient.getExchange getExchange} response's
-   * {@link katanaperps.KatanaPerpsExchange.bridgeAdapters.localDepositAdapterV1KatanaContractAddress localDepositAdapterV1KatanaContractAddress}
-   * property.
-   *
-   * - If not provided, this will be fetched and cached automatically from the public client before
-   *   making the first request which requires it.
-   *
-   * @internal
-   */
-  localDepositAdapterContractAddress?: string;
   /**
    * - Changing this value will likely result in a broken client, internal use only.
    *
@@ -266,7 +254,6 @@ export class RestAuthenticatedClient {
     exchangeContractAddress: string;
     chainId: number;
     bridgeAdapterContractAddress: string;
-    localDepositAdapterContractAddress: string;
   }>;
 
   /**
@@ -330,7 +317,6 @@ export class RestAuthenticatedClient {
       exchangeContractAddress,
       chainId,
       bridgeAdapterContractAddress,
-      localDepositAdapterContractAddress,
       autoCreateHmacHeader = true,
     } = options;
 
@@ -352,7 +338,6 @@ export class RestAuthenticatedClient {
       baseURL,
       sandbox,
       bridgeAdapterContractAddress,
-      localDepositAdapterContractAddress,
       exchangeContractAddress,
       chainId,
       autoCreateHmacHeader,
@@ -1815,21 +1800,11 @@ export class RestAuthenticatedClient {
     chainId: number;
     exchangeContractAddress: string;
     bridgeAdapterContractAddress: string;
-    localDepositAdapterContractAddress: string;
   }> {
-    let {
-      chainId,
-      exchangeContractAddress,
-      bridgeAdapterContractAddress,
-      localDepositAdapterContractAddress,
-    } = this.#config;
+    let { chainId, exchangeContractAddress, bridgeAdapterContractAddress } =
+      this.#config;
 
-    if (
-      !chainId ||
-      !exchangeContractAddress ||
-      !bridgeAdapterContractAddress ||
-      !localDepositAdapterContractAddress
-    ) {
+    if (!chainId || !exchangeContractAddress || !bridgeAdapterContractAddress) {
       if (!this.#exchange) {
         this.#exchange = await this.public.getExchange();
       }
@@ -1847,21 +1822,11 @@ export class RestAuthenticatedClient {
         this.#exchange.bridgeAdapters.stargateBridgeAdapterV1KatanaContractAddress;
       bridgeAdapterContractAddress ??=
         this.#config.bridgeAdapterContractAddress;
-
-      this.#config.localDepositAdapterContractAddress ??=
-        this.#exchange.bridgeAdapters.localDepositAdapterV1KatanaContractAddress;
-      localDepositAdapterContractAddress ??=
-        this.#config.localDepositAdapterContractAddress;
     }
 
-    if (
-      !chainId ||
-      !exchangeContractAddress ||
-      !bridgeAdapterContractAddress ||
-      !localDepositAdapterContractAddress
-    ) {
+    if (!chainId || !exchangeContractAddress || !bridgeAdapterContractAddress) {
       throw new Error(
-        `Could not determine chainId (${typeof chainId}) or exchangeContractAddress (${typeof exchangeContractAddress}) or bridgeAdapterContractAddress (${typeof bridgeAdapterContractAddress} or localDepositAdapterContractAddress (${typeof localDepositAdapterContractAddress})`,
+        `Could not determine chainId (${typeof chainId}) or exchangeContractAddress (${typeof exchangeContractAddress}) or bridgeAdapterContractAddress (${typeof bridgeAdapterContractAddress})`,
       );
     }
 
@@ -1869,7 +1834,6 @@ export class RestAuthenticatedClient {
       chainId,
       exchangeContractAddress,
       bridgeAdapterContractAddress,
-      localDepositAdapterContractAddress,
     } as const;
   }
 
