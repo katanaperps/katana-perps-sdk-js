@@ -92,7 +92,7 @@ export const BridgeConfig = {
       // vbUSDC OFTAdapter https://github.com/agglayer/vault-bridge/tree/main/broadcast#mainnet
       layerzeroOFTAddress: '0xb5bADA33542a05395d504a25885e02503A957Bb3',
       layerZeroVaultComposerSyncAddress:
-        '0x8A35897fda9E024d2aC20a937193e099679eC477',
+        '0x75B4cA53d62cd4274ACBce30487A74de87f0D661',
       // https://stargateprotocol.gitbook.io/stargate/v2-developer-docs/technical-reference/v2-supported-networks-and-assets#ethereum
       tokenDecimals: 6,
       usdcAddress: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
