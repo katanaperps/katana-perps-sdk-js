@@ -8,6 +8,7 @@ export * from './GetExchange.js';
 export * from './GetFills.js';
 export * from './GetFundingPayments.js';
 export * from './GetFundingRates.js';
+export * from './GetFundingRateSamples.js';
 export * from './GetGasFees.js';
 export * from './GetHistoricalPnL.js';
 export * from './GetInitialMarginFractionOverride.js';

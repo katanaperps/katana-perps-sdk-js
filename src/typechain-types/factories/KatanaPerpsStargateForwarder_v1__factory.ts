@@ -4,17 +4,32 @@
 
 import { Contract, Interface, type ContractRunner } from 'ethers';
 import type {
-  KumaStargateForwarder_v2,
-  KumaStargateForwarder_v2Interface,
-} from '../KumaStargateForwarder_v2';
+  KatanaPerpsStargateForwarder_v1,
+  KatanaPerpsStargateForwarder_v1Interface,
+} from '../KatanaPerpsStargateForwarder_v1';
 
 const _abi = [
   {
     inputs: [
       {
+        internalType: 'uint32',
+        name: 'ethereumEndpointId_',
+        type: 'uint32',
+      },
+      {
         internalType: 'address',
         name: 'exchangeLayerZeroAdapter_',
         type: 'address',
+      },
+      {
+        internalType: 'uint128',
+        name: 'katanaComposeGasLimit_',
+        type: 'uint128',
+      },
+      {
+        internalType: 'uint32',
+        name: 'katanaEndpointId_',
+        type: 'uint32',
       },
       {
         internalType: 'address',
@@ -23,18 +38,13 @@ const _abi = [
       },
       {
         internalType: 'uint64',
-        name: 'minimumForwardQuantityMultiplier_',
-        type: 'uint64',
-      },
-      {
-        internalType: 'uint64',
         name: 'minimumDepositNativeDropQuantityMultiplier_',
         type: 'uint64',
       },
       {
-        internalType: 'address',
-        name: 'xchainOFT_',
-        type: 'address',
+        internalType: 'uint64',
+        name: 'minimumForwardQuantityMultiplier_',
+        type: 'uint64',
       },
       {
         internalType: 'address',
@@ -47,13 +57,29 @@ const _abi = [
         type: 'address',
       },
       {
-        internalType: 'uint32',
-        name: 'xchainEndpointId_',
-        type: 'uint32',
+        internalType: 'address',
+        name: 'vbUSDC_',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: 'vbUSDCOFTAdapter_',
+        type: 'address',
       },
     ],
     stateMutability: 'nonpayable',
     type: 'constructor',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint16',
+        name: 'optionType',
+        type: 'uint16',
+      },
+    ],
+    name: 'InvalidOptionType',
+    type: 'error',
   },
   {
     inputs: [
@@ -75,6 +101,22 @@ const _abi = [
       },
     ],
     name: 'OwnableUnauthorizedAccount',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint8',
+        name: 'bits',
+        type: 'uint8',
+      },
+      {
+        internalType: 'uint256',
+        name: 'value',
+        type: 'uint256',
+      },
+    ],
+    name: 'SafeCastOverflowedUintDowncast',
     type: 'error',
   },
   {
@@ -181,12 +223,51 @@ const _abi = [
   },
   {
     inputs: [],
+    name: 'ethereumEndpointId',
+    outputs: [
+      {
+        internalType: 'uint32',
+        name: '',
+        type: 'uint32',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
     name: 'exchangeLayerZeroAdapter',
     outputs: [
       {
         internalType: 'address',
         name: '',
         type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'katanaComposeGasLimit',
+    outputs: [
+      {
+        internalType: 'uint128',
+        name: '',
+        type: 'uint128',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'katanaEndpointId',
+    outputs: [
+      {
+        internalType: 'uint32',
+        name: '',
+        type: 'uint32',
       },
     ],
     stateMutability: 'view',
@@ -366,6 +447,19 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: 'uint128',
+        name: 'newKatanaComposeGasLimit',
+        type: 'uint128',
+      },
+    ],
+    name: 'setKatanaComposeGasLimit',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
         internalType: 'uint64',
         name: 'newMinimumDepositNativeDropQuantityMultiplier',
         type: 'uint64',
@@ -429,6 +523,32 @@ const _abi = [
     type: 'function',
   },
   {
+    inputs: [],
+    name: 'vbUSDC',
+    outputs: [
+      {
+        internalType: 'contract IERC4626',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'vbUSDCOFTAdapter',
+    outputs: [
+      {
+        internalType: 'contract IOFT',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [
       {
         internalType: 'address payable',
@@ -447,50 +567,24 @@ const _abi = [
     type: 'function',
   },
   {
-    inputs: [],
-    name: 'xchainEndpointId',
-    outputs: [
-      {
-        internalType: 'uint32',
-        name: '',
-        type: 'uint32',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'xchainOFT',
-    outputs: [
-      {
-        internalType: 'contract IOFT',
-        name: '',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
     stateMutability: 'payable',
     type: 'receive',
   },
 ] as const;
 
-export class KumaStargateForwarder_v2__factory {
+export class KatanaPerpsStargateForwarder_v1__factory {
   static readonly abi = _abi;
-  static createInterface(): KumaStargateForwarder_v2Interface {
-    return new Interface(_abi) as KumaStargateForwarder_v2Interface;
+  static createInterface(): KatanaPerpsStargateForwarder_v1Interface {
+    return new Interface(_abi) as KatanaPerpsStargateForwarder_v1Interface;
   }
   static connect(
     address: string,
     runner?: ContractRunner | null,
-  ): KumaStargateForwarder_v2 {
+  ): KatanaPerpsStargateForwarder_v1 {
     return new Contract(
       address,
       _abi,
       runner,
-    ) as unknown as KumaStargateForwarder_v2;
+    ) as unknown as KatanaPerpsStargateForwarder_v1;
   }
 }

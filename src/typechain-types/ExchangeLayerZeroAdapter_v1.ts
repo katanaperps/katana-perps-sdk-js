@@ -23,22 +23,22 @@ import type {
   TypedContractMethod,
 } from './common';
 
-export interface ExchangeLayerZeroAdapter_v3Interface extends Interface {
+export interface ExchangeLayerZeroAdapter_v1Interface extends Interface {
   getFunction(
     nameOrSignature:
       | 'MAX_MINIMUM_WITHDRAW_QUANTITY_MULTIPLIER'
       | 'MIN_MINIMUM_WITHDRAW_QUANTITY_MULTIPLIER'
-      | 'PIP_PRICE_MULTIPLIER'
       | 'acceptOwnership'
       | 'addManagedAccountDepositFeeQuantityInAssetUnits'
       | 'addManagedAccountManagerWalletNativeDropQuantity'
-      | 'berachainEndpointId'
       | 'depositToManagedAccountFeeQuantityInAssetUnits'
       | 'estimateWithdrawQuantityInAssetUnits'
+      | 'ethereumComposeGasLimit'
+      | 'ethereumEndpointId'
       | 'exchange'
       | 'isDepositEnabled'
       | 'isWithdrawEnabled'
-      | 'loadBerachainWithdrawalGasFeesInAssetUnits'
+      | 'loadEthereumWithdrawalGasFeeInAssetUnits'
       | 'lzCompose'
       | 'lzEndpoint'
       | 'minimumAddManagedAccountDepositQuantityInAssetUnits'
@@ -51,6 +51,7 @@ export interface ExchangeLayerZeroAdapter_v3Interface extends Interface {
       | 'renounceOwnership'
       | 'setComposeParameters'
       | 'setDepositEnabled'
+      | 'setEthereumComposeGasLimit'
       | 'setMinimumWithdrawQuantityMultiplier'
       | 'setStargateForwarder'
       | 'setWithdrawEnabled'
@@ -78,10 +79,6 @@ export interface ExchangeLayerZeroAdapter_v3Interface extends Interface {
     values?: undefined,
   ): string;
   encodeFunctionData(
-    functionFragment: 'PIP_PRICE_MULTIPLIER',
-    values?: undefined,
-  ): string;
-  encodeFunctionData(
     functionFragment: 'acceptOwnership',
     values?: undefined,
   ): string;
@@ -94,16 +91,20 @@ export interface ExchangeLayerZeroAdapter_v3Interface extends Interface {
     values?: undefined,
   ): string;
   encodeFunctionData(
-    functionFragment: 'berachainEndpointId',
-    values?: undefined,
-  ): string;
-  encodeFunctionData(
     functionFragment: 'depositToManagedAccountFeeQuantityInAssetUnits',
     values?: undefined,
   ): string;
   encodeFunctionData(
     functionFragment: 'estimateWithdrawQuantityInAssetUnits',
-    values: [BigNumberish, BigNumberish],
+    values: [BigNumberish],
+  ): string;
+  encodeFunctionData(
+    functionFragment: 'ethereumComposeGasLimit',
+    values?: undefined,
+  ): string;
+  encodeFunctionData(
+    functionFragment: 'ethereumEndpointId',
+    values?: undefined,
   ): string;
   encodeFunctionData(functionFragment: 'exchange', values?: undefined): string;
   encodeFunctionData(
@@ -115,7 +116,7 @@ export interface ExchangeLayerZeroAdapter_v3Interface extends Interface {
     values?: undefined,
   ): string;
   encodeFunctionData(
-    functionFragment: 'loadBerachainWithdrawalGasFeesInAssetUnits',
+    functionFragment: 'loadEthereumWithdrawalGasFeeInAssetUnits',
     values?: undefined,
   ): string;
   encodeFunctionData(
@@ -168,6 +169,10 @@ export interface ExchangeLayerZeroAdapter_v3Interface extends Interface {
     values: [boolean],
   ): string;
   encodeFunctionData(
+    functionFragment: 'setEthereumComposeGasLimit',
+    values: [BigNumberish],
+  ): string;
+  encodeFunctionData(
     functionFragment: 'setMinimumWithdrawQuantityMultiplier',
     values: [BigNumberish],
   ): string;
@@ -205,10 +210,6 @@ export interface ExchangeLayerZeroAdapter_v3Interface extends Interface {
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'PIP_PRICE_MULTIPLIER',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
     functionFragment: 'acceptOwnership',
     data: BytesLike,
   ): Result;
@@ -221,15 +222,19 @@ export interface ExchangeLayerZeroAdapter_v3Interface extends Interface {
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'berachainEndpointId',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
     functionFragment: 'depositToManagedAccountFeeQuantityInAssetUnits',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
     functionFragment: 'estimateWithdrawQuantityInAssetUnits',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: 'ethereumComposeGasLimit',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: 'ethereumEndpointId',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(functionFragment: 'exchange', data: BytesLike): Result;
@@ -242,7 +247,7 @@ export interface ExchangeLayerZeroAdapter_v3Interface extends Interface {
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'loadBerachainWithdrawalGasFeesInAssetUnits',
+    functionFragment: 'loadEthereumWithdrawalGasFeeInAssetUnits',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(functionFragment: 'lzCompose', data: BytesLike): Result;
@@ -276,6 +281,10 @@ export interface ExchangeLayerZeroAdapter_v3Interface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: 'setDepositEnabled',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: 'setEthereumComposeGasLimit',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
@@ -403,11 +412,11 @@ export namespace WithdrawQuoteAssetFailedEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export interface ExchangeLayerZeroAdapter_v3 extends BaseContract {
-  connect(runner?: ContractRunner | null): ExchangeLayerZeroAdapter_v3;
+export interface ExchangeLayerZeroAdapter_v1 extends BaseContract {
+  connect(runner?: ContractRunner | null): ExchangeLayerZeroAdapter_v1;
   waitForDeployment(): Promise<this>;
 
-  interface: ExchangeLayerZeroAdapter_v3Interface;
+  interface: ExchangeLayerZeroAdapter_v1Interface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
@@ -458,8 +467,6 @@ export interface ExchangeLayerZeroAdapter_v3 extends BaseContract {
     'view'
   >;
 
-  PIP_PRICE_MULTIPLIER: TypedContractMethod<[], [bigint], 'view'>;
-
   acceptOwnership: TypedContractMethod<[], [void], 'nonpayable'>;
 
   addManagedAccountDepositFeeQuantityInAssetUnits: TypedContractMethod<
@@ -474,8 +481,6 @@ export interface ExchangeLayerZeroAdapter_v3 extends BaseContract {
     'view'
   >;
 
-  berachainEndpointId: TypedContractMethod<[], [bigint], 'view'>;
-
   depositToManagedAccountFeeQuantityInAssetUnits: TypedContractMethod<
     [],
     [bigint],
@@ -483,7 +488,7 @@ export interface ExchangeLayerZeroAdapter_v3 extends BaseContract {
   >;
 
   estimateWithdrawQuantityInAssetUnits: TypedContractMethod<
-    [destinationEndpointId: BigNumberish, quantity: BigNumberish],
+    [quantity: BigNumberish],
     [
       [bigint, bigint, bigint] & {
         estimatedWithdrawQuantityInAssetUnits: bigint;
@@ -494,20 +499,19 @@ export interface ExchangeLayerZeroAdapter_v3 extends BaseContract {
     'view'
   >;
 
+  ethereumComposeGasLimit: TypedContractMethod<[], [bigint], 'view'>;
+
+  ethereumEndpointId: TypedContractMethod<[], [bigint], 'view'>;
+
   exchange: TypedContractMethod<[], [string], 'view'>;
 
   isDepositEnabled: TypedContractMethod<[], [boolean], 'view'>;
 
   isWithdrawEnabled: TypedContractMethod<[], [boolean], 'view'>;
 
-  loadBerachainWithdrawalGasFeesInAssetUnits: TypedContractMethod<
+  loadEthereumWithdrawalGasFeeInAssetUnits: TypedContractMethod<
     [],
-    [
-      [bigint, bigint] & {
-        gasFeeWithoutForwardInAssetUnits: bigint;
-        gasFeeWithForwardInAssetUnits: bigint;
-      },
-    ],
+    [bigint],
     'view'
   >;
 
@@ -568,6 +572,12 @@ export interface ExchangeLayerZeroAdapter_v3 extends BaseContract {
     'nonpayable'
   >;
 
+  setEthereumComposeGasLimit: TypedContractMethod<
+    [newEthereumComposeGasLimit: BigNumberish],
+    [void],
+    'nonpayable'
+  >;
+
   setMinimumWithdrawQuantityMultiplier: TypedContractMethod<
     [newMinimumWithdrawQuantityMultiplier: BigNumberish],
     [void],
@@ -617,9 +627,6 @@ export interface ExchangeLayerZeroAdapter_v3 extends BaseContract {
     nameOrSignature: 'MIN_MINIMUM_WITHDRAW_QUANTITY_MULTIPLIER',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
-    nameOrSignature: 'PIP_PRICE_MULTIPLIER',
-  ): TypedContractMethod<[], [bigint], 'view'>;
-  getFunction(
     nameOrSignature: 'acceptOwnership',
   ): TypedContractMethod<[], [void], 'nonpayable'>;
   getFunction(
@@ -629,15 +636,12 @@ export interface ExchangeLayerZeroAdapter_v3 extends BaseContract {
     nameOrSignature: 'addManagedAccountManagerWalletNativeDropQuantity',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
-    nameOrSignature: 'berachainEndpointId',
-  ): TypedContractMethod<[], [bigint], 'view'>;
-  getFunction(
     nameOrSignature: 'depositToManagedAccountFeeQuantityInAssetUnits',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
     nameOrSignature: 'estimateWithdrawQuantityInAssetUnits',
   ): TypedContractMethod<
-    [destinationEndpointId: BigNumberish, quantity: BigNumberish],
+    [quantity: BigNumberish],
     [
       [bigint, bigint, bigint] & {
         estimatedWithdrawQuantityInAssetUnits: bigint;
@@ -648,6 +652,12 @@ export interface ExchangeLayerZeroAdapter_v3 extends BaseContract {
     'view'
   >;
   getFunction(
+    nameOrSignature: 'ethereumComposeGasLimit',
+  ): TypedContractMethod<[], [bigint], 'view'>;
+  getFunction(
+    nameOrSignature: 'ethereumEndpointId',
+  ): TypedContractMethod<[], [bigint], 'view'>;
+  getFunction(
     nameOrSignature: 'exchange',
   ): TypedContractMethod<[], [string], 'view'>;
   getFunction(
@@ -657,17 +667,8 @@ export interface ExchangeLayerZeroAdapter_v3 extends BaseContract {
     nameOrSignature: 'isWithdrawEnabled',
   ): TypedContractMethod<[], [boolean], 'view'>;
   getFunction(
-    nameOrSignature: 'loadBerachainWithdrawalGasFeesInAssetUnits',
-  ): TypedContractMethod<
-    [],
-    [
-      [bigint, bigint] & {
-        gasFeeWithoutForwardInAssetUnits: bigint;
-        gasFeeWithForwardInAssetUnits: bigint;
-      },
-    ],
-    'view'
-  >;
+    nameOrSignature: 'loadEthereumWithdrawalGasFeeInAssetUnits',
+  ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
     nameOrSignature: 'lzCompose',
   ): TypedContractMethod<
@@ -725,6 +726,13 @@ export interface ExchangeLayerZeroAdapter_v3 extends BaseContract {
   getFunction(
     nameOrSignature: 'setDepositEnabled',
   ): TypedContractMethod<[isEnabled: boolean], [void], 'nonpayable'>;
+  getFunction(
+    nameOrSignature: 'setEthereumComposeGasLimit',
+  ): TypedContractMethod<
+    [newEthereumComposeGasLimit: BigNumberish],
+    [void],
+    'nonpayable'
+  >;
   getFunction(
     nameOrSignature: 'setMinimumWithdrawQuantityMultiplier',
   ): TypedContractMethod<
