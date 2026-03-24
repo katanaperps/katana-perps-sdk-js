@@ -363,6 +363,7 @@ export type KatanaPointsPeriod = {
   endsAt: number;
   reviewEndsAt: number;
   points?: string | null;
+  isWalletEligible?: boolean;
 };
 
 /**
@@ -390,7 +391,7 @@ export interface RestResponseGetKatanaPoints {
   currentPeriodWeek: number;
   currentPeriodEndsAt: number;
   pastPeriods: KatanaPointsPeriod[];
-  isWalletEligible?: boolean;
+  isWalletEligible: boolean;
   walletRank: PointsProgramRank;
-  walletTotalRewards?: string;
+  walletTotalRewards: string;
 }
