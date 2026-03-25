@@ -59,3 +59,13 @@ export interface RestRequestRemoveDelegatedKeyParameters {
  */
 export type RestRequestRemoveDelegatedKeySigned =
   RestRequestWithSignature<RestRequestRemoveDelegatedKeyParameters>;
+
+/**
+ * Response body for a successful `DELETE /v1/delegatedKeys`.
+ *
+ * Returns the removed key in the same shape as {@link RestResponseDelegatedKeyEntry}
+ * (GET/POST), so callers can confirm metadata without a second request.
+ *
+ * @category KatanaPerps - Delegated Keys
+ */
+export type RestResponseRemoveDelegatedKey = RestResponseDelegatedKeyEntry;

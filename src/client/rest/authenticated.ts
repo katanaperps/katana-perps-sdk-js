@@ -662,34 +662,44 @@ export class RestAuthenticatedClient {
    * > - **API Key Scope:**        [Trade](https://api-docs-v1-perps.katana.network/#api-keys)
    * ---
    *
+   * @returns
+   * - The removed delegated key {@link katanaperps.RestResponseRemoveDelegatedKey RestResponseRemoveDelegatedKey}
+   *   (same fields as {@link katanaperps.RestResponseDelegatedKeyEntry RestResponseDelegatedKeyEntry}).
+   *
+   * ---
+   *
    * @see typedoc  [Reference Documentation](https://sdk-js-docs-v1-perps.katana.network/classes/RestAuthenticatedClient.html#removeDelegatedKey)
    * @see request  {@link katanaperps.RestRequestRemoveDelegatedKeyParameters RestRequestRemoveDelegatedKeyParameters}
+   * @see response {@link katanaperps.RestResponseRemoveDelegatedKey RestResponseRemoveDelegatedKey}
    *
    * @category Wallets & Positions
    */
   public async removeDelegatedKey(
     params: katanaPerps.RestRequestRemoveDelegatedKeyParameters,
     signer: undefined | katanaPerps.SignTypedData = this.#signer,
-  ) {
+  ): Promise<katanaPerps.RestResponseRemoveDelegatedKey> {
     ensureSigner(signer);
 
     const { chainId, exchangeContractAddress } =
       await this.getContractAndChainId();
 
-    return this.delete<Record<string, never>>('/delegatedKeys', {
-      parameters: params,
-      signature: await signer(
-        ...getDelegatedKeyAuthorizationSignatureTypedData(
-          {
-            delegatedKey: params.delegatedKey,
-            nonce: params.nonce,
-          },
-          exchangeContractAddress,
-          chainId,
-          this.#config.sandbox,
+    return this.delete<katanaPerps.RestResponseRemoveDelegatedKey>(
+      '/delegatedKeys',
+      {
+        parameters: params,
+        signature: await signer(
+          ...getDelegatedKeyAuthorizationSignatureTypedData(
+            {
+              delegatedKey: params.delegatedKey,
+              nonce: params.nonce,
+            },
+            exchangeContractAddress,
+            chainId,
+            this.#config.sandbox,
+          ),
         ),
-      ),
-    } satisfies katanaPerps.RestRequestRemoveDelegatedKeySigned);
+      } satisfies katanaPerps.RestRequestRemoveDelegatedKeySigned,
+    );
   }
 
   /**
