@@ -9,6 +9,7 @@ import { ethers } from 'ethers';
 import { REST_API_KEY_HEADER } from '#constants';
 import {
   createPrivateKeyTypedDataSigner,
+  getDelegatedKeyAuthorizationSignatureTypedData,
   getInitialMarginFractionOverrideSettingsSignatureTypedData,
   getOrderCancellationSignatureTypedData,
   getOrderSignatureTypedData,
@@ -124,9 +125,9 @@ export interface RestAuthenticatedClientOptions {
    */
   chainId?: number;
   /**
-   * Optionally provide the `stargateBridgeAdapterV1KatanaContractAddress` as returned by the public clients
+   * Optionally provide the `bridgeAdapterContractAddress` as returned by the public clients
    * {@link RestPublicClient.getExchange getExchange} response's
-   * {@link katanaperps.KatanaPerpsExchange.bridgeAdapters.stargateBridgeAdapterV1KatanaContractAddress stargateBridgeAdapterV1KatanaContractAddress}
+   * {@link katanaperps.KatanaPerpsExchange.bridgeAdapterContractAddress bridgeAdapterContractAddress}
    * property.
    *
    * - If not provided, this will be fetched and cached automatically from the public client before
@@ -135,18 +136,6 @@ export interface RestAuthenticatedClientOptions {
    * @internal
    */
   bridgeAdapterContractAddress?: string;
-  /**
-   * Optionally provide the `localDepositAdapterV1KatanaContractAddress` as returned by the public clients
-   * {@link RestPublicClient.getExchange getExchange} response's
-   * {@link katanaperps.KatanaPerpsExchange.bridgeAdapters.localDepositAdapterV1KatanaContractAddress localDepositAdapterV1KatanaContractAddress}
-   * property.
-   *
-   * - If not provided, this will be fetched and cached automatically from the public client before
-   *   making the first request which requires it.
-   *
-   * @internal
-   */
-  localDepositAdapterContractAddress?: string;
   /**
    * - Changing this value will likely result in a broken client, internal use only.
    *
@@ -199,6 +188,7 @@ export interface RestAuthenticatedClientOptions {
  * @category KatanaPerps - Get Wallets
  * @category KatanaPerps - Get Positions
  * @category KatanaPerps - Associate Wallet
+ * @category KatanaPerps - Delegated Keys
  * @category KatanaPerps - Create Order
  * @category KatanaPerps - Cancel Order
  * @category KatanaPerps - Get Orders
@@ -265,7 +255,6 @@ export class RestAuthenticatedClient {
     exchangeContractAddress: string;
     chainId: number;
     bridgeAdapterContractAddress: string;
-    localDepositAdapterContractAddress: string;
   }>;
 
   /**
@@ -329,7 +318,6 @@ export class RestAuthenticatedClient {
       exchangeContractAddress,
       chainId,
       bridgeAdapterContractAddress,
-      localDepositAdapterContractAddress,
       autoCreateHmacHeader = true,
     } = options;
 
@@ -351,7 +339,6 @@ export class RestAuthenticatedClient {
       baseURL,
       sandbox,
       bridgeAdapterContractAddress,
-      localDepositAdapterContractAddress,
       exchangeContractAddress,
       chainId,
       autoCreateHmacHeader,
@@ -590,6 +577,128 @@ export class RestAuthenticatedClient {
    */
   public async getWallets(params: katanaPerps.RestRequestGetWallets) {
     return this.get<katanaPerps.RestResponseGetWallets>('/wallets', params);
+  }
+
+  /**
+   * Returns delegated keys authorized for the requested wallet.
+   *
+   * ---
+   * **Endpoint Parameters**
+   *
+   * > - **HTTP Request:**         `GET /v1/delegatedKeys`
+   * > - **Endpoint Security:**    [User Data](https://api-docs-v1-perps.katana.network/#endpointSecurityUserData)
+   * > - **API Key Scope:**        [Read](https://api-docs-v1-perps.katana.network/#api-keys)
+   * ---
+   *
+   * @see typedoc  [Reference Documentation](https://sdk-js-docs-v1-perps.katana.network/classes/RestAuthenticatedClient.html#getDelegatedKeys)
+   * @see request  {@link katanaperps.RestRequestGetDelegatedKeys RestRequestGetDelegatedKeys}
+   * @see response {@link katanaperps.RestResponseDelegatedKeyEntry RestResponseDelegatedKeyEntry}
+   *
+   * @category Wallets & Positions
+   */
+  public async getDelegatedKeys(
+    params: katanaPerps.RestRequestGetDelegatedKeys,
+  ) {
+    return this.get<katanaPerps.RestResponseDelegatedKeyEntry[]>(
+      '/delegatedKeys',
+      params,
+    );
+  }
+
+  /**
+   * Authorizes a delegated public key for API trading on behalf of the custody wallet (signed).
+   *
+   * ---
+   * **Endpoint Parameters**
+   *
+   * > - **HTTP Request:**         `POST /v1/delegatedKeys`
+   * > - **Endpoint Security:**    [Trade](https://api-docs-v1-perps.katana.network/#endpointSecurityTrade)
+   * > - **API Key Scope:**        [Trade](https://api-docs-v1-perps.katana.network/#api-keys)
+   * ---
+   *
+   * @see typedoc  [Reference Documentation](https://sdk-js-docs-v1-perps.katana.network/classes/RestAuthenticatedClient.html#authorizeDelegatedKey)
+   * @see request  {@link katanaperps.RestRequestAuthorizeDelegatedKeyParameters RestRequestAuthorizeDelegatedKeyParameters}
+   * @see response {@link katanaperps.RestResponseDelegatedKeyEntry RestResponseDelegatedKeyEntry}
+   *
+   * @category Wallets & Positions
+   */
+  public async authorizeDelegatedKey(
+    params: katanaPerps.RestRequestAuthorizeDelegatedKeyParameters,
+    signer: undefined | katanaPerps.SignTypedData = this.#signer,
+  ) {
+    ensureSigner(signer);
+
+    const { chainId, exchangeContractAddress } =
+      await this.getContractAndChainId();
+
+    return this.post<katanaPerps.RestResponseDelegatedKeyEntry>(
+      '/delegatedKeys',
+      {
+        parameters: params,
+        signature: await signer(
+          ...getDelegatedKeyAuthorizationSignatureTypedData(
+            {
+              delegatedKey: params.delegatedKey,
+              nonce: params.nonce,
+            },
+            exchangeContractAddress,
+            chainId,
+            this.#config.sandbox,
+          ),
+        ),
+      } satisfies katanaPerps.RestRequestAuthorizeDelegatedKeySigned,
+    );
+  }
+
+  /**
+   * Revokes a previously authorized delegated key (signed).
+   *
+   * ---
+   * **Endpoint Parameters**
+   *
+   * > - **HTTP Request:**         `DELETE /v1/delegatedKeys`
+   * > - **Endpoint Security:**    [Trade](https://api-docs-v1-perps.katana.network/#endpointSecurityTrade)
+   * > - **API Key Scope:**        [Trade](https://api-docs-v1-perps.katana.network/#api-keys)
+   * ---
+   *
+   * @returns
+   * - The removed delegated key {@link katanaperps.RestResponseRemoveDelegatedKey RestResponseRemoveDelegatedKey}
+   *   (same fields as {@link katanaperps.RestResponseDelegatedKeyEntry RestResponseDelegatedKeyEntry}).
+   *
+   * ---
+   *
+   * @see typedoc  [Reference Documentation](https://sdk-js-docs-v1-perps.katana.network/classes/RestAuthenticatedClient.html#removeDelegatedKey)
+   * @see request  {@link katanaperps.RestRequestRemoveDelegatedKeyParameters RestRequestRemoveDelegatedKeyParameters}
+   * @see response {@link katanaperps.RestResponseRemoveDelegatedKey RestResponseRemoveDelegatedKey}
+   *
+   * @category Wallets & Positions
+   */
+  public async removeDelegatedKey(
+    params: katanaPerps.RestRequestRemoveDelegatedKeyParameters,
+    signer: undefined | katanaPerps.SignTypedData = this.#signer,
+  ): Promise<katanaPerps.RestResponseRemoveDelegatedKey> {
+    ensureSigner(signer);
+
+    const { chainId, exchangeContractAddress } =
+      await this.getContractAndChainId();
+
+    return this.delete<katanaPerps.RestResponseRemoveDelegatedKey>(
+      '/delegatedKeys',
+      {
+        parameters: params,
+        signature: await signer(
+          ...getDelegatedKeyAuthorizationSignatureTypedData(
+            {
+              delegatedKey: params.delegatedKey,
+              nonce: params.nonce,
+            },
+            exchangeContractAddress,
+            chainId,
+            this.#config.sandbox,
+          ),
+        ),
+      } satisfies katanaPerps.RestRequestRemoveDelegatedKeySigned,
+    );
   }
 
   /**
@@ -1798,21 +1907,11 @@ export class RestAuthenticatedClient {
     chainId: number;
     exchangeContractAddress: string;
     bridgeAdapterContractAddress: string;
-    localDepositAdapterContractAddress: string;
   }> {
-    let {
-      chainId,
-      exchangeContractAddress,
-      bridgeAdapterContractAddress,
-      localDepositAdapterContractAddress,
-    } = this.#config;
+    let { chainId, exchangeContractAddress, bridgeAdapterContractAddress } =
+      this.#config;
 
-    if (
-      !chainId ||
-      !exchangeContractAddress ||
-      !bridgeAdapterContractAddress ||
-      !localDepositAdapterContractAddress
-    ) {
+    if (!chainId || !exchangeContractAddress || !bridgeAdapterContractAddress) {
       if (!this.#exchange) {
         this.#exchange = await this.public.getExchange();
       }
@@ -1830,21 +1929,11 @@ export class RestAuthenticatedClient {
         this.#exchange.bridgeAdapters.stargateBridgeAdapterV1KatanaContractAddress;
       bridgeAdapterContractAddress ??=
         this.#config.bridgeAdapterContractAddress;
-
-      this.#config.localDepositAdapterContractAddress ??=
-        this.#exchange.bridgeAdapters.localDepositAdapterV1KatanaContractAddress;
-      localDepositAdapterContractAddress ??=
-        this.#config.localDepositAdapterContractAddress;
     }
 
-    if (
-      !chainId ||
-      !exchangeContractAddress ||
-      !bridgeAdapterContractAddress ||
-      !localDepositAdapterContractAddress
-    ) {
+    if (!chainId || !exchangeContractAddress || !bridgeAdapterContractAddress) {
       throw new Error(
-        `Could not determine chainId (${typeof chainId}) or exchangeContractAddress (${typeof exchangeContractAddress}) or bridgeAdapterContractAddress (${typeof bridgeAdapterContractAddress} or localDepositAdapterContractAddress (${typeof localDepositAdapterContractAddress})`,
+        `Could not determine chainId (${typeof chainId}) or exchangeContractAddress (${typeof exchangeContractAddress}) or bridgeAdapterContractAddress (${typeof bridgeAdapterContractAddress})`,
       );
     }
 
@@ -1852,7 +1941,6 @@ export class RestAuthenticatedClient {
       chainId,
       exchangeContractAddress,
       bridgeAdapterContractAddress,
-      localDepositAdapterContractAddress,
     } as const;
   }
 

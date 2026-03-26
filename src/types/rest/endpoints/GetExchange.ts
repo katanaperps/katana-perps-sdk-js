@@ -69,10 +69,6 @@ export interface KatanaPerpsExchange {
    */
   withdrawEnabled?: boolean;
   bridgeAdapters: {
-    /** Address of the v1 local deposit adapter contract on Katana */
-    localDepositAdapterV1KatanaContractAddress: string;
-    /** Address of the v1 loopback adapter contract on Katana */
-    loopbackBridgeAdapterV1KatanaContractAddress: string;
     /** Address of the v1 Stargate bridge adapter contract on Katana */
     stargateBridgeAdapterV1KatanaContractAddress: string;
     /** Address of the v1 Stargate cross-chain forwarder contract on Ethereum */
@@ -81,46 +77,6 @@ export interface KatanaPerpsExchange {
     vbUsdcOFTAdapterEthereumContractAddress: string;
     /** Address of the vbUSDC OVault composer contract on Ethereum */
     vbUsdcVaultComposerSyncEthereumContractAddress: string;
-  };
-  vaults: {
-    /**
-     * Vault creation fee
-     * @internal
-     */
-    vaultCreationFee: string;
-    /**
-     * Vault deposit fee
-     * @internal
-     */
-    vaultDepositFee: string;
-    /**
-     * Vault withdrawal fee
-     * @internal
-     */
-    vaultWithdrawalFee: string;
-    /**
-     * Minimum deposit required to create a vault
-     * @internal
-     */
-    vaultCreationMinimum: string;
-    /**
-     * Minimum deposit quantity
-     * @internal
-     */
-    vaultDepositMinimum: string;
-    /**
-     * Minimum withdrawal and withdrawal dust quantity
-     * @internal
-     */
-    vaultWithdrawalMinimum: string;
-    /**
-     * Address of Fixed Income Vault Provider V1 contract
-     */
-    fixedIncomeVaultProviderV1ContractAddress: string;
-    /**
-     * Address of Fixed Income Vault Provider aggregator V1 contract
-     */
-    fixedIncomeVaultProviderStateAggregatorV1ContractAddress: string;
   };
 }
 
