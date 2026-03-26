@@ -1,6 +1,7 @@
 export * from './AssociateWallet.js';
 export * from './CancelOrders.js';
 export * from './CreateOrder.js';
+export * from './DelegatedKeys.js';
 export * from './GetAuthenticationToken.js';
 export * from './GetCandles.js';
 export * from './GetDeposits.js';
