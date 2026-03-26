@@ -16,6 +16,7 @@ export interface RestRequestGetDelegatedKeys extends RestRequestByWallet {}
 export interface RestResponseDelegatedKeyEntry {
   delegatedKey: string;
   userAgent: string;
+  /** Optional client label; when present, at most 64 characters. */
   name?: string;
   time: number;
   expires: number;
@@ -30,6 +31,7 @@ export interface RestRequestAuthorizeDelegatedKeyParameters {
   nonce: string;
   wallet: string;
   delegatedKey: string;
+  /** Optional client label; if set, must be 64 characters or fewer. */
   name?: string;
 }
 

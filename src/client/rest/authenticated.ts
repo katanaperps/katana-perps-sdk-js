@@ -617,6 +617,10 @@ export class RestAuthenticatedClient {
    * > - **API Key Scope:**        [Trade](https://api-docs-v1-perps.katana.network/#api-keys)
    * ---
    *
+   * Optional `name` on the request is a client label and must be **64 characters or fewer** when provided.
+   *
+   * ---
+   *
    * @see typedoc  [Reference Documentation](https://sdk-js-docs-v1-perps.katana.network/classes/RestAuthenticatedClient.html#authorizeDelegatedKey)
    * @see request  {@link katanaperps.RestRequestAuthorizeDelegatedKeyParameters RestRequestAuthorizeDelegatedKeyParameters}
    * @see response {@link katanaperps.RestResponseDelegatedKeyEntry RestResponseDelegatedKeyEntry}
