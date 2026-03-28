@@ -1,4 +1,8 @@
-import type { MarketStatus, RestRequestByMarketOptional } from '#index';
+import type {
+  MarginType,
+  MarketStatus,
+  RestRequestByMarketOptional,
+} from '#index';
 
 /**
  * GET markets
@@ -117,6 +121,12 @@ export interface KatanaPerpsMarket {
    *     - increases the {@link initialMarginFraction} by {@link incrementalInitialMarginFraction} (this value)
    */
   incrementalInitialMarginFraction: string;
+  /**
+   * Type of margin
+   *
+   * @see {@link MarginType}
+   */
+  marginType: MarginType;
   /**
    * Default maker trade fee rate for the market
    *
