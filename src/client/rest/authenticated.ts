@@ -785,6 +785,34 @@ export class RestAuthenticatedClient {
    * }
    * ```
    *
+   * @example
+   * ```typescript
+   * import {
+   *   OrderSide,
+   *   OrderType,
+   *   createPrivateKeyTypedDataSigner,
+   * } from '@katanaperps/katana-perps-sdk';
+   *
+   * const delegatedSigner =
+   *   createPrivateKeyTypedDataSigner('0x<delegated-key-private-key>');
+   *
+   * await client.createOrder(
+   *   {
+   *     type: OrderType.market,
+   *     side: OrderSide.buy,
+   *     wallet: '0x<custody-wallet>',
+   *     delegatedKey: '0x<delegated-wallet-address>',
+   *     nonce: '6ec30a00-bde7-11f0-93c3-8f2944e286f3',
+   *     market: 'ETH-USD',
+   *     quantity: '1.00000000',
+   *   },
+   *   delegatedSigner,
+   * );
+   * ```
+   *
+   * When `params.delegatedKey` is set, this method requires an explicit signer
+   * created from that delegated key's private key.
+   *
    * <br />
    *
    * ---
@@ -798,16 +826,21 @@ export class RestAuthenticatedClient {
    */
   public async createOrder<T extends katanaPerps.OrderType>(
     params: katanaPerps.RestRequestOrder & { type: T },
-    signer: undefined | katanaPerps.SignTypedData = this.#signer,
+    signer?: katanaPerps.SignTypedData,
   ) {
-    ensureSigner(signer);
+    const resolvedSigner = resolveSignerForDelegatedMode({
+      providedSigner: signer,
+      defaultSigner: this.#signer,
+      delegated: !!params.delegatedKey,
+      methodName: 'createOrder',
+    });
 
     const { chainId, exchangeContractAddress } =
       await this.getContractAndChainId();
 
     return this.post<katanaPerps.RestResponseGetOrder>('/orders', {
       parameters: params,
-      signature: await signer(
+      signature: await resolvedSigner(
         ...getOrderSignatureTypedData(
           params,
           exchangeContractAddress,
@@ -864,10 +897,13 @@ export class RestAuthenticatedClient {
    * @see related  {@link cancelOrder client.cancelOrder}
    *
    * @category Orders
+   *
+   * When using delegated-key cancellation params (`delegatedKey` or
+   * `orderDelegatedKey`), pass an explicit delegated-key signer.
    */
   public async cancelOrders(
     params: katanaPerps.RestRequestCancelOrders,
-    signer: katanaPerps.SignTypedData | undefined = this.#signer,
+    signer?: katanaPerps.SignTypedData,
   ) {
     return this.makeCancelOrdersRequest('/orders', params, signer);
   }
@@ -875,16 +911,23 @@ export class RestAuthenticatedClient {
   private async makeCancelOrdersRequest(
     endpoint: string,
     params: katanaPerps.RestRequestCancelOrders,
-    signer: katanaPerps.SignTypedData | undefined = this.#signer,
+    signer?: katanaPerps.SignTypedData,
   ) {
-    ensureSigner(signer);
+    const isDelegatedCancellation =
+      !!params.delegatedKey || !!params.orderDelegatedKey;
+    const resolvedSigner = resolveSignerForDelegatedMode({
+      providedSigner: signer,
+      defaultSigner: this.#signer,
+      delegated: isDelegatedCancellation,
+      methodName: 'cancelOrders',
+    });
 
     const { chainId, exchangeContractAddress } =
       await this.getContractAndChainId();
 
     return this.delete<katanaPerps.RestResponseCancelOrders>(endpoint, {
       parameters: params,
-      signature: await signer(
+      signature: await resolvedSigner(
         ...getOrderCancellationSignatureTypedData(
           params,
           exchangeContractAddress,
@@ -1466,21 +1509,28 @@ export class RestAuthenticatedClient {
 
    *
    * @category Wallets & Positions
+   *
+   * When `params.delegatedKey` is set, pass an explicit delegated-key signer.
    */
   public async setInitialMarginFractionOverride<
     R = katanaPerps.RestResponseSetInitialMarginFractionOverride,
   >(
     params: katanaPerps.RestRequestSetInitialMarginFractionOverride,
-    signer: katanaPerps.SignTypedData | undefined = this.#signer,
+    signer?: katanaPerps.SignTypedData,
   ) {
-    ensureSigner(signer);
+    const resolvedSigner = resolveSignerForDelegatedMode({
+      providedSigner: signer,
+      defaultSigner: this.#signer,
+      delegated: !!params.delegatedKey,
+      methodName: 'setInitialMarginFractionOverride',
+    });
 
     const { chainId, exchangeContractAddress } =
       await this.getContractAndChainId();
 
     return this.post<R>('/initialMarginFractionOverride', {
       parameters: params,
-      signature: await signer(
+      signature: await resolvedSigner(
         ...getInitialMarginFractionOverrideSettingsSignatureTypedData(
           params,
           exchangeContractAddress,
@@ -1603,7 +1653,7 @@ export class RestAuthenticatedClient {
      */
     cancelConditionalStopLossOrders: async (
       params: katanaPerps.RestRequestCancelOrders,
-      signer: katanaPerps.SignTypedData | undefined = this.#signer,
+      signer?: katanaPerps.SignTypedData,
     ) => {
       return this.makeCancelOrdersRequest(
         '/internal/orders/conditionalStopLossOrders',
@@ -1618,7 +1668,7 @@ export class RestAuthenticatedClient {
      */
     cancelConditionalTakeProfitOrders: async (
       params: katanaPerps.RestRequestCancelOrders,
-      signer: katanaPerps.SignTypedData | undefined = this.#signer,
+      signer?: katanaPerps.SignTypedData,
     ) => {
       return this.makeCancelOrdersRequest(
         '/internal/orders/conditionalTakeProfitOrders',
@@ -1664,9 +1714,14 @@ export class RestAuthenticatedClient {
     >(
       takeProfitOrStopLossOrder: katanaPerps.RestRequestOrder & { type: T },
       conditionalParentOrderId: string,
-      signer: undefined | katanaPerps.SignTypedData = this.#signer,
+      signer?: katanaPerps.SignTypedData,
     ): Promise<katanaPerps.RestResponseGetOrder & { type: T }> => {
-      ensureSigner(signer);
+      const resolvedSigner = resolveSignerForDelegatedMode({
+        providedSigner: signer,
+        defaultSigner: this.#signer,
+        delegated: !!takeProfitOrStopLossOrder.delegatedKey,
+        methodName: 'internal.placeConditionalTpSlOrder',
+      });
 
       const { chainId, exchangeContractAddress } =
         await this.getContractAndChainId();
@@ -1676,7 +1731,7 @@ export class RestAuthenticatedClient {
         {
           order: {
             parameters: takeProfitOrStopLossOrder,
-            signature: await signer(
+            signature: await resolvedSigner(
               ...getOrderSignatureTypedData(
                 takeProfitOrStopLossOrder,
                 exchangeContractAddress,
@@ -1705,7 +1760,7 @@ export class RestAuthenticatedClient {
           type: typeof katanaPerps.OrderType.stopLossMarket;
         };
       },
-      signer: undefined | katanaPerps.SignTypedData = this.#signer,
+      signer?: katanaPerps.SignTypedData,
     ): Promise<{
       order: katanaPerps.RestResponseGetOrder & { type: T };
       conditionalTakeProfitOrder?: katanaPerps.RestResponseGetOrder & {
@@ -1715,7 +1770,17 @@ export class RestAuthenticatedClient {
         type: typeof katanaPerps.OrderType.stopLossMarket;
       };
     }> => {
-      ensureSigner(signer);
+      const delegatedOrderInBatch = [
+        params.order,
+        params.conditionalTakeProfitOrder,
+        params.conditionalStopLossOrder,
+      ].some((order) => !!order?.delegatedKey);
+      const resolvedSigner = resolveSignerForDelegatedMode({
+        providedSigner: signer,
+        defaultSigner: this.#signer,
+        delegated: delegatedOrderInBatch,
+        methodName: 'internal.placeOrderWithConditionalTpSlOrders',
+      });
 
       const { chainId, exchangeContractAddress } =
         await this.getContractAndChainId();
@@ -1723,7 +1788,7 @@ export class RestAuthenticatedClient {
       const signOrder = (
         order: katanaPerps.RestRequestOrder,
       ): Promise<string> =>
-        signer(
+        resolvedSigner(
           ...getOrderSignatureTypedData(
             order,
             exchangeContractAddress,
@@ -2140,6 +2205,32 @@ function ensureSigner(
       'A "signer" function is required but was not provided during RestAuthenticatedClient constructor or when calling the method',
     );
   }
+}
+
+function resolveSignerForDelegatedMode({
+  providedSigner,
+  defaultSigner,
+  delegated,
+  methodName,
+}: {
+  providedSigner: katanaPerps.SignTypedData | undefined;
+  defaultSigner: katanaPerps.SignTypedData | undefined;
+  delegated: boolean;
+  methodName: string;
+}): katanaPerps.SignTypedData {
+  if (delegated) {
+    if (!providedSigner) {
+      throw new Error(
+        `"${methodName}" requires an explicit signer when using delegated key parameters. Pass a signer created from the delegated key private key.`,
+      );
+    }
+
+    return providedSigner;
+  }
+
+  const signer = providedSigner ?? defaultSigner;
+  ensureSigner(signer);
+  return signer;
 }
 
 /**

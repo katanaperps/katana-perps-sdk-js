@@ -6,6 +6,10 @@ import type { RestRequestWithSignature } from '#types/utils';
  * [[include:base.md]]
  * </div>
  *
+ * If {@link katanaperps.DelegatedKeyParams.delegatedKey delegatedKey} is
+ * defined, the request signature must be produced by that delegated key's
+ * private key.
+ *
  * @category Base Types
  *
  * @see related {@link RestRequestOrderBaseWithoutTriggerPrice}

@@ -2,12 +2,14 @@ import type { UnknownObj } from '#types/utils';
 
 /**
  * Base delegated key params.
- *
- * @internal
  */
 export interface DelegatedKeyParams {
   /**
    * The delegated key to use for the request, if any.
+   *
+   * If this value is provided on a signed REST request (for example order
+   * placement), the EIP-712 signature must be created by this delegated key's
+   * private key rather than the custody wallet's private key.
    */
   delegatedKey?: string;
 }
