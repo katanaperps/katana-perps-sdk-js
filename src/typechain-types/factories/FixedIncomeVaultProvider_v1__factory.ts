@@ -13,7 +13,7 @@ const _abi = [
     inputs: [
       {
         internalType: 'address',
-        name: 'exchange_',
+        name: 'custodian_',
         type: 'address',
       },
       {
@@ -139,6 +139,11 @@ const _abi = [
   {
     inputs: [],
     name: 'InvalidDepositorWallet',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'InvalidManagedAccountProvider',
     type: 'error',
   },
   {
@@ -306,7 +311,7 @@ const _abi = [
         type: 'uint64',
       },
     ],
-    name: 'MinimumUnappliedWithdrawalAgeInSToInitiateExitOutOfRange',
+    name: 'MinimumUnappliedDepositOrWithdrawalAgeInSToInitiateExitOutOfRange',
     type: 'error',
   },
   {
@@ -1161,7 +1166,7 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'MAX_MINIMUM_UNAPPLIED_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
+    name: 'MAX_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
     outputs: [
       {
         internalType: 'uint64',
@@ -1291,7 +1296,7 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'MIN_MINIMUM_UNAPPLIED_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
+    name: 'MIN_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
     outputs: [
       {
         internalType: 'uint64',
@@ -1454,6 +1459,19 @@ const _abi = [
     type: 'function',
   },
   {
+    inputs: [],
+    name: 'custodian',
+    outputs: [
+      {
+        internalType: 'contract ICustodian',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [
       {
         internalType: 'uint64',
@@ -1502,19 +1520,6 @@ const _abi = [
     name: 'emitEventsForFrontOfDepositAndWithdrawalQueues',
     outputs: [],
     stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'exchange',
-    outputs: [
-      {
-        internalType: 'contract IExchange',
-        name: '',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'view',
     type: 'function',
   },
   {
@@ -1738,7 +1743,7 @@ const _abi = [
           },
           {
             internalType: 'uint64',
-            name: 'minimumUnappliedWithdrawalAgeInSToInitiateExit',
+            name: 'minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit',
             type: 'uint64',
           },
           {
@@ -1832,6 +1837,11 @@ const _abi = [
             name: 'payload',
             type: 'bytes',
           },
+          {
+            internalType: 'uint64',
+            name: 'addedToQueueAtTimestampInS',
+            type: 'uint64',
+          },
         ],
         internalType: 'struct VaultDepositQueue.Item',
         name: '',
@@ -1904,6 +1914,11 @@ const _abi = [
           },
           {
             internalType: 'uint64',
+            name: 'exitedDepositorPendingDepositQuantity',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
             name: 'exitedTotalOwedQuantity',
             type: 'uint64',
           },
@@ -1914,7 +1929,7 @@ const _abi = [
           },
           {
             internalType: 'uint64',
-            name: 'netDeposits',
+            name: 'depositorNetDeposits',
             type: 'uint64',
           },
           {
@@ -1934,7 +1949,7 @@ const _abi = [
           },
           {
             internalType: 'uint64',
-            name: 'totalPendingDepositQuantity',
+            name: 'depositorPendingDepositQuantity',
             type: 'uint64',
           },
           {
@@ -1971,7 +1986,7 @@ const _abi = [
               },
               {
                 internalType: 'uint64',
-                name: 'minimumUnappliedWithdrawalAgeInSToInitiateExit',
+                name: 'minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit',
                 type: 'uint64',
               },
               {
@@ -2424,7 +2439,7 @@ const _abi = [
           },
           {
             internalType: 'uint64',
-            name: 'minimumUnappliedWithdrawalAgeInSToInitiateExit',
+            name: 'minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit',
             type: 'uint64',
           },
           {

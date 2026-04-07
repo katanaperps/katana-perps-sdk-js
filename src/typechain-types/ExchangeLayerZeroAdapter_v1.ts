@@ -161,7 +161,6 @@ export interface ExchangeLayerZeroAdapter_v1Interface extends Interface {
       BigNumberish,
       BigNumberish,
       BigNumberish,
-      BigNumberish,
     ],
   ): string;
   encodeFunctionData(
@@ -560,7 +559,6 @@ export interface ExchangeLayerZeroAdapter_v1 extends BaseContract {
       depositToManagedAccountFeeQuantityInAssetUnits_: BigNumberish,
       minimumAddManagedAccountDepositQuantityInAssetUnits_: BigNumberish,
       minimumDepositToManagedAccountQuantityInAssetUnits_: BigNumberish,
-      minimumWithdrawQuantityMultiplier_: BigNumberish,
     ],
     [void],
     'nonpayable'
@@ -718,7 +716,6 @@ export interface ExchangeLayerZeroAdapter_v1 extends BaseContract {
       depositToManagedAccountFeeQuantityInAssetUnits_: BigNumberish,
       minimumAddManagedAccountDepositQuantityInAssetUnits_: BigNumberish,
       minimumDepositToManagedAccountQuantityInAssetUnits_: BigNumberish,
-      minimumWithdrawQuantityMultiplier_: BigNumberish,
     ],
     [void],
     'nonpayable'

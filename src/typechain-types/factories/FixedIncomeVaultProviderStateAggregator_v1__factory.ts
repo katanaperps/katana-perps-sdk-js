@@ -96,7 +96,7 @@ const _abi = [
           },
           {
             internalType: 'uint64',
-            name: 'minimumUnappliedWithdrawalAgeInSToInitiateExit',
+            name: 'minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit',
             type: 'uint64',
           },
           {

@@ -322,7 +322,7 @@ const _abi = [
     ],
     name: 'withdrawQuoteAsset',
     outputs: [],
-    stateMutability: 'view',
+    stateMutability: 'pure',
     type: 'function',
   },
 ] as const;
