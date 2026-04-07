@@ -312,7 +312,7 @@
     ],
     "name": "withdrawQuoteAsset",
     "outputs": [],
-    "stateMutability": "view",
+    "stateMutability": "pure",
     "type": "function"
   }
 ]

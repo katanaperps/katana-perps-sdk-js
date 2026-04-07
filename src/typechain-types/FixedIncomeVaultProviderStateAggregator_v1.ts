@@ -57,7 +57,7 @@ export declare namespace FixedIncomeVaultProvider_v1 {
     maximumNetDeposits: BigNumberish;
     maximumTotalOwedQuantityAvailableMultiplierToInitiateExit: BigNumberish;
     minimumTotalOwedQuantityAvailableMultiplierToAllowManagerWalletWithdrawal: BigNumberish;
-    minimumUnappliedWithdrawalAgeInSToInitiateExit: BigNumberish;
+    minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit: BigNumberish;
     withdrawalLimitPercentForDepositors: BigNumberish;
     withdrawalLimitPercentForVault: BigNumberish;
   };
@@ -69,7 +69,7 @@ export declare namespace FixedIncomeVaultProvider_v1 {
     maximumNetDeposits: bigint,
     maximumTotalOwedQuantityAvailableMultiplierToInitiateExit: bigint,
     minimumTotalOwedQuantityAvailableMultiplierToAllowManagerWalletWithdrawal: bigint,
-    minimumUnappliedWithdrawalAgeInSToInitiateExit: bigint,
+    minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit: bigint,
     withdrawalLimitPercentForDepositors: bigint,
     withdrawalLimitPercentForVault: bigint,
   ] & {
@@ -79,7 +79,7 @@ export declare namespace FixedIncomeVaultProvider_v1 {
     maximumNetDeposits: bigint;
     maximumTotalOwedQuantityAvailableMultiplierToInitiateExit: bigint;
     minimumTotalOwedQuantityAvailableMultiplierToAllowManagerWalletWithdrawal: bigint;
-    minimumUnappliedWithdrawalAgeInSToInitiateExit: bigint;
+    minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit: bigint;
     withdrawalLimitPercentForDepositors: bigint;
     withdrawalLimitPercentForVault: bigint;
   };

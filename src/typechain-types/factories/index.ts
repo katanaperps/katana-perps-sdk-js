@@ -5,6 +5,7 @@ export { ERC20__factory } from './ERC20__factory';
 export { EarningsEscrow__factory } from './EarningsEscrow__factory';
 export { ExchangeLayerZeroAdapter_v1__factory } from './ExchangeLayerZeroAdapter_v1__factory';
 export { ExchangeLocalDepositAdapter_v1__factory } from './ExchangeLocalDepositAdapter_v1__factory';
+export { ExchangeLoopbackAdapter_v1__factory } from './ExchangeLoopbackAdapter_v1__factory';
 export { Exchange_v1__factory } from './Exchange_v1__factory';
 export { FixedIncomeVaultProviderStateAggregator_v1__factory } from './FixedIncomeVaultProviderStateAggregator_v1__factory';
 export { FixedIncomeVaultProvider_v1__factory } from './FixedIncomeVaultProvider_v1__factory';
