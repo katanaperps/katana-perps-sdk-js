@@ -16,7 +16,7 @@ import {
 import { pipToDecimal } from './pipmath';
 
 import type * as types from '#index';
-import type { WithdrawalFromManagedAccountStruct } from './typechain-types/Exchange_v1';
+import type { WithdrawalFromManagedAccountStruct } from './typechain-types/Exchange_v2';
 
 export type SignTypedData = (
   domain: ethers.TypedDataDomain,
