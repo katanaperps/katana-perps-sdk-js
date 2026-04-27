@@ -1,0 +1,73 @@
+import type { RestRequestByWallet } from '#types/rest/common/common';
+import type { RestRequestWithSignature } from '#types/utils';
+
+/**
+ * Query parameters for `GET /v1/delegatedKeys`.
+ *
+ * @category KatanaPerps - Delegated Keys
+ */
+export interface RestRequestGetDelegatedKeys extends RestRequestByWallet {}
+
+/**
+ * One authorized delegated key as returned by the public API.
+ *
+ * @category KatanaPerps - Delegated Keys
+ */
+export interface RestResponseDelegatedKeyEntry {
+  delegatedKey: string;
+  userAgent: string;
+  /** Optional client label; when present, at most 64 characters. */
+  name?: string;
+  time: number;
+  expires: number;
+}
+
+/**
+ * Parameters (inside `parameters`) for authorizing a delegated key (`POST /v1/delegatedKeys`).
+ *
+ * @category KatanaPerps - Delegated Keys
+ */
+export interface RestRequestAuthorizeDelegatedKeyParameters {
+  nonce: string;
+  wallet: string;
+  delegatedKey: string;
+  /** Optional client label; if set, must be 64 characters or fewer. */
+  name?: string;
+}
+
+/**
+ * Signed body for `POST /v1/delegatedKeys`.
+ *
+ * @category KatanaPerps - Delegated Keys
+ */
+export type RestRequestAuthorizeDelegatedKeySigned =
+  RestRequestWithSignature<RestRequestAuthorizeDelegatedKeyParameters>;
+
+/**
+ * Parameters (inside `parameters`) for removing a delegated key (`DELETE /v1/delegatedKeys`).
+ *
+ * @category KatanaPerps - Delegated Keys
+ */
+export interface RestRequestRemoveDelegatedKeyParameters {
+  nonce: string;
+  wallet: string;
+  delegatedKey: string;
+}
+
+/**
+ * Signed body for `DELETE /v1/delegatedKeys`.
+ *
+ * @category KatanaPerps - Delegated Keys
+ */
+export type RestRequestRemoveDelegatedKeySigned =
+  RestRequestWithSignature<RestRequestRemoveDelegatedKeyParameters>;
+
+/**
+ * Response body for a successful `DELETE /v1/delegatedKeys`.
+ *
+ * Returns the removed key in the same shape as {@link RestResponseDelegatedKeyEntry}
+ * (GET/POST), so callers can confirm metadata without a second request.
+ *
+ * @category KatanaPerps - Delegated Keys
+ */
+export type RestResponseRemoveDelegatedKey = RestResponseDelegatedKeyEntry;

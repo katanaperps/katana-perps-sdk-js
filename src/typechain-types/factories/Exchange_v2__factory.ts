@@ -3,7 +3,7 @@
 /* eslint-disable */
 
 import { Contract, Interface, type ContractRunner } from 'ethers';
-import type { Exchange_v1, Exchange_v1Interface } from '../Exchange_v1';
+import type { Exchange_v2, Exchange_v2Interface } from '../Exchange_v2';
 
 const _abi = [
   {
@@ -3650,12 +3650,12 @@ const _abi = [
   },
 ] as const;
 
-export class Exchange_v1__factory {
+export class Exchange_v2__factory {
   static readonly abi = _abi;
-  static createInterface(): Exchange_v1Interface {
-    return new Interface(_abi) as Exchange_v1Interface;
+  static createInterface(): Exchange_v2Interface {
+    return new Interface(_abi) as Exchange_v2Interface;
   }
-  static connect(address: string, runner?: ContractRunner | null): Exchange_v1 {
-    return new Contract(address, _abi, runner) as unknown as Exchange_v1;
+  static connect(address: string, runner?: ContractRunner | null): Exchange_v2 {
+    return new Contract(address, _abi, runner) as unknown as Exchange_v2;
   }
 }
