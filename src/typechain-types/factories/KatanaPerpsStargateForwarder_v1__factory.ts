@@ -552,7 +552,7 @@ const _abi = [
     inputs: [
       {
         internalType: 'address payable',
-        name: 'destinationWallet',
+        name: 'destinationContractOrWallet',
         type: 'address',
       },
       {
