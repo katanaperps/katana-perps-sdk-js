@@ -1,6 +1,6 @@
 {
   "name": "@katanaperps/katana-perps-sdk",
-  "version": "1.1.0-alpha.5",
+  "version": "2.1.0-alpha.1",
   "description": "Katana Perps SDK for Javascript in the browser and Node.js",
   "repository": "git@github.com:katanaperps/katana-perps-sdk-js.git",
   "license": "MIT",
