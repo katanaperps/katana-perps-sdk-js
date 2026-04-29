@@ -355,7 +355,6 @@ export interface RestResponseFarmPayout {
 export interface RestRequestGetKatanaPoints
   extends RestRequestByWalletOptional {
   seasonId?: number;
-  periodId?: number;
 }
 
 /**
