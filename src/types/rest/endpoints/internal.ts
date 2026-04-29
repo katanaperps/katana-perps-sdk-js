@@ -353,17 +353,22 @@ export interface RestResponseFarmPayout {
  * @hidden
  */
 export interface RestRequestGetKatanaPoints
-  extends RestRequestByWalletOptional {}
+  extends RestRequestByWalletOptional {
+  seasonId?: number;
+  periodId?: number;
+}
 
 /**
  * @hidden
  */
 export type KatanaPointsPeriod = {
+  sequence: number;
   startsAt: number;
   endsAt: number;
   reviewEndsAt: number;
   points?: string | null;
   isWalletEligible?: boolean;
+  walletRank?: PointsProgramRank;
 };
 
 /**
@@ -388,10 +393,37 @@ export type PointsProgramRank =
  * @hidden
  */
 export interface RestResponseGetKatanaPoints {
+  currentSeasonId: number;
+  currentSeasonEndsAt: number;
   currentPeriodWeek: number;
   currentPeriodEndsAt: number;
   pastPeriods: KatanaPointsPeriod[];
   isWalletEligible: boolean;
   walletRank: PointsProgramRank;
   walletTotalRewards: string;
+  previousSeasonRewards: null | {
+    seasonId: number;
+    walletTotalRewards: string;
+  };
 }
+
+/**
+ * @hidden
+ */
+export interface RestRequestGetKatanaPointSeasons {}
+
+/**
+ * @hidden
+ */
+export type RestResponseGetKatanaPointSeasons = Array<{
+  seasonId: number;
+  isCurrent: boolean;
+  isPending: boolean;
+  periods: Array<{
+    id: number;
+    sequence: number;
+    startsAt: number;
+    endsAt: number;
+    reviewEndsAt: number;
+  }>;
+}>;
