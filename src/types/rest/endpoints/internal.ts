@@ -400,6 +400,8 @@ export interface RestResponseGetKatanaPoints {
   isWalletEligible: boolean;
   walletRank: PointsProgramRank;
   walletTotalRewards: string;
+  vbUsdcRewards: string | null;
+  katRewards: string | null;
   previousSeasonRewards: null | {
     seasonId: number;
     walletTotalRewards: string;
