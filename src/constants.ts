@@ -3,9 +3,9 @@ export const REST_HMAC_SIGNATURE_HEADER = 'kp-hmac-signature';
 
 export const EIP_712_DOMAIN_NAME = 'KatanaPerps';
 
-export const EIP_712_DOMAIN_VERSION = '1.0.0';
+export const EIP_712_DOMAIN_VERSION = '2.0.0';
 
-export const EIP_712_DOMAIN_VERSION_SANDBOX = '1.0.0-sandbox';
+export const EIP_712_DOMAIN_VERSION_SANDBOX = '2.0.0-sandbox';
 
 // sdk-js-docs-v1-perps.katana.network
 // api-docs-v1-perps.katana.network

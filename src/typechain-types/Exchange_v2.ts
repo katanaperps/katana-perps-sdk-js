@@ -494,7 +494,7 @@ export type WithdrawalStructOutput = [
   walletSignature: string;
 };
 
-export interface Exchange_v1Interface extends Interface {
+export interface Exchange_v2Interface extends Interface {
   getFunction(
     nameOrSignature:
       | 'activateMarket'
@@ -2079,11 +2079,11 @@ export namespace WithdrawnEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export interface Exchange_v1 extends BaseContract {
-  connect(runner?: ContractRunner | null): Exchange_v1;
+export interface Exchange_v2 extends BaseContract {
+  connect(runner?: ContractRunner | null): Exchange_v2;
   waitForDeployment(): Promise<this>;
 
-  interface: Exchange_v1Interface;
+  interface: Exchange_v2Interface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
