@@ -181,6 +181,25 @@ export type OrderStateChange =
  * @category Enums - Response Properties
  * @enum
  */
+export const MarginType = Object.freeze({
+  /**
+   * Positions are cross-margined with positions in other markets
+   */
+  cross: 'cross',
+  /**
+   * A wallet that has an open position or orders on the book in a market with
+   * isolated margin cannot place orders or have open positions in other markets
+   * at the same time.
+   */
+  isolated: 'isolated',
+} as const);
+
+export type MarginType = (typeof MarginType)[keyof typeof MarginType];
+
+/**
+ * @category Enums - Response Properties
+ * @enum
+ */
 export const MarketStatus = Object.freeze({
   /**
    * No orders or cancels accepted
