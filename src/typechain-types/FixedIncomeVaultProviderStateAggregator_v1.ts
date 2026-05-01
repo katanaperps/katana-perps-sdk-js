@@ -37,13 +37,13 @@ export type LoadVaultDepositorsResultStructOutput = [
   owedQuantity: bigint;
 };
 
-export type LoadVaultWithdrawalQueueResultStruct = {
+export type VaultWithdrawQueueItemStruct = {
   nonce: BigNumberish;
   depositorWallet: AddressLike;
   grossQuantity: BigNumberish;
 };
 
-export type LoadVaultWithdrawalQueueResultStructOutput = [
+export type VaultWithdrawQueueItemStructOutput = [
   nonce: bigint,
   depositorWallet: string,
   grossQuantity: bigint,
@@ -57,7 +57,7 @@ export declare namespace FixedIncomeVaultProvider_v1 {
     maximumNetDeposits: BigNumberish;
     maximumTotalOwedQuantityAvailableMultiplierToInitiateExit: BigNumberish;
     minimumTotalOwedQuantityAvailableMultiplierToAllowManagerWalletWithdrawal: BigNumberish;
-    minimumUnappliedWithdrawalAgeInSToInitiateExit: BigNumberish;
+    minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit: BigNumberish;
     withdrawalLimitPercentForDepositors: BigNumberish;
     withdrawalLimitPercentForVault: BigNumberish;
   };
@@ -69,7 +69,7 @@ export declare namespace FixedIncomeVaultProvider_v1 {
     maximumNetDeposits: bigint,
     maximumTotalOwedQuantityAvailableMultiplierToInitiateExit: bigint,
     minimumTotalOwedQuantityAvailableMultiplierToAllowManagerWalletWithdrawal: bigint,
-    minimumUnappliedWithdrawalAgeInSToInitiateExit: bigint,
+    minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit: bigint,
     withdrawalLimitPercentForDepositors: bigint,
     withdrawalLimitPercentForVault: bigint,
   ] & {
@@ -79,7 +79,7 @@ export declare namespace FixedIncomeVaultProvider_v1 {
     maximumNetDeposits: bigint;
     maximumTotalOwedQuantityAvailableMultiplierToInitiateExit: bigint;
     minimumTotalOwedQuantityAvailableMultiplierToAllowManagerWalletWithdrawal: bigint;
-    minimumUnappliedWithdrawalAgeInSToInitiateExit: bigint;
+    minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit: bigint;
     withdrawalLimitPercentForDepositors: bigint;
     withdrawalLimitPercentForVault: bigint;
   };
@@ -90,16 +90,20 @@ export interface FixedIncomeVaultProviderStateAggregator_v1Interface
   getFunction(
     nameOrSignature:
       | 'fixedIncomeVaultProvider'
+      | 'loadTotalQuantitiesOwedByVaults'
       | 'loadVaultConfigurations'
       | 'loadVaultDepositorsByDepositorWallet'
       | 'loadVaultDepositorsByManagerWallet'
-      | 'loadVaultDeposits'
       | 'loadVaultWithdrawalQueue',
   ): FunctionFragment;
 
   encodeFunctionData(
     functionFragment: 'fixedIncomeVaultProvider',
     values?: undefined,
+  ): string;
+  encodeFunctionData(
+    functionFragment: 'loadTotalQuantitiesOwedByVaults',
+    values: [AddressLike[]],
   ): string;
   encodeFunctionData(
     functionFragment: 'loadVaultConfigurations',
@@ -114,16 +118,16 @@ export interface FixedIncomeVaultProviderStateAggregator_v1Interface
     values: [AddressLike, AddressLike[]],
   ): string;
   encodeFunctionData(
-    functionFragment: 'loadVaultDeposits',
-    values: [AddressLike[]],
-  ): string;
-  encodeFunctionData(
     functionFragment: 'loadVaultWithdrawalQueue',
     values: [AddressLike],
   ): string;
 
   decodeFunctionResult(
     functionFragment: 'fixedIncomeVaultProvider',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: 'loadTotalQuantitiesOwedByVaults',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
@@ -136,10 +140,6 @@ export interface FixedIncomeVaultProviderStateAggregator_v1Interface
   ): Result;
   decodeFunctionResult(
     functionFragment: 'loadVaultDepositorsByManagerWallet',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: 'loadVaultDeposits',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
@@ -196,6 +196,12 @@ export interface FixedIncomeVaultProviderStateAggregator_v1
 
   fixedIncomeVaultProvider: TypedContractMethod<[], [string], 'view'>;
 
+  loadTotalQuantitiesOwedByVaults: TypedContractMethod<
+    [managerWallets: AddressLike[]],
+    [bigint[]],
+    'view'
+  >;
+
   loadVaultConfigurations: TypedContractMethod<
     [managerWallet: AddressLike],
     [FixedIncomeVaultProvider_v1.VaultConfigurationFieldsStructOutput[]],
@@ -214,15 +220,9 @@ export interface FixedIncomeVaultProviderStateAggregator_v1
     'view'
   >;
 
-  loadVaultDeposits: TypedContractMethod<
-    [managerWallets: AddressLike[]],
-    [bigint[]],
-    'view'
-  >;
-
   loadVaultWithdrawalQueue: TypedContractMethod<
     [managerWallet: AddressLike],
-    [LoadVaultWithdrawalQueueResultStructOutput[]],
+    [VaultWithdrawQueueItemStructOutput[]],
     'view'
   >;
 
@@ -233,6 +233,9 @@ export interface FixedIncomeVaultProviderStateAggregator_v1
   getFunction(
     nameOrSignature: 'fixedIncomeVaultProvider',
   ): TypedContractMethod<[], [string], 'view'>;
+  getFunction(
+    nameOrSignature: 'loadTotalQuantitiesOwedByVaults',
+  ): TypedContractMethod<[managerWallets: AddressLike[]], [bigint[]], 'view'>;
   getFunction(
     nameOrSignature: 'loadVaultConfigurations',
   ): TypedContractMethod<
@@ -255,13 +258,10 @@ export interface FixedIncomeVaultProviderStateAggregator_v1
     'view'
   >;
   getFunction(
-    nameOrSignature: 'loadVaultDeposits',
-  ): TypedContractMethod<[managerWallets: AddressLike[]], [bigint[]], 'view'>;
-  getFunction(
     nameOrSignature: 'loadVaultWithdrawalQueue',
   ): TypedContractMethod<
     [managerWallet: AddressLike],
-    [LoadVaultWithdrawalQueueResultStructOutput[]],
+    [VaultWithdrawQueueItemStructOutput[]],
     'view'
   >;
 
