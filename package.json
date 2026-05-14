@@ -13,10 +13,6 @@
       "esm-only"
     ],
     [
-      "eslint v9",
-      "due to eslint-plugin-import not supporting flat config or ts path resolution"
-    ],
-    [
       "ethers",
       "keep in sync with other repos"
     ]
@@ -109,7 +105,7 @@
     "lint:types": "yarn exec tsc --noEmit",
     "on:commit": "npm-run-all build test --parallel lint:fix:staged lint:types --",
     "orderbook:demo": "yarn node dist/orderbook/demo.js",
-    "postinstall": "git config --local core.hooksPath .githooks || echo 'Not a git repository, did not set up git hooks'",
+    "prepare": "git config --local core.hooksPath .githooks || echo 'Not a git repository, did not set up git hooks'",
     "prettier:fix": "yarn exec prettier --cache --write 'src/**/*.ts'",
     "prettier:fix:staged": "yarn exec pretty-quick --staged",
     "start:path": "yarn exec tsx --tsconfig tsconfig.tsx.json --",
@@ -167,7 +163,7 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-typescript": "^3.6.1",
-    "eslint-plugin-import": "npm:eslint-plugin-i@latest",
+    "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "^5.5.1",
     "eslint-plugin-promise": "^6.1.1",
     "globals": "^15.2.0",
@@ -196,5 +192,13 @@
   "optionalDependencies": {
     "bufferutil": "^4.0.8"
   },
-  "packageManager": "yarn@4.2.2"
+  "dependenciesMeta": {
+    "bufferutil": {
+      "built": true
+    },
+    "esbuild": {
+      "built": true
+    }
+  },
+  "packageManager": "yarn@4.14.1"
 }
