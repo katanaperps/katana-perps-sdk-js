@@ -349,6 +349,190 @@ export interface RestResponseFarmPayout {
   txHash: string;
 }
 
+/*
+ * Taker Competition V3
+ */
+
+/**
+ * @hidden
+ */
+export interface RestRequestGetTakerCompetitionV3ByName
+  extends RestRequestByWalletOptional {
+  name: string;
+}
+
+/**
+ * @hidden
+ */
+export interface RestRequestGetTakerCompetitionV3List {}
+
+/**
+ * @hidden
+ */
+export interface RestRequestRegisterTakerCompetitionV3 {
+  name: string;
+  wallet: string;
+}
+
+/**
+ * @hidden
+ */
+export interface RestRequestSetTakerCompetitionV3DisplayName
+  extends RestRequestRegisterTakerCompetitionV3 {
+  displayName: string;
+}
+
+/**
+ * @hidden
+ */
+export interface RestRequestGetTakerCompetitionV3Payout {
+  wallet: string;
+  program: PayoutProgram;
+}
+
+/**
+ * @hidden
+ */
+export type RestRequestAuthorizeTakerCompetitionV3Payout =
+  RestRequestGetTakerCompetitionV3Payout;
+
+/**
+ * @hidden
+ */
+export interface KatanaPerpsTakerCompetitionV3Summary {
+  name: string;
+  startsAt: number;
+  endsAt: number;
+}
+
+/**
+ * @hidden
+ */
+export interface KatanaPerpsTakerCompetitionV3MilestoneCompetition {
+  name: string;
+  startsAt: number;
+  endsAt: number;
+  totalRewardQuantity: string;
+  walletCount: number;
+  pnlRewardPool: string;
+  pnlMaxWinners: number;
+  volumeRewardPool: string;
+  totalVolume: string;
+  milestoneTiers: ReadonlyArray<{
+    thresholdVolumeUsd: string;
+    poolRewardQuantity: string;
+  }>;
+}
+
+/**
+ * @hidden
+ */
+export interface KatanaPerpsTakerCompetitionV3PnLLeaderboardEntry {
+  rank: number;
+  address?: string;
+  displayName?: string;
+  pnl?: string;
+  pnlPercent?: string;
+  rewardQuantity: string;
+}
+
+/**
+ * @hidden
+ */
+export interface KatanaPerpsTakerCompetitionV3VolumeLeaderboardEntry {
+  rank: number;
+  address?: string;
+  displayName?: string;
+  pnl?: string;
+  pnlPercent?: string;
+  volume?: string;
+  rewardQuantity: string;
+}
+
+/**
+ * @hidden
+ */
+export interface KatanaPerpsTakerCompetitionV3WalletUnregistered {
+  readonly isRegistered: false;
+  readonly isBlacklisted: boolean;
+  readonly hasSufficientEquity: boolean;
+}
+
+/**
+ * @hidden
+ */
+export interface KatanaPerpsTakerCompetitionV3WalletRegistered {
+  readonly isRegistered: true;
+  readonly address: string;
+  readonly displayName: string;
+  readonly pnl: string;
+  readonly pnlPercent: string;
+  readonly volume: string;
+  readonly qualifiedVolume: string;
+  readonly pnlRank: number | null;
+  readonly volumeRank: number | null;
+  readonly volumeRewardQuantity: string | null;
+}
+
+/**
+ * @hidden
+ */
+export type KatanaPerpsTakerCompetitionV3Wallet =
+  | KatanaPerpsTakerCompetitionV3WalletRegistered
+  | KatanaPerpsTakerCompetitionV3WalletUnregistered
+  | null;
+
+/**
+ * @hidden
+ */
+export interface RestResponseGetTakerCompetitionV3ByName {
+  competition: KatanaPerpsTakerCompetitionV3MilestoneCompetition;
+  pnlLeaderboard: KatanaPerpsTakerCompetitionV3PnLLeaderboardEntry[];
+  volumeLeaderboard: KatanaPerpsTakerCompetitionV3VolumeLeaderboardEntry[];
+  wallet: KatanaPerpsTakerCompetitionV3Wallet;
+}
+
+/**
+ * @hidden
+ */
+export interface RestResponseGetTakerCompetitionV3List {
+  competitions: KatanaPerpsTakerCompetitionV3Summary[];
+}
+
+/**
+ * @hidden
+ */
+export type RestResponseRegisterTakerCompetitionV3 = Record<string, never>;
+
+/**
+ * @hidden
+ */
+export type RestResponseSetTakerCompetitionV3DisplayName = Record<
+  string,
+  never
+>;
+
+/**
+ * @hidden
+ */
+export interface RestResponseGetTakerCompetitionV3Payout {
+  assetAddress: string;
+  assetSymbol: string;
+  payoutWalletAddress: string;
+  quantityEarned: string;
+  quantityPaid: string;
+  quantityOwed: string;
+}
+
+/**
+ * @hidden
+ */
+export interface RestResponseAuthorizeTakerCompetitionV3Payout {
+  assetAddress: string;
+  assetSymbol: string;
+  txHash: string;
+}
+
 /**
  * @hidden
  */
