@@ -403,6 +403,8 @@ export interface KatanaPerpsTakerCompetitionV3Summary {
   name: string;
   startsAt: number;
   endsAt: number;
+  reviewEndsAt: number;
+  escrowContractAddress: string | null;
 }
 
 /**
@@ -412,6 +414,8 @@ export interface KatanaPerpsTakerCompetitionV3MilestoneCompetition {
   name: string;
   startsAt: number;
   endsAt: number;
+  reviewEndsAt: number;
+  escrowContractAddress: string | null;
   totalRewardQuantity: string;
   walletCount: number;
   pnlRewardPool: string;
@@ -427,33 +431,30 @@ export interface KatanaPerpsTakerCompetitionV3MilestoneCompetition {
 /**
  * @hidden
  */
+
 export interface KatanaPerpsTakerCompetitionV3PnLLeaderboardEntry {
   rank: number;
-  address?: string;
-  displayName?: string;
-  pnl?: string;
-  pnlPercent?: string;
+  address: string;
+  displayName: string;
+  pnl: string;
+  pnlPercent: string;
+  volume: string;
   rewardQuantity: string;
 }
 
 /**
  * @hidden
  */
-export interface KatanaPerpsTakerCompetitionV3VolumeLeaderboardEntry {
-  rank: number;
-  address?: string;
-  displayName?: string;
-  pnl?: string;
-  pnlPercent?: string;
-  volume?: string;
-  rewardQuantity: string;
-}
+
+export interface KatanaPerpsTakerCompetitionV3VolumeLeaderboardEntry
+  extends KatanaPerpsTakerCompetitionV3PnLLeaderboardEntry {}
 
 /**
  * @hidden
  */
-export interface KatanaPerpsTakerCompetitionV3WalletUnregistered {
-  readonly isRegistered: false;
+
+interface KatanaPerpsTakerCompetitionV3WalletBase {
+  readonly isRegistered: boolean;
   readonly isBlacklisted: boolean;
   readonly hasSufficientEquity: boolean;
 }
@@ -461,26 +462,38 @@ export interface KatanaPerpsTakerCompetitionV3WalletUnregistered {
 /**
  * @hidden
  */
-export interface KatanaPerpsTakerCompetitionV3WalletRegistered {
-  readonly isRegistered: true;
-  readonly address: string;
-  readonly displayName: string;
-  readonly pnl: string;
-  readonly pnlPercent: string;
-  readonly volume: string;
-  readonly qualifiedVolume: string;
-  readonly pnlRank: number | null;
-  readonly volumeRank: number | null;
-  readonly volumeRewardQuantity: string | null;
-}
+
+export type KatanaPerpsTakerCompetitionV3WalletRegistered =
+  KatanaPerpsTakerCompetitionV3WalletBase & {
+    readonly isRegistered: true;
+    readonly hasSufficientEquity: true;
+    readonly address: string;
+    readonly displayName: string;
+    readonly pnl: string;
+    readonly pnlPercent: string;
+    readonly volume: string;
+    readonly qualifiedVolume: string;
+    readonly pnlRank: number | null;
+    readonly volumeRank: number | null;
+    readonly volumeRewardQuantity: string | null;
+  };
 
 /**
  * @hidden
  */
+
+export type KatanaPerpsTakerCompetitionV3WalletUnregistered =
+  KatanaPerpsTakerCompetitionV3WalletBase & {
+    isRegistered: false;
+  };
+
+/**
+ * @hidden
+ */
+
 export type KatanaPerpsTakerCompetitionV3Wallet =
   | KatanaPerpsTakerCompetitionV3WalletRegistered
-  | KatanaPerpsTakerCompetitionV3WalletUnregistered
-  | null;
+  | KatanaPerpsTakerCompetitionV3WalletUnregistered;
 
 /**
  * @hidden
@@ -489,7 +502,7 @@ export interface RestResponseGetTakerCompetitionV3ByName {
   competition: KatanaPerpsTakerCompetitionV3MilestoneCompetition;
   pnlLeaderboard: KatanaPerpsTakerCompetitionV3PnLLeaderboardEntry[];
   volumeLeaderboard: KatanaPerpsTakerCompetitionV3VolumeLeaderboardEntry[];
-  wallet: KatanaPerpsTakerCompetitionV3Wallet;
+  wallet: KatanaPerpsTakerCompetitionV3Wallet | null;
 }
 
 /**
