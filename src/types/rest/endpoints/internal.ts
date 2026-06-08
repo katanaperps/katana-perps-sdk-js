@@ -5,6 +5,7 @@ import type {
 } from '#index';
 import type { RestRequestWithSignature } from '#types/utils';
 import type { KatanaPerpsDeposit } from './GetDeposits';
+import type { KatanaPerpsFill } from './GetFills';
 import type { KatanaPerpsWithdrawal } from './GetWithdrawals';
 import type { DelegatedKeyParams } from '../../delegatedKeys';
 
@@ -621,3 +622,90 @@ export type RestResponseGetKatanaPointSeasons = Array<{
     reviewEndsAt: number;
   }>;
 }>;
+
+/*
+ * Builder Rewards
+ */
+
+/**
+ * @hidden
+ */
+export interface RestRequestGetBuilderRewards {
+  wallet: string;
+}
+
+/**
+ * @hidden
+ */
+export interface RestResponseGetBuilderRewards {
+  /**
+   * Builder code (`B:[A-Za-z0-9]{8}`) when the wallet is registered as a builder
+   */
+  code?: string;
+  makerFeeRate: string;
+  takerFeeRate: string;
+  program: 'builderRewards';
+  assetAddress: string;
+  assetSymbol: string;
+  quantityEarned: string;
+  quantityPaid: string;
+  quantityOwed: string;
+}
+
+/**
+ * @hidden
+ */
+export interface RestRequestGetBuilderRewardsFills {
+  wallet: string;
+}
+
+/**
+ * @hidden
+ */
+export interface BuilderRewardFill extends KatanaPerpsFill {
+  /**
+   * Builder fee earned by the requesting builder wallet on this fill
+   */
+  builderFee: string;
+  /**
+   * Which trade side(s) generated the builder fee
+   */
+  builderFeeSide: 'maker' | 'taker' | 'both';
+}
+
+/**
+ * @hidden
+ */
+export interface RestResponseGetBuilderRewardsFills {
+  fills: BuilderRewardFill[];
+}
+
+/**
+ * @hidden
+ */
+export interface RestRequestGetBuilderRewardsDailyFees {
+  wallet: string;
+}
+
+/**
+ * @hidden
+ */
+export interface BuilderRewardDailyFeesRow {
+  /**
+   * Inclusive UTC day range start, in milliseconds
+   */
+  startsAt: number;
+  /**
+   * Inclusive UTC day range end, in milliseconds
+   */
+  endsAt: number;
+  builderFees: string;
+  uniqueWallets: number;
+}
+
+/**
+ * @hidden
+ */
+export interface RestResponseGetBuilderRewardsDailyFees {
+  dailyFees: BuilderRewardDailyFeesRow[];
+}
