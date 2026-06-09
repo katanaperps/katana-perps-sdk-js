@@ -613,6 +613,9 @@ export const DepositSource = {
   KATANA_REFERRAL_REWARD: 'katana.referralReward',
   KATANA_TRADING_COMPETITION_REWARD: 'katana.tradingCompetitionReward',
   KATANA_WALLET_BANKROLL: 'katana.walletBankroll',
+  // New members must be appended last: downstream DB enum migrations derive
+  // their column order from Object.values() and rely on append-only changes.
+  KATANA_BUILDER_REWARD: 'katana.builderReward',
 } as const;
 
 export type DepositSource = (typeof DepositSource)[keyof typeof DepositSource];
