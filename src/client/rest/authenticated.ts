@@ -1659,6 +1659,61 @@ export class RestAuthenticatedClient {
       return result;
     },
 
+    getTakerCompetitionV3List: async (
+      params: katanaPerps.RestRequestGetTakerCompetitionV3List = {},
+    ) => {
+      return this.get<katanaPerps.RestResponseGetTakerCompetitionV3List>(
+        '/internal/takerCompetitionV3/list',
+        params,
+      );
+    },
+
+    getTakerCompetitionV3ByName: async ({
+      name,
+      ...params
+    }: katanaPerps.RestRequestGetTakerCompetitionV3ByName) => {
+      return this.get<katanaPerps.RestResponseGetTakerCompetitionV3ByName>(
+        `/internal/takerCompetitionV3/name/${encodeURIComponent(name)}`,
+        params,
+      );
+    },
+
+    registerTakerCompetitionV3: async (
+      params: katanaPerps.RestRequestRegisterTakerCompetitionV3,
+    ) => {
+      return this.post<katanaPerps.RestResponseRegisterTakerCompetitionV3>(
+        '/internal/takerCompetitionV3/register',
+        params,
+      );
+    },
+
+    setTakerCompetitionV3DisplayName: async (
+      params: katanaPerps.RestRequestSetTakerCompetitionV3DisplayName,
+    ) => {
+      return this.post<katanaPerps.RestResponseSetTakerCompetitionV3DisplayName>(
+        '/internal/takerCompetitionV3/displayName',
+        params,
+      );
+    },
+
+    getTakerCompetitionV3Payout: async (
+      params: katanaPerps.RestRequestGetTakerCompetitionV3Payout,
+    ) => {
+      return this.get<katanaPerps.RestResponseGetTakerCompetitionV3Payout>(
+        '/internal/takerCompetitionV3/payouts',
+        params,
+      );
+    },
+
+    authorizeTakerCompetitionV3Payout: async (
+      params: katanaPerps.RestRequestAuthorizeTakerCompetitionV3Payout,
+    ) => {
+      return this.post<katanaPerps.RestResponseAuthorizeTakerCompetitionV3Payout>(
+        '/internal/takerCompetitionV3/payouts',
+        params,
+      );
+    },
+
     getXChallenge: async (
       params: katanaPerps.RestRequestGetVaultXConnectionChallenge,
     ) => {

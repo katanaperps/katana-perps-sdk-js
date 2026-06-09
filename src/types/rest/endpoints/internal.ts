@@ -5,6 +5,7 @@ import type {
 } from '#index';
 import type { RestRequestWithSignature } from '#types/utils';
 import type { KatanaPerpsDeposit } from './GetDeposits';
+import type { KatanaPerpsFill } from './GetFills';
 import type { KatanaPerpsWithdrawal } from './GetWithdrawals';
 import type { DelegatedKeyParams } from '../../delegatedKeys';
 
@@ -357,6 +358,203 @@ export interface RestResponseFarmPayout {
   txHash: string;
 }
 
+/*
+ * Taker Competition V3
+ */
+
+/**
+ * @hidden
+ */
+export interface RestRequestGetTakerCompetitionV3ByName
+  extends RestRequestByWalletOptional {
+  name: string;
+}
+
+/**
+ * @hidden
+ */
+export interface RestRequestGetTakerCompetitionV3List {}
+
+/**
+ * @hidden
+ */
+export interface RestRequestRegisterTakerCompetitionV3 {
+  name: string;
+  wallet: string;
+}
+
+/**
+ * @hidden
+ */
+export interface RestRequestSetTakerCompetitionV3DisplayName
+  extends RestRequestRegisterTakerCompetitionV3 {
+  displayName: string;
+}
+
+/**
+ * @hidden
+ */
+export interface RestRequestGetTakerCompetitionV3Payout {
+  wallet: string;
+  program: PayoutProgram;
+}
+
+/**
+ * @hidden
+ */
+export type RestRequestAuthorizeTakerCompetitionV3Payout =
+  RestRequestGetTakerCompetitionV3Payout;
+
+/**
+ * @hidden
+ */
+export interface KatanaPerpsTakerCompetitionV3Summary {
+  name: string;
+  startsAt: number;
+  endsAt: number;
+  reviewEndsAt: number;
+  escrowContractAddress: string | null;
+}
+
+/**
+ * @hidden
+ */
+export interface KatanaPerpsTakerCompetitionV3MilestoneCompetition {
+  name: string;
+  startsAt: number;
+  endsAt: number;
+  reviewEndsAt: number;
+  escrowContractAddress: string | null;
+  totalRewardQuantity: string;
+  walletCount: number;
+  pnlRewardPool: string;
+  pnlMaxWinners: number;
+  volumeRewardPool: string;
+  totalVolume: string;
+  milestoneTiers: ReadonlyArray<{
+    thresholdVolumeUsd: string;
+    poolRewardQuantity: string;
+  }>;
+}
+
+/**
+ * @hidden
+ */
+
+export interface KatanaPerpsTakerCompetitionV3PnLLeaderboardEntry {
+  rank: number;
+  address: string;
+  displayName: string;
+  pnl: string;
+  pnlPercent: string;
+  volume: string;
+  rewardQuantity: string;
+}
+
+/**
+ * @hidden
+ */
+
+export interface KatanaPerpsTakerCompetitionV3VolumeLeaderboardEntry
+  extends KatanaPerpsTakerCompetitionV3PnLLeaderboardEntry {}
+
+/**
+ * @hidden
+ */
+
+interface KatanaPerpsTakerCompetitionV3WalletBase {
+  readonly isRegistered: boolean;
+  readonly isBlacklisted: boolean;
+  readonly hasSufficientEquity: boolean;
+}
+
+/**
+ * @hidden
+ */
+
+export type KatanaPerpsTakerCompetitionV3WalletRegistered =
+  KatanaPerpsTakerCompetitionV3WalletBase & {
+    readonly isRegistered: true;
+    readonly hasSufficientEquity: true;
+    readonly address: string;
+    readonly displayName: string;
+    readonly pnl: string;
+    readonly pnlPercent: string;
+    readonly volume: string;
+    readonly qualifiedVolume: string;
+    readonly pnlRank: number | null;
+    readonly volumeRank: number | null;
+    readonly volumeRewardQuantity: string | null;
+  };
+
+/**
+ * @hidden
+ */
+
+export type KatanaPerpsTakerCompetitionV3WalletUnregistered =
+  KatanaPerpsTakerCompetitionV3WalletBase & {
+    isRegistered: false;
+  };
+
+/**
+ * @hidden
+ */
+
+export type KatanaPerpsTakerCompetitionV3Wallet =
+  | KatanaPerpsTakerCompetitionV3WalletRegistered
+  | KatanaPerpsTakerCompetitionV3WalletUnregistered;
+
+/**
+ * @hidden
+ */
+export interface RestResponseGetTakerCompetitionV3ByName {
+  competition: KatanaPerpsTakerCompetitionV3MilestoneCompetition;
+  pnlLeaderboard: KatanaPerpsTakerCompetitionV3PnLLeaderboardEntry[];
+  volumeLeaderboard: KatanaPerpsTakerCompetitionV3VolumeLeaderboardEntry[];
+  wallet: KatanaPerpsTakerCompetitionV3Wallet | null;
+}
+
+/**
+ * @hidden
+ */
+export interface RestResponseGetTakerCompetitionV3List {
+  competitions: KatanaPerpsTakerCompetitionV3Summary[];
+}
+
+/**
+ * @hidden
+ */
+export type RestResponseRegisterTakerCompetitionV3 = Record<string, never>;
+
+/**
+ * @hidden
+ */
+export type RestResponseSetTakerCompetitionV3DisplayName = Record<
+  string,
+  never
+>;
+
+/**
+ * @hidden
+ */
+export interface RestResponseGetTakerCompetitionV3Payout {
+  assetAddress: string;
+  assetSymbol: string;
+  payoutWalletAddress: string;
+  quantityEarned: string;
+  quantityPaid: string;
+  quantityOwed: string;
+}
+
+/**
+ * @hidden
+ */
+export interface RestResponseAuthorizeTakerCompetitionV3Payout {
+  assetAddress: string;
+  assetSymbol: string;
+  txHash: string;
+}
+
 /**
  * @hidden
  */
@@ -432,3 +630,90 @@ export type RestResponseGetKatanaPointSeasons = Array<{
     reviewEndsAt: number;
   }>;
 }>;
+
+/*
+ * Builder Rewards
+ */
+
+/**
+ * @hidden
+ */
+export interface RestRequestGetBuilderRewards {
+  wallet: string;
+}
+
+/**
+ * @hidden
+ */
+export interface RestResponseGetBuilderRewards {
+  /**
+   * Builder code (`B:[A-Za-z0-9]{8}`) when the wallet is registered as a builder
+   */
+  code?: string;
+  makerFeeRate: string;
+  takerFeeRate: string;
+  program: 'builderRewards';
+  assetAddress: string;
+  assetSymbol: string;
+  quantityEarned: string;
+  quantityPaid: string;
+  quantityOwed: string;
+}
+
+/**
+ * @hidden
+ */
+export interface RestRequestGetBuilderRewardsFills {
+  wallet: string;
+}
+
+/**
+ * @hidden
+ */
+export interface BuilderRewardFill extends KatanaPerpsFill {
+  /**
+   * Builder fee earned by the requesting builder wallet on this fill
+   */
+  builderFee: string;
+  /**
+   * Which trade side(s) generated the builder fee
+   */
+  builderFeeSide: 'maker' | 'taker' | 'both';
+}
+
+/**
+ * @hidden
+ */
+export interface RestResponseGetBuilderRewardsFills {
+  fills: BuilderRewardFill[];
+}
+
+/**
+ * @hidden
+ */
+export interface RestRequestGetBuilderRewardsDailyFees {
+  wallet: string;
+}
+
+/**
+ * @hidden
+ */
+export interface BuilderRewardDailyFeesRow {
+  /**
+   * Inclusive UTC day range start, in milliseconds
+   */
+  startsAt: number;
+  /**
+   * Inclusive UTC day range end, in milliseconds
+   */
+  endsAt: number;
+  builderFees: string;
+  uniqueWallets: number;
+}
+
+/**
+ * @hidden
+ */
+export interface RestResponseGetBuilderRewardsDailyFees {
+  dailyFees: BuilderRewardDailyFeesRow[];
+}

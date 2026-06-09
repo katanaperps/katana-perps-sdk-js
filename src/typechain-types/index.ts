@@ -3,6 +3,7 @@
 
 export type { ERC20 } from './ERC20';
 export type { EarningsEscrow } from './EarningsEscrow';
+export type { EarningsEscrow_v2 } from './EarningsEscrow_v2';
 export type { ExchangeLayerZeroAdapter_v1 } from './ExchangeLayerZeroAdapter_v1';
 export type { ExchangeLocalDepositAdapter_v1 } from './ExchangeLocalDepositAdapter_v1';
 export type { ExchangeLoopbackAdapter_v1 } from './ExchangeLoopbackAdapter_v1';
@@ -13,6 +14,7 @@ export type { IOFT } from './IOFT';
 export type { IVaultComposerSync } from './IVaultComposerSync';
 export type { KatanaPerpsStargateForwarder_v1 } from './KatanaPerpsStargateForwarder_v1';
 export * as factories from './factories';
+export { EarningsEscrow_v2__factory } from './factories/EarningsEscrow_v2__factory';
 export { EarningsEscrow__factory } from './factories/EarningsEscrow__factory';
 export { ERC20__factory } from './factories/ERC20__factory';
 export { Exchange_v2__factory } from './factories/Exchange_v2__factory';

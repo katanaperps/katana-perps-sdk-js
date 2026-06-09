@@ -3,6 +3,7 @@
 
 export { ERC20__factory } from './ERC20__factory';
 export { EarningsEscrow__factory } from './EarningsEscrow__factory';
+export { EarningsEscrow_v2__factory } from './EarningsEscrow_v2__factory';
 export { ExchangeLayerZeroAdapter_v1__factory } from './ExchangeLayerZeroAdapter_v1__factory';
 export { ExchangeLocalDepositAdapter_v1__factory } from './ExchangeLocalDepositAdapter_v1__factory';
 export { ExchangeLoopbackAdapter_v1__factory } from './ExchangeLoopbackAdapter_v1__factory';

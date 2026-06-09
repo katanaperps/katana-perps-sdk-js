@@ -106,6 +106,12 @@ export interface KatanaPerpsFill {
    */
   fee?: string;
   /**
+   * Builder fee on the fill in quote terms for the requesting wallet's side.
+   *
+   * - omitted on realtime (WebSocket) fills when no builder fee was generated
+   */
+  builderFee?: string;
+  /**
    * Whether the fill increases or decreases the notional value of the position, open or close
    *
    * @see enum {@link katanaPerps.FillAction FillAction}
