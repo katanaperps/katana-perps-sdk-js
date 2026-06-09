@@ -609,13 +609,11 @@ export type BridgeTarget = (typeof BridgeTarget)[keyof typeof BridgeTarget];
  */
 export const DepositSource = {
   ...BridgeTarget,
+  KATANA_BUILDER_REWARD: 'katana.builderReward',
   KATANA_POINTS_REWARD: 'katana.pointsReward',
   KATANA_REFERRAL_REWARD: 'katana.referralReward',
   KATANA_TRADING_COMPETITION_REWARD: 'katana.tradingCompetitionReward',
   KATANA_WALLET_BANKROLL: 'katana.walletBankroll',
-  // New members must be appended last: downstream DB enum migrations derive
-  // their column order from Object.values() and rely on append-only changes.
-  KATANA_BUILDER_REWARD: 'katana.builderReward',
 } as const;
 
 export type DepositSource = (typeof DepositSource)[keyof typeof DepositSource];
