@@ -1700,6 +1700,33 @@ export class RestAuthenticatedClient {
       );
     },
 
+    getBuilderRewards: async (
+      params: katanaPerps.RestRequestGetBuilderRewards,
+    ) => {
+      return this.get<katanaPerps.RestResponseGetBuilderRewards>(
+        '/internal/builderRewards',
+        params,
+      );
+    },
+
+    getBuilderRewardsFills: async (
+      params: katanaPerps.RestRequestGetBuilderRewardsFills,
+    ) => {
+      return this.get<katanaPerps.RestResponseGetBuilderRewardsFills>(
+        '/internal/builderRewards/fills',
+        params,
+      );
+    },
+
+    getBuilderRewardsDailyFees: async (
+      params: katanaPerps.RestRequestGetBuilderRewardsDailyFees,
+    ) => {
+      return this.get<katanaPerps.RestResponseGetBuilderRewardsDailyFees>(
+        '/internal/builderRewards/dailyFees',
+        params,
+      );
+    },
+
     getXChallenge: async (
       params: katanaPerps.RestRequestGetVaultXConnectionChallenge,
     ) => {
