@@ -1709,15 +1709,6 @@ export class RestAuthenticatedClient {
       );
     },
 
-    getBuilderRewardsFills: async (
-      params: katanaPerps.RestRequestGetBuilderRewardsFills,
-    ) => {
-      return this.get<katanaPerps.RestResponseGetBuilderRewardsFills>(
-        '/internal/builderRewards/fills',
-        params,
-      );
-    },
-
     getBuilderRewardsDailyFees: async (
       params: katanaPerps.RestRequestGetBuilderRewardsDailyFees,
     ) => {
