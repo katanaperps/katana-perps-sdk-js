@@ -179,8 +179,15 @@ export interface BuySellPanelEstimate {
   postOnlyWouldCross: boolean;
   /** `true` if a fill-or-kill ({@link TimeInForce.fok fok}) order could not be fully filled (rejected) */
   fillOrKillWouldNotExecute: boolean;
-  /** `true` if a reduce-only order does not reduce the position (rejected) */
+  /** `true` if a reduce-only order is on the same side as the open position (rejected) */
   reduceOnlyWouldNotReducePosition: boolean;
+  /** `true` if a reduce-only order is placed with no open position (rejected) */
+  reduceOnlyNoOpenPosition: boolean;
+  /**
+   * `true` if a reduce-only order's resting (maker) quantity would exceed the
+   * remaining open position size (the order would not be fully reducing)
+   */
+  reduceOnlyOpenPositionSizeExceeded: boolean;
 }
 
 type StandingOrderBigInt = {
@@ -240,6 +247,8 @@ function makeEmptyEstimate(): BuySellPanelEstimate {
     postOnlyWouldCross: false,
     fillOrKillWouldNotExecute: false,
     reduceOnlyWouldNotReducePosition: false,
+    reduceOnlyNoOpenPosition: false,
+    reduceOnlyOpenPositionSizeExceeded: false,
   };
 }
 
@@ -603,6 +612,10 @@ function runEstimate(
   let reduceOnlyMaximumBaseQuantity: bigint | null = null;
   if (context.reduceOnly) {
     const positionQuantity = context.currentPositionQuantity;
+    if (positionQuantity === BigInt(0)) {
+      estimate.reduceOnlyNoOpenPosition = true;
+      return estimate;
+    }
     const reduces =
       (context.isBuy && positionQuantity < BigInt(0)) ||
       (!context.isBuy && positionQuantity > BigInt(0));
@@ -610,24 +623,7 @@ function runEstimate(
       estimate.reduceOnlyWouldNotReducePosition = true;
       return estimate;
     }
-    // The position size, minus the wallet's better-priced same-side standing
-    // orders, which reduce the position first.
-    let betterPricedSameSideQuantity = BigInt(0);
-    for (const order of context.marketStandingOrders) {
-      if (order.isBuy === context.isBuy && order.openQuantity > BigInt(0)) {
-        const isBetterPriced =
-          context.isMarketOrder ? true
-          : context.isBuy ? order.price >= context.limitPrice
-          : order.price <= context.limitPrice;
-        if (isBetterPriced) {
-          betterPricedSameSideQuantity += order.openQuantity;
-        }
-      }
-    }
-    reduceOnlyMaximumBaseQuantity = maxBigInt(
-      absBigInt(positionQuantity) - betterPricedSameSideQuantity,
-      BigInt(0),
-    );
+    reduceOnlyMaximumBaseQuantity = absBigInt(positionQuantity);
   }
 
   // Post-only (gtx) orders may not cross the spread.
@@ -678,12 +674,13 @@ function runEstimate(
   estimate.tradeBaseQuantity = fill.tradeBaseQuantity;
   estimate.tradeQuoteQuantity = fill.tradeQuoteQuantity;
 
-  // Determine the resting (maker) portion.
+  // Determine the resting (maker) portion. Reduce-only limit orders may rest on
+  // the books (their reducing portion); whether the resting quantity is valid is
+  // checked below via `reduceOnlyOpenPositionSizeExceeded`.
   const canRest =
     !context.isMarketOrder &&
     (context.timeInForce === TimeInForce.gtc ||
-      context.timeInForce === TimeInForce.gtx) &&
-    !context.reduceOnly;
+      context.timeInForce === TimeInForce.gtx);
   let makerBaseQuantity = BigInt(0);
   if (canRest) {
     if ('baseQuantity' in quantity) {
@@ -703,6 +700,18 @@ function runEstimate(
     }
   }
   estimate.makerBaseQuantity = makerBaseQuantity;
+
+  // A reduce-only order's resting (maker) quantity may not exceed the open
+  // position size that remains after the reducing fills (it would otherwise no
+  // longer be fully reducing). A zero remaining position with a resting quantity
+  // (i.e. the position is closed) is likewise flagged.
+  if (context.reduceOnly && makerBaseQuantity > BigInt(0)) {
+    const remainingOpenPositionSize =
+      absBigInt(context.currentPositionQuantity) - fill.tradeBaseQuantity;
+    if (makerBaseQuantity > remainingOpenPositionSize) {
+      estimate.reduceOnlyOpenPositionSizeExceeded = true;
+    }
+  }
 
   // Resulting position quantity in the order's market.
   const newPositionQuantity =
@@ -839,26 +848,40 @@ function runEstimate(
       freeCollateralAfter - totalHeldCollateralAfter < BigInt(0);
   }
 
-  // Maximum position size.
+  // Maximum position size. Check the order's requested quantity against the
+  // room left by the current position (`maximumPositionSize` ∓ position).
   if (!context.reduceOnly) {
-    const maxPositionSize = context.maximumPositionSize;
-    if (absBigInt(newPositionQuantity) > maxPositionSize) {
-      estimate.maximumPositionSizeExceeded = true;
-    }
-    if (makerBaseQuantity > BigInt(0)) {
-      // The resting order must fit alongside the wallet's other same-side
-      // standing orders without collectively exceeding the maximum position.
+    const maxAdditionalLiquidity =
+      context.isBuy ?
+        context.maximumPositionSize - context.currentPositionQuantity
+      : context.maximumPositionSize + context.currentPositionQuantity;
+
+    // For quote-denominated orders the requested base quantity is not fixed; the
+    // realized base (fills + resting + self-trade) is used as a proxy.
+    const orderBaseQuantity =
+      'baseQuantity' in quantity ?
+        quantity.baseQuantity
+      : fill.tradeBaseQuantity + fill.selfTradeBaseQuantity + makerBaseQuantity;
+
+    if (context.isMarketOrder || crossesSpread) {
+      // Market and crossing limit orders are checked against the order quantity
+      // alone; the wallet's other standing orders may be canceled after the
+      // incoming order is executed if the sum of all standing orders exceeds
+      // the maximum position size.
+      if (orderBaseQuantity > maxAdditionalLiquidity) {
+        estimate.maximumPositionSizeExceeded = true;
+      }
+    } else {
+      // A non-crossing (resting) limit order must fit alongside the wallet's
+      // other same-side standing orders without collectively exceeding the
+      // maximum position.
       let sameSideActiveQuantity = BigInt(0);
       for (const order of context.marketStandingOrders) {
         if (order.isBuy === context.isBuy) {
           sameSideActiveQuantity += order.openQuantity;
         }
       }
-      const maxAdditionalLiquidity =
-        context.isBuy ?
-          maxPositionSize - newPositionQuantity
-        : maxPositionSize + newPositionQuantity;
-      if (sameSideActiveQuantity + makerBaseQuantity > maxAdditionalLiquidity) {
+      if (sameSideActiveQuantity + orderBaseQuantity > maxAdditionalLiquidity) {
         estimate.maximumPositionSizeExceeded = true;
       }
     }
@@ -1036,8 +1059,10 @@ function buildContext(args: BuySellPanelEstimateArgs): EstimateContext {
       limitPrice < minimumLimitPrice || limitPrice > maximumLimitPrice;
   }
 
-  // The wallet's standing orders in the order's market (active limit orders).
-  const activeStandingOrderStatuses = ['open', 'partiallyFilled', 'active'];
+  // The wallet's resting limit orders in the order's market. Untriggered stop
+  // orders have the `active` status; they are excluded because they cannot be
+  // matched or self-traded and do not require held collateral.
+  const restingOrderStatuses = ['open', 'partiallyFilled'];
   const marketStandingOrders: StandingOrderBigInt[] = (
     args.walletsStandingOrders ?? []
   )
@@ -1045,7 +1070,7 @@ function buildContext(args: BuySellPanelEstimateArgs): EstimateContext {
       (standingOrder) =>
         standingOrder.market === market.market &&
         typeof standingOrder.price !== 'undefined' &&
-        activeStandingOrderStatuses.includes(standingOrder.status),
+        restingOrderStatuses.includes(standingOrder.status),
     )
     .map((standingOrder) => ({
       isBuy: standingOrder.side === OrderSide.buy,

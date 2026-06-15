@@ -89,6 +89,15 @@ const longEthPosition = position({
   marginRequirement: '50.00000000',
 });
 
+/** A wallet holding {@link longEthPosition} (equity 100, free collateral 50). */
+const longEthWallet: BuySellPanelEstimateArgs['wallet'] = {
+  ...defaultWallet,
+  quoteBalance: '-400.00000000',
+  equity: '100.00000000',
+  marginRatio: '0.25000000',
+  positions: [longEthPosition],
+};
+
 const runEstimate = (
   args: Partial<Omit<BuySellPanelEstimateArgs, 'order'>> & {
     order: BuySellPanelOrder;
@@ -466,6 +475,175 @@ describe('orderbook/buySellPanelEstimate', () => {
         },
       });
       expect(estimate.reduceOnlyWouldNotReducePosition).to.equal(true);
+    });
+
+    it('flags a reduce-only order placed with no open position', () => {
+      const estimate = runEstimate({
+        orderBook: { bids: [level('100', '10')], asks: [] },
+        order: {
+          side: OrderSide.sell,
+          baseQuantity: decimalToPip('5'),
+          reduceOnly: true,
+        },
+      });
+      expect(estimate.reduceOnlyNoOpenPosition).to.equal(true);
+      testHelpers.assertBigintsEqual(
+        estimate.tradeBaseQuantity,
+        decimalToPip('0'),
+      );
+      testHelpers.assertBigintsEqual(
+        estimate.makerBaseQuantity,
+        decimalToPip('0'),
+      );
+    });
+
+    it('rests a reduce-only limit order up to the open position size', () => {
+      const estimate = runEstimate({
+        wallet: longEthWallet,
+        orderBook: { asks: [], bids: [] },
+        order: {
+          side: OrderSide.sell,
+          baseQuantity: decimalToPip('3'),
+          limitPrice: decimalToPip('110'), // above the market: does not cross
+          reduceOnly: true,
+          timeInForce: TimeInForce.gtc,
+        },
+      });
+      testHelpers.assertBigintsEqual(
+        estimate.tradeBaseQuantity,
+        decimalToPip('0'),
+      );
+      // The reducing portion (<= position size of 5) rests on the books
+      testHelpers.assertBigintsEqual(
+        estimate.makerBaseQuantity,
+        decimalToPip('3'),
+      );
+      expect(estimate.reduceOnlyOpenPositionSizeExceeded).to.equal(false);
+    });
+
+    it('flags a reduce-only limit order whose resting quantity exceeds the open position size', () => {
+      const estimate = runEstimate({
+        wallet: longEthWallet,
+        orderBook: { asks: [], bids: [] },
+        order: {
+          side: OrderSide.sell,
+          baseQuantity: decimalToPip('8'), // exceeds the position of 5
+          limitPrice: decimalToPip('110'),
+          reduceOnly: true,
+          timeInForce: TimeInForce.gtc,
+        },
+      });
+      // The order is still reported as resting, but flagged as not fully reducing
+      testHelpers.assertBigintsEqual(
+        estimate.makerBaseQuantity,
+        decimalToPip('8'),
+      );
+      expect(estimate.reduceOnlyOpenPositionSizeExceeded).to.equal(true);
+    });
+
+    it('fills a reduce-only market order up to the full position size regardless of same-side standing orders', () => {
+      const estimate = runEstimate({
+        wallet: longEthWallet,
+        orderBook: { bids: [level('100', '100')], asks: [] },
+        walletsStandingOrders: [
+          {
+            market: 'ETH-USD',
+            side: OrderSide.sell, // same side as the reduce-only sell
+            price: '100.00000000',
+            originalQuantity: '3.00000000',
+            executedQuantity: '0.00000000',
+            status: 'open',
+          },
+        ],
+        order: {
+          side: OrderSide.sell,
+          baseQuantity: decimalToPip('10'),
+          reduceOnly: true,
+        },
+      });
+      // The standing sell does not cap the market reduce-only fill: the full
+      // position of 5 is reduced
+      testHelpers.assertBigintsEqual(
+        estimate.tradeBaseQuantity,
+        decimalToPip('5'),
+      );
+    });
+
+    it('does not flag maximum position size for a crossing limit order on account of standing orders', () => {
+      const estimate = runEstimate({
+        market: { ...defaultMarket, maximumPositionSize: '10.00000000' },
+        wallet: {
+          ...defaultWallet,
+          equity: '100000.00000000',
+          quoteBalance: '100000.00000000',
+        },
+        orderBook: { asks: [level('100', '3')], bids: [] },
+        walletsStandingOrders: [
+          {
+            market: 'ETH-USD',
+            side: OrderSide.buy,
+            price: '90.00000000',
+            originalQuantity: '8.00000000',
+            executedQuantity: '0.00000000',
+            status: 'open',
+          },
+        ],
+        order: {
+          side: OrderSide.buy,
+          baseQuantity: decimalToPip('6'), // <= MPS of 10
+          limitPrice: decimalToPip('100'),
+          timeInForce: TimeInForce.gtc,
+        },
+      });
+      // Order qty 6 <= MPS 10; the 8 standing buy is excluded from the check
+      // for a crossing order (it would get canceled after the incoming order
+      // is executed)
+      expect(estimate.maximumPositionSizeExceeded).to.equal(false);
+      testHelpers.assertBigintsEqual(
+        estimate.tradeBaseQuantity,
+        decimalToPip('3'),
+      );
+      testHelpers.assertBigintsEqual(
+        estimate.makerBaseQuantity,
+        decimalToPip('3'),
+      );
+    });
+
+    it('flags maximum position size for a market order whose requested quantity exceeds it despite thin liquidity', () => {
+      const estimate = runEstimate({
+        market: { ...defaultMarket, maximumPositionSize: '4.00000000' },
+        orderBook: { asks: [level('100', '2')], bids: [] },
+        order: { side: OrderSide.buy, baseQuantity: decimalToPip('5') },
+      });
+      expect(estimate.maximumPositionSizeExceeded).to.equal(true);
+      // Only the 2 of available liquidity is fillable
+      testHelpers.assertBigintsEqual(
+        estimate.tradeBaseQuantity,
+        decimalToPip('2'),
+      );
+    });
+
+    it('excludes untriggered stop orders (status active) from self-trade detection', () => {
+      const estimate = runEstimate({
+        orderBook: { asks: [level('100', '10')], bids: [] },
+        walletsStandingOrders: [
+          {
+            market: 'ETH-USD',
+            side: OrderSide.sell,
+            price: '100.00000000',
+            originalQuantity: '3.00000000',
+            executedQuantity: '0.00000000',
+            status: 'active', // untriggered stop order
+          },
+        ],
+        order: { side: OrderSide.buy, baseQuantity: decimalToPip('5') },
+      });
+      // The untriggered stop order is ignored: no self-trade, full 5 is traded
+      expect(estimate.selfTradeEncountered).to.equal(false);
+      testHelpers.assertBigintsEqual(
+        estimate.tradeBaseQuantity,
+        decimalToPip('5'),
+      );
     });
 
     it('resolves the available-collateral slider so that a ratio of 1 consumes all of it', () => {
