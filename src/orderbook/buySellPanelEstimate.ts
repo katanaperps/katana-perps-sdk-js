@@ -832,10 +832,11 @@ function runEstimate(
   });
 
   // Feasibility flags.
+  //
+  // `freeCollateralExceeded` covers the crossing (trade) portion: the initial
+  // margin requirement must be met after a trade that increases a position, and
+  // the maintenance margin requirement after a trade that reduces it.
   if (crossesSpread && fill.tradeBaseQuantity > BigInt(0)) {
-    // The initial margin requirement must be met after a trade that increases
-    // a position, and the maintenance margin requirement after a trade that
-    // reduces it.
     const positionReduced = wasPositionReduced(
       context.currentPositionQuantity,
       newPositionQuantity,
@@ -847,9 +848,13 @@ function runEstimate(
             newPositionMaintenanceMarginRequirement) <
         BigInt(0)
       : freeCollateralAfterUnclamped < BigInt(0);
-  } else if (!crossesSpread) {
-    // A non-crossing (resting) order is rejected if its held collateral exceeds
-    // the wallet's available collateral.
+  }
+
+  // `availableCollateralExceeded` covers any resting (maker) portion: its held
+  // collateral may not exceed the wallet's available collateral. This applies
+  // both to non-crossing orders and to the unfilled remainder of an order that
+  // partially crossed the spread.
+  if (makerBaseQuantity > BigInt(0)) {
     estimate.availableCollateralExceeded =
       freeCollateralAfter - totalHeldCollateralAfter < BigInt(0);
   }

@@ -367,6 +367,35 @@ describe('orderbook/buySellPanelEstimate', () => {
       );
     });
 
+    it('flags available collateral when a partially-crossing limit order rests an unaffordable remainder', () => {
+      const estimate = runEstimate({
+        wallet: {
+          ...defaultWallet,
+          equity: '100.00000000',
+          quoteBalance: '100.00000000',
+        },
+        // Only 2 of liquidity at the limit price; the rest rests on the books.
+        orderBook: { asks: [level('100', '2')], bids: [] },
+        order: {
+          side: OrderSide.buy,
+          baseQuantity: decimalToPip('100'),
+          limitPrice: decimalToPip('100'),
+          timeInForce: TimeInForce.gtc,
+        },
+      });
+      // 2 fills (affordable), 98 rests => held 98 * 100 * 0.1 = 980 > ~80 free
+      testHelpers.assertBigintsEqual(
+        estimate.tradeBaseQuantity,
+        decimalToPip('2'),
+      );
+      testHelpers.assertBigintsEqual(
+        estimate.makerBaseQuantity,
+        decimalToPip('98'),
+      );
+      expect(estimate.freeCollateralExceeded).to.equal(false);
+      expect(estimate.availableCollateralExceeded).to.equal(true);
+    });
+
     it('flags an order that exceeds the maximum position size', () => {
       const estimate = runEstimate({
         market: { ...defaultMarket, maximumPositionSize: '4.00000000' },
