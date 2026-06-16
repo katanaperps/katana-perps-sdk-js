@@ -551,9 +551,15 @@ function matchTakerOrder(
       result.tradeBaseQuantity += realPart;
       result.tradeQuoteQuantity += realQuote;
 
-      // Taker fees for this fill, capped at 5% of the fill's quote quantity.
-      const tradeFee = multiplyPips(realQuote, context.takerFeeRate);
+      // Taker fees for this fill. The sum of the trade and gas fee is capped at
+      // 5% of the fill's quote quantity, with priority given to the trade fee:
+      // the trade fee is capped at 5%, and the gas fee may only consume whatever
+      // of the 5% budget the trade fee leaves (zero once the trade fee hits 5%).
       const maxFee = multiplyPips(realQuote, maximumTradeFeeFraction);
+      const tradeFee = minBigInt(
+        multiplyPips(realQuote, context.takerFeeRate),
+        maxFee,
+      );
       const realSizeAtLevel = maxBigInt(level.size - ownSizeAtLevel, BigInt(0));
       const ordersAtLevel =
         realSizeAtLevel <= BigInt(0) ?

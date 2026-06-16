@@ -164,6 +164,27 @@ describe('orderbook/buySellPanelEstimate', () => {
       testHelpers.assertBigintsEqual(estimate.cost, decimalToPip('50.7'));
     });
 
+    it('caps the taker trade fee at 5% of the fill quote', () => {
+      const estimate = runEstimate({
+        wallet: { ...defaultWallet, takerFeeRate: '0.10000000' }, // 10%, above the cap
+        orderBook: { asks: [level('100', '100')], bids: [] },
+        order: { side: OrderSide.buy, baseQuantity: decimalToPip('5') },
+      });
+      // Notional 500: margin 50 + taker fee capped at 5% of 500 = 25 (not 50) => 75
+      testHelpers.assertBigintsEqual(estimate.cost, decimalToPip('75'));
+    });
+
+    it('gives the trade fee priority over the gas fee within the 5% cap', () => {
+      const estimate = runEstimate({
+        wallet: { ...defaultWallet, takerFeeRate: '0.05000000' }, // exactly 5%
+        takerTradeGasFee: decimalToPip('5'), // would apply, but no budget remains
+        orderBook: { asks: [level('100', '100')], bids: [] },
+        order: { side: OrderSide.buy, baseQuantity: decimalToPip('5') },
+      });
+      // Trade fee consumes the whole 5% (25 of 500), so the gas fee is coerced to 0 => 75
+      testHelpers.assertBigintsEqual(estimate.cost, decimalToPip('75'));
+    });
+
     it('supports quote-denominated quantities', () => {
       const estimate = runEstimate({
         orderBook: { asks: [level('100', '100')], bids: [] },
