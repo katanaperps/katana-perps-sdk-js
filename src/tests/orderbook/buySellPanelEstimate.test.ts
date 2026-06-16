@@ -680,6 +680,27 @@ describe('orderbook/buySellPanelEstimate', () => {
       const target = multiplyPips(decimalToPip('1000'), ratio);
       expect(estimate.cost <= target).to.equal(true);
       expect(target - estimate.cost <= decimalToPip('1')).to.equal(true);
+      // The quantity is bound by collateral (margin 10/unit + fee), ~99 base —
+      // NOT the full 1,000 of available book liquidity, and it stays feasible.
+      expect(estimate.tradeBaseQuantity < decimalToPip('150')).to.equal(true);
+      expect(estimate.tradeBaseQuantity > decimalToPip('90')).to.equal(true);
+      expect(estimate.freeCollateralExceeded).to.equal(false);
+    });
+
+    it('does not gulp all crossable liquidity for a 100% slider on a limit order', () => {
+      const estimate = runEstimate({
+        orderBook: { asks: [level('100', '1000')], bids: [] },
+        order: {
+          side: OrderSide.buy,
+          limitPrice: decimalToPip('100'),
+          timeInForce: TimeInForce.gtc,
+          availableCollateralRatio: oneInPips,
+        },
+      });
+      // Collateral-bound (~99), not the 1,000 of liquidity up to the limit price.
+      expect(estimate.tradeBaseQuantity < decimalToPip('150')).to.equal(true);
+      expect(estimate.tradeBaseQuantity > decimalToPip('90')).to.equal(true);
+      expect(estimate.freeCollateralExceeded).to.equal(false);
     });
 
     it('applies an initial margin fraction override (higher margin, higher cost)', () => {

@@ -959,15 +959,40 @@ function resolveBaseQuantityForCollateralRatio(
     return BigInt(0);
   }
 
-  // Binary search for the largest base quantity with cost <= targetCost.
+  // The slider seeks the largest quantity that (a) does not exceed the target
+  // cost and (b) remains feasible (does not breach the wallet's collateral).
+  //
+  // The feasibility gate is essential, not merely a cost comparison: `cost` is
+  // clamped at the available collateral (available-after cannot go below zero),
+  // so at a 100% slider the target equals that ceiling and a cost-only check
+  // (`cost <= target`) is satisfied by *every* larger quantity on the clamped
+  // "plateau" — which made the search walk all the way to `high` (matching all
+  // liquidity, or all liquidity up to the limit price). A quantity past the
+  // boundary sets freeCollateral/availableCollateralExceeded, which excludes the
+  // plateau and yields the largest quantity that drives available collateral to
+  // ~zero while remaining acceptable.
+  const isAcceptable = (baseQuantity: bigint): boolean => {
+    const e = runEstimate(context, { baseQuantity });
+    return (
+      e.cost <= targetCost &&
+      !e.freeCollateralExceeded &&
+      !e.availableCollateralExceeded
+    );
+  };
+
+  // If even the maximum quantity is acceptable (e.g. liquidity- or
+  // position-size-limited so the target cost is never reached), return it.
+  if (isAcceptable(high)) {
+    return high;
+  }
+
   let low = BigInt(0);
   for (let iteration = 0; iteration < 80; iteration += 1) {
     if (high - low <= BigInt(1)) {
       break;
     }
     const mid = (low + high) / BigInt(2);
-    const { cost } = runEstimate(context, { baseQuantity: mid });
-    if (cost <= targetCost) {
+    if (isAcceptable(mid)) {
       low = mid;
     } else {
       high = mid;
