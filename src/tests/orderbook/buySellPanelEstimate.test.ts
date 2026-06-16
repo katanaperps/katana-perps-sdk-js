@@ -356,6 +356,48 @@ describe('orderbook/buySellPanelEstimate', () => {
       );
     });
 
+    it('fills a quote-denominated fill-or-kill order to the largest quote not exceeding the request', () => {
+      const estimate = runEstimate({
+        // Price 7 does not divide 100 evenly; ample liquidity (700 quote).
+        orderBook: { asks: [level('7', '100')], bids: [] },
+        order: {
+          side: OrderSide.buy,
+          quoteQuantity: decimalToPip('100'),
+          limitPrice: decimalToPip('10'),
+          timeInForce: TimeInForce.fok,
+        },
+      });
+      // 14.28571428 @ 7 = 99.99999996 (largest quote <= 100); not killed.
+      expect(estimate.fillOrKillWouldNotExecute).to.equal(false);
+      testHelpers.assertBigintsEqual(
+        estimate.tradeBaseQuantity,
+        decimalToPip('14.28571428'),
+      );
+      testHelpers.assertBigintsEqual(
+        estimate.tradeQuoteQuantity,
+        decimalToPip('99.99999996'),
+      );
+      expect(estimate.tradeQuoteQuantity <= decimalToPip('100')).to.equal(true);
+    });
+
+    it('kills a quote-denominated fill-or-kill order without enough liquidity', () => {
+      const estimate = runEstimate({
+        // Only 7 of crossable quote (1 @ 7) vs a 100 quote request.
+        orderBook: { asks: [level('7', '1')], bids: [] },
+        order: {
+          side: OrderSide.buy,
+          quoteQuantity: decimalToPip('100'),
+          limitPrice: decimalToPip('10'),
+          timeInForce: TimeInForce.fok,
+        },
+      });
+      expect(estimate.fillOrKillWouldNotExecute).to.equal(true);
+      testHelpers.assertBigintsEqual(
+        estimate.tradeBaseQuantity,
+        decimalToPip('0'),
+      );
+    });
+
     it('detects self-trades and frees the matched order’s held collateral', () => {
       // The book’s ask at 100 (size 10) includes the wallet’s own 3-unit sell.
       const estimate = runEstimate({

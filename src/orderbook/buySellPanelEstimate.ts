@@ -685,14 +685,34 @@ function runEstimate(
 
   // Fill-or-kill: the order must be fully filled by crossing liquidity.
   if (context.timeInForce === TimeInForce.fok && !isZeroQuantity) {
-    const requestedFilled =
-      'baseQuantity' in quantity ?
+    let fullyFillable: boolean;
+    if ('baseQuantity' in quantity) {
+      // Base quantities are matched exactly (no rounding), so the bounded fill
+      // determines fillability directly.
+      fullyFillable =
         fill.tradeBaseQuantity + fill.selfTradeBaseQuantity >=
-        quantity.baseQuantity
-      : fill.tradeQuoteQuantity +
-          multiplyPips(fill.selfTradeBaseQuantity, context.indexPrice) >=
+        quantity.baseQuantity;
+    } else {
+      // Quote fills are floored to whole base pips, so the achievable quote is
+      // the largest value not exceeding the requested quote and rarely equals it
+      // exactly. Decide fillability from the *total* crossable quote liquidity
+      // instead: re-match with an unbounded budget (every crossable level fills
+      // in full, so no flooring occurs).
+      const unboundedQuote = context.makerLevels.reduce(
+        (sum, level) => sum + multiplyPips(level.size, level.price),
+        BigInt(1),
+      );
+      const maxFill = matchTakerOrder(
+        context,
+        { quoteQuantity: unboundedQuote },
+        reduceOnlyMaximumBaseQuantity,
+      );
+      fullyFillable =
+        maxFill.tradeQuoteQuantity +
+          multiplyPips(maxFill.selfTradeBaseQuantity, context.indexPrice) >=
         quantity.quoteQuantity;
-    if (!requestedFilled) {
+    }
+    if (!fullyFillable) {
       estimate.fillOrKillWouldNotExecute = true;
       return estimate;
     }
