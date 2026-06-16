@@ -177,6 +177,8 @@ export interface BuySellPanelEstimate {
   maximumPositionSizeExceeded: boolean;
   /** `true` if a post-only ({@link TimeInForce.gtx gtx}) order would cross the spread (rejected) */
   postOnlyWouldCross: boolean;
+  /** `true` if an immediate-or-cancel ({@link TimeInForce.ioc ioc}) order matched no liquidity (nothing would execute) */
+  immediateOrCancelWouldNotExecute: boolean;
   /** `true` if a fill-or-kill ({@link TimeInForce.fok fok}) order could not be fully filled (rejected) */
   fillOrKillWouldNotExecute: boolean;
   /** `true` if a reduce-only order is on the same side as the open position (rejected) */
@@ -245,6 +247,7 @@ function makeEmptyEstimate(): BuySellPanelEstimate {
     executionPriceLimitExceeded: false,
     maximumPositionSizeExceeded: false,
     postOnlyWouldCross: false,
+    immediateOrCancelWouldNotExecute: false,
     fillOrKillWouldNotExecute: false,
     reduceOnlyWouldNotReducePosition: false,
     reduceOnlyNoOpenPosition: false,
@@ -614,6 +617,13 @@ function runEstimate(
 ): BuySellPanelEstimate {
   const estimate = makeEmptyEstimate();
 
+  // A zero-quantity order does nothing, so none of the time-in-force
+  // feasibility flags apply to it.
+  const isZeroQuantity =
+    ('baseQuantity' in quantity ?
+      quantity.baseQuantity
+    : quantity.quoteQuantity) <= BigInt(0);
+
   // Reduce-only validity and fill capacity.
   let reduceOnlyMaximumBaseQuantity: bigint | null = null;
   if (context.reduceOnly) {
@@ -642,7 +652,11 @@ function runEstimate(
         context.limitPrice >= bestMakerPrice
       : context.limitPrice <= bestMakerPrice));
 
-  if (context.timeInForce === TimeInForce.gtx && crossesSpread) {
+  if (
+    context.timeInForce === TimeInForce.gtx &&
+    crossesSpread &&
+    !isZeroQuantity
+  ) {
     estimate.postOnlyWouldCross = true;
     return estimate;
   }
@@ -662,8 +676,15 @@ function runEstimate(
   estimate.selfTradeEncountered = fill.selfTradeEncountered;
   estimate.executionPriceLimitExceeded = fill.executionPriceLimitExceeded;
 
+  // Immediate-or-cancel: the unfilled remainder is canceled rather than rested,
+  // so an order that matched no liquidity would not execute at all.
+  estimate.immediateOrCancelWouldNotExecute =
+    context.timeInForce === TimeInForce.ioc &&
+    !isZeroQuantity &&
+    fill.tradeBaseQuantity === BigInt(0);
+
   // Fill-or-kill: the order must be fully filled by crossing liquidity.
-  if (context.timeInForce === TimeInForce.fok) {
+  if (context.timeInForce === TimeInForce.fok && !isZeroQuantity) {
     const requestedFilled =
       'baseQuantity' in quantity ?
         fill.tradeBaseQuantity + fill.selfTradeBaseQuantity >=

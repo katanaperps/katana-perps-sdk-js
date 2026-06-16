@@ -239,6 +239,66 @@ describe('orderbook/buySellPanelEstimate', () => {
         estimate.makerBaseQuantity,
         decimalToPip('0'),
       );
+      // Some liquidity matched, so the order executes.
+      expect(estimate.immediateOrCancelWouldNotExecute).to.equal(false);
+    });
+
+    it('flags an ioc order that matches no liquidity', () => {
+      const estimate = runEstimate({
+        orderBook: { asks: [level('100', '10')], bids: [] },
+        order: {
+          side: OrderSide.buy,
+          baseQuantity: decimalToPip('5'),
+          limitPrice: decimalToPip('99'), // below the best ask: does not cross
+          timeInForce: TimeInForce.ioc,
+        },
+      });
+      expect(estimate.immediateOrCancelWouldNotExecute).to.equal(true);
+      testHelpers.assertBigintsEqual(
+        estimate.tradeBaseQuantity,
+        decimalToPip('0'),
+      );
+      testHelpers.assertBigintsEqual(
+        estimate.makerBaseQuantity,
+        decimalToPip('0'),
+      );
+    });
+
+    it('sets no time-in-force flags for a zero-quantity order', () => {
+      for (const timeInForce of [
+        TimeInForce.gtc,
+        TimeInForce.gtx,
+        TimeInForce.ioc,
+        TimeInForce.fok,
+      ]) {
+        // Crosses the spread (gtx would otherwise flag) with a zero quantity.
+        const estimate = runEstimate({
+          orderBook: { asks: [level('100', '10')], bids: [] },
+          order: {
+            side: OrderSide.buy,
+            baseQuantity: decimalToPip('0'),
+            limitPrice: decimalToPip('100'),
+            timeInForce,
+          },
+        });
+        expect(estimate.postOnlyWouldCross, timeInForce).to.equal(false);
+        expect(estimate.immediateOrCancelWouldNotExecute, timeInForce).to.equal(
+          false,
+        );
+        expect(estimate.fillOrKillWouldNotExecute, timeInForce).to.equal(false);
+      }
+
+      // A 0% slider resolves to a zero quantity as well.
+      const sliderEstimate = runEstimate({
+        orderBook: { asks: [level('100', '10')], bids: [] },
+        order: {
+          side: OrderSide.buy,
+          limitPrice: decimalToPip('100'),
+          timeInForce: TimeInForce.ioc,
+          availableCollateralRatio: decimalToPip('0'),
+        },
+      });
+      expect(sliderEstimate.immediateOrCancelWouldNotExecute).to.equal(false);
     });
 
     it('flags a post-only (gtx) order that would cross the spread', () => {
