@@ -427,6 +427,10 @@ function matchTakerOrder(
   context: EstimateContext,
   quantity: { baseQuantity: bigint } | { quoteQuantity: bigint },
   reduceOnlyMaximumBaseQuantity: bigint | null,
+  // When `false`, the order keeps matching through the book past the execution
+  // price limit (the breach is still flagged on the result) rather than stopping
+  // at it. Used when sizing the slider so it can consume the target collateral.
+  enforceExecutionPriceLimit: boolean,
 ): FillResult {
   const isQuantityInQuote = 'quoteQuantity' in quantity;
 
@@ -462,6 +466,15 @@ function matchTakerOrder(
   let remainingReduceOnly = reduceOnlyMaximumBaseQuantity;
 
   for (const level of context.makerLevels) {
+    // Stop once the taker order's quantity is fully consumed.
+    const exhausted =
+      remainingBase !== null ?
+        remainingBase <= BigInt(0)
+      : remainingQuote! <= BigInt(0);
+    if (exhausted) {
+      break;
+    }
+
     // doOrdersMatch
     if (!context.isMarketOrder) {
       const crosses =
@@ -471,24 +484,6 @@ function matchTakerOrder(
       if (!crosses) {
         break;
       }
-    }
-    // Execution price limit (market orders)
-    if (
-      (context.minimumExecutionPrice !== null &&
-        level.price < context.minimumExecutionPrice) ||
-      (context.maximumExecutionPrice !== null &&
-        level.price > context.maximumExecutionPrice)
-    ) {
-      result.executionPriceLimitExceeded = true;
-      break;
-    }
-
-    const exhausted =
-      remainingBase !== null ?
-        remainingBase <= BigInt(0)
-      : remainingQuote! <= BigInt(0);
-    if (exhausted) {
-      break;
     }
 
     // Determine how much of this level the taker consumes.
@@ -506,6 +501,28 @@ function matchTakerOrder(
       } else {
         // Partial: reduce base proportionally to the quote budget
         consumedBase = (level.size * remainingQuote!) / levelQuoteIfFull;
+      }
+    }
+
+    // Nothing more can be filled at this (best remaining) price — e.g. a
+    // sub-pip quote remainder left by flooring. The order is complete, so worse
+    // levels it never reaches must not trip the execution price limit.
+    if (consumedBase <= BigInt(0)) {
+      break;
+    }
+
+    // A trade occurs at this level's price, so apply the execution price limit.
+    // When not enforcing (slider sizing), matching continues but the breach is
+    // still recorded on the result.
+    if (
+      (context.minimumExecutionPrice !== null &&
+        level.price < context.minimumExecutionPrice) ||
+      (context.maximumExecutionPrice !== null &&
+        level.price > context.maximumExecutionPrice)
+    ) {
+      result.executionPriceLimitExceeded = true;
+      if (enforceExecutionPriceLimit) {
+        break;
       }
     }
 
@@ -614,15 +631,20 @@ function matchTakerOrder(
 function runEstimate(
   context: EstimateContext,
   quantity: { baseQuantity: bigint } | { quoteQuantity: bigint },
+  // Whether the *input* quantity is zero. A zero-quantity order does nothing, so
+  // none of the time-in-force feasibility flags apply to it. This is based on
+  // the input (e.g. the slider ratio) rather than the resolved base quantity: a
+  // non-zero slider on an order that cannot execute or rest resolves to a base
+  // quantity of zero, yet its time-in-force flags should still be evaluated.
+  isZeroQuantity: boolean = ('baseQuantity' in quantity ?
+    quantity.baseQuantity
+  : quantity.quoteQuantity) <= BigInt(0),
+  // When `false`, matching continues past the execution price limit (still
+  // flagged) instead of stopping at it. Used for slider sizing so the order can
+  // be sized to consume the target collateral.
+  enforceExecutionPriceLimit: boolean = true,
 ): BuySellPanelEstimate {
   const estimate = makeEmptyEstimate();
-
-  // A zero-quantity order does nothing, so none of the time-in-force
-  // feasibility flags apply to it.
-  const isZeroQuantity =
-    ('baseQuantity' in quantity ?
-      quantity.baseQuantity
-    : quantity.quoteQuantity) <= BigInt(0);
 
   // Reduce-only validity and fill capacity.
   let reduceOnlyMaximumBaseQuantity: bigint | null = null;
@@ -671,6 +693,7 @@ function runEstimate(
     context,
     quantity,
     reduceOnlyMaximumBaseQuantity,
+    enforceExecutionPriceLimit,
   );
 
   estimate.selfTradeEncountered = fill.selfTradeEncountered;
@@ -706,6 +729,7 @@ function runEstimate(
         context,
         { quoteQuantity: unboundedQuote },
         reduceOnlyMaximumBaseQuantity,
+        enforceExecutionPriceLimit,
       );
       fullyFillable =
         maxFill.tradeQuoteQuantity +
@@ -969,7 +993,9 @@ function resolveBaseQuantityForCollateralRatio(
   }
 
   // Upper bound: all matchable liquidity, plus resting capacity for limit
-  // orders that may add to the books.
+  // orders that may add to the books. Liquidity beyond the execution price limit
+  // is included: the slider matches through the book (the breach is flagged on
+  // the result rather than capping the size).
   let matchableBase = BigInt(0);
   for (const level of context.makerLevels) {
     if (!context.isMarketOrder) {
@@ -980,14 +1006,6 @@ function resolveBaseQuantityForCollateralRatio(
       if (!crosses) {
         break;
       }
-    }
-    if (
-      (context.minimumExecutionPrice !== null &&
-        level.price < context.minimumExecutionPrice) ||
-      (context.maximumExecutionPrice !== null &&
-        level.price > context.maximumExecutionPrice)
-    ) {
-      break;
     }
     matchableBase += level.size;
   }
@@ -1021,7 +1039,9 @@ function resolveBaseQuantityForCollateralRatio(
   // plateau and yields the largest quantity that drives available collateral to
   // ~zero while remaining acceptable.
   const isAcceptable = (baseQuantity: bigint): boolean => {
-    const e = runEstimate(context, { baseQuantity });
+    // Size against the full book (do not cap at the execution price limit), so a
+    // breach does not prevent the slider from consuming the target collateral.
+    const e = runEstimate(context, { baseQuantity }, undefined, false);
     return (
       e.cost <= targetCost &&
       !e.freeCollateralExceeded &&
@@ -1088,11 +1108,24 @@ function buildContext(args: BuySellPanelEstimateArgs): EstimateContext {
       isBuy ? Number(a.price - b.price) : Number(b.price - a.price),
     );
 
-  // Execution price limits.
+  // Execution price limits. The best bid/ask are taken defensively (the input
+  // book is not assumed to be sorted), ignoring empty levels.
+  const positiveAsks = args.orderBook.asks.filter((l) => l.size > BigInt(0));
+  const positiveBids = args.orderBook.bids.filter((l) => l.size > BigInt(0));
   const bestAsk =
-    args.orderBook.asks.length > 0 ? args.orderBook.asks[0].price : null;
+    positiveAsks.length > 0 ?
+      positiveAsks.reduce(
+        (best, l) => (l.price < best ? l.price : best),
+        positiveAsks[0].price,
+      )
+    : null;
   const bestBid =
-    args.orderBook.bids.length > 0 ? args.orderBook.bids[0].price : null;
+    positiveBids.length > 0 ?
+      positiveBids.reduce(
+        (best, l) => (l.price > best ? l.price : best),
+        positiveBids[0].price,
+      )
+    : null;
   const baselinePrice =
     bestAsk !== null && bestBid !== null ?
       (bestAsk + bestBid) / BigInt(2)
@@ -1260,9 +1293,11 @@ export function calculateBuySellPanelEstimate(
   if (typeof order.baseQuantity !== 'undefined') {
     return runEstimate(context, { baseQuantity: order.baseQuantity });
   }
-  const baseQuantity = resolveBaseQuantityForCollateralRatio(
-    context,
-    order.availableCollateralRatio,
-  );
-  return runEstimate(context, { baseQuantity });
+  const ratio = order.availableCollateralRatio;
+  const baseQuantity = resolveBaseQuantityForCollateralRatio(context, ratio);
+  // Base the zero-quantity determination on the slider input, not the resolved
+  // base quantity (which is zero when the order cannot execute or rest). The
+  // slider also matches through the book rather than capping at the execution
+  // price limit (the breach is still flagged).
+  return runEstimate(context, { baseQuantity }, ratio <= BigInt(0), false);
 }

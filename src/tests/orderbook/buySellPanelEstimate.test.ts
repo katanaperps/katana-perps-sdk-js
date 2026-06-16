@@ -264,6 +264,25 @@ describe('orderbook/buySellPanelEstimate', () => {
       );
     });
 
+    it('flags a non-zero-slider ioc order that matches no liquidity', () => {
+      const estimate = runEstimate({
+        orderBook: { asks: [level('100', '10')], bids: [] },
+        order: {
+          side: OrderSide.buy,
+          // Non-zero slider, but the limit price does not cross and ioc can't
+          // rest, so it resolves to a zero base quantity.
+          availableCollateralRatio: decimalToPip('0.5'),
+          limitPrice: decimalToPip('99'),
+          timeInForce: TimeInForce.ioc,
+        },
+      });
+      expect(estimate.immediateOrCancelWouldNotExecute).to.equal(true);
+      testHelpers.assertBigintsEqual(
+        estimate.tradeBaseQuantity,
+        decimalToPip('0'),
+      );
+    });
+
     it('sets no time-in-force flags for a zero-quantity order', () => {
       for (const timeInForce of [
         TimeInForce.gtc,
@@ -529,6 +548,72 @@ describe('orderbook/buySellPanelEstimate', () => {
         estimate.tradeBaseQuantity,
         decimalToPip('10'),
       );
+    });
+
+    it('does not flag the execution price limit when the order fills entirely within it', () => {
+      const estimate = runEstimate({
+        market: {
+          ...defaultMarket,
+          marketOrderExecutionPriceLimit: '0.01000000', // 1%
+        },
+        orderBook: {
+          // best ask 100.1, plus worse levels beyond the 1% limit (max ~101.01)
+          asks: [level('100.1', '10'), level('102', '10'), level('103', '10')],
+          bids: [level('99.9', '10'), level('98', '10')],
+        },
+        // baseline 100; fully fills 5 @ 100.1 and never reaches the 102 level
+        order: { side: OrderSide.buy, baseQuantity: decimalToPip('5') },
+      });
+      expect(estimate.executionPriceLimitExceeded).to.equal(false);
+      testHelpers.assertBigintsEqual(
+        estimate.tradeBaseQuantity,
+        decimalToPip('5'),
+      );
+    });
+
+    it('does not flag the execution price limit for a quote order that fills within it', () => {
+      const estimate = runEstimate({
+        market: {
+          ...defaultMarket,
+          marketOrderExecutionPriceLimit: '0.01000000', // 1%
+        },
+        orderBook: {
+          asks: [level('100.1', '10'), level('102', '10'), level('103', '10')],
+          bids: [level('99.9', '10')],
+        },
+        // 50 quote fills within the best ask (well under its 1,001 quote of
+        // depth); the worse 102 level is never reached.
+        order: { side: OrderSide.buy, quoteQuantity: decimalToPip('50') },
+      });
+      expect(estimate.executionPriceLimitExceeded).to.equal(false);
+      expect(estimate.tradeBaseQuantity > decimalToPip('0')).to.equal(true);
+    });
+
+    it('matches a slider order through the book past the execution price limit and flags it', () => {
+      const estimate = runEstimate({
+        market: {
+          ...defaultMarket,
+          marketOrderExecutionPriceLimit: '0.01000000', // 1%, max ~101.01
+        },
+        wallet: {
+          ...defaultWallet,
+          equity: '100.00000000',
+          quoteBalance: '100.00000000',
+        },
+        orderBook: {
+          // Only 2 of liquidity within the limit; the rest is beyond it.
+          asks: [level('100.1', '2'), level('102', '10'), level('103', '10')],
+          bids: [level('99.9', '10')],
+        },
+        order: { side: OrderSide.buy, availableCollateralRatio: oneInPips }, // 100%
+      });
+      // The slider sizes the order to consume the available collateral by
+      // matching beyond the limit, and flags the breach rather than capping.
+      expect(estimate.executionPriceLimitExceeded).to.equal(true);
+      expect(estimate.tradeBaseQuantity > decimalToPip('2')).to.equal(true);
+      const target = decimalToPip('100');
+      expect(estimate.cost <= target).to.equal(true);
+      expect(target - estimate.cost <= decimalToPip('1')).to.equal(true);
     });
 
     it('flags a limit order whose price is outside the allowed range', () => {
