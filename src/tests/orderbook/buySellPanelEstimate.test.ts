@@ -365,6 +365,9 @@ describe('orderbook/buySellPanelEstimate', () => {
         estimate.makerBaseQuantity,
         decimalToPip('30'),
       );
+      // 30 @ 50 => 1,500 notional, held 150; available was 100, so the cost is
+      // allowed to exceed available collateral (150, not clamped to 100).
+      testHelpers.assertBigintsEqual(estimate.cost, decimalToPip('150'));
     });
 
     it('flags available collateral when a partially-crossing limit order rests an unaffordable remainder', () => {

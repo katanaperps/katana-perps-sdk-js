@@ -813,10 +813,13 @@ function runEstimate(
     freeCollateralAfterUnclamped,
     BigInt(0),
   );
-  const availableCollateralAfter = maxBigInt(
-    freeCollateralAfter - totalHeldCollateralAfter,
-    BigInt(0),
-  );
+  // Available collateral after the order is intentionally NOT clamped at zero:
+  // `cost` is allowed to exceed the wallet's available collateral (e.g. an order
+  // whose margin or held-collateral requirement is greater than the wallet can
+  // cover), consistent with the feasibility flags, which also reflect unclamped
+  // values.
+  const availableCollateralAfter =
+    freeCollateralAfterUnclamped - totalHeldCollateralAfter;
 
   estimate.cost = availableCollateralBefore - availableCollateralAfter;
 
