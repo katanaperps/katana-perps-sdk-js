@@ -436,17 +436,19 @@ describe('orderbook/buySellPanelEstimate', () => {
       });
 
       expect(estimate.selfTradeEncountered).to.equal(true);
-      // Only the 2 units not belonging to the wallet are actually traded
+      // The order must cross all 5 (the 2 others + the 3 own units) to reach the
+      // wallet's own order, so the self-traded 3 count toward the trade quantity.
       testHelpers.assertBigintsEqual(
         estimate.tradeBaseQuantity,
-        decimalToPip('2'),
+        decimalToPip('5'),
       );
       testHelpers.assertBigintsEqual(
         estimate.tradeQuoteQuantity,
-        decimalToPip('200'),
+        decimalToPip('500'),
       );
-      // Freeing the 30 held by the canceled own order more than offsets the new
-      // position’s margin (20) and fee (0.2): collateral increases.
+      // Cost reflects only the real 2-unit fill: freeing the 30 held by the
+      // canceled own order more than offsets the new position’s margin (20) and
+      // fee (0.2), so collateral increases.
       testHelpers.assertBigintsEqual(estimate.cost, decimalToPip('-9.8'));
     });
 

@@ -408,6 +408,8 @@ type FillResult = {
   takerTradeFee: bigint;
   takerGasFee: bigint;
   selfTradeBaseQuantity: bigint;
+  /** Quote quantity of the self-traded base, at the matched own orders' prices */
+  selfTradeQuoteQuantity: bigint;
   selfTradeEncountered: boolean;
   executionPriceLimitExceeded: boolean;
   /** Maker-side standing orders after self-trade reductions */
@@ -454,6 +456,7 @@ function matchTakerOrder(
     takerTradeFee: BigInt(0),
     takerGasFee: BigInt(0),
     selfTradeBaseQuantity: BigInt(0),
+    selfTradeQuoteQuantity: BigInt(0),
     selfTradeEncountered: false,
     executionPriceLimitExceeded: false,
     standingOrdersAfterSelfTrade: standingOrdersCopy,
@@ -546,6 +549,11 @@ function matchTakerOrder(
     if (selfPart > BigInt(0)) {
       result.selfTradeEncountered = true;
       result.selfTradeBaseQuantity += selfPart;
+      result.selfTradeQuoteQuantity += multiplyPips(
+        selfPart,
+        level.price,
+        context.isMarketOrder && context.isBuy,
+      );
       // Reduce the wallet's own resting orders at this price.
       let toReduce = selfPart;
       for (const order of ownOrders) {
@@ -732,8 +740,7 @@ function runEstimate(
         enforceExecutionPriceLimit,
       );
       fullyFillable =
-        maxFill.tradeQuoteQuantity +
-          multiplyPips(maxFill.selfTradeBaseQuantity, context.indexPrice) >=
+        maxFill.tradeQuoteQuantity + maxFill.selfTradeQuoteQuantity >=
         quantity.quoteQuantity;
     }
     if (!fullyFillable) {
@@ -742,8 +749,15 @@ function runEstimate(
     }
   }
 
-  estimate.tradeBaseQuantity = fill.tradeBaseQuantity;
-  estimate.tradeQuoteQuantity = fill.tradeQuoteQuantity;
+  // The crossing (trade) quantity includes any self-traded quantity: the taker
+  // order must be submitted with enough quantity to traverse the book and reach
+  // the wallet's own resting order, otherwise that self-trade would not occur.
+  // (Position, collateral and liquidation effects below use only the real
+  // fills, since a self-trade does not change the position or quote balance.)
+  estimate.tradeBaseQuantity =
+    fill.tradeBaseQuantity + fill.selfTradeBaseQuantity;
+  estimate.tradeQuoteQuantity =
+    fill.tradeQuoteQuantity + fill.selfTradeQuoteQuantity;
 
   // Determine the resting (maker) portion. Reduce-only limit orders may rest on
   // the books (their reducing portion); whether the resting quantity is valid is
@@ -757,11 +771,12 @@ function runEstimate(
     if ('baseQuantity' in quantity) {
       makerBaseQuantity = fill.remainingBaseQuantity;
     } else {
-      // Convert the remaining quote budget to base at the limit price.
+      // Convert the remaining quote budget to base at the limit price. The
+      // crossing portion (real fills + self-trades) has consumed the rest.
       const remainingQuote = maxBigInt(
         quantity.quoteQuantity -
           fill.tradeQuoteQuantity -
-          multiplyPips(fill.selfTradeBaseQuantity, context.limitPrice),
+          fill.selfTradeQuoteQuantity,
         BigInt(0),
       );
       makerBaseQuantity =
