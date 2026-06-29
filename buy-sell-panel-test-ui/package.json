@@ -1,0 +1,18 @@
+{
+  "name": "buy-sell-panel-test-ui",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Buy/sell panel test UI exercising the Katana Perps SDK buy/sell panel estimate",
+  "scripts": {
+    "setup": "bash setup.sh",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "vite": "^5.4.10"
+  }
+}
