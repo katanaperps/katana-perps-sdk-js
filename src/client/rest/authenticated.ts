@@ -581,6 +581,39 @@ export class RestAuthenticatedClient {
   }
 
   /**
+   * Returns all wallet addresses associated with the API key used to make the
+   * request, sorted alphabetically.
+   *
+   * ---
+   * **Endpoint Parameters**
+   *
+   * > - **HTTP Request:**         `GET /v1/walletList`
+   * > - **Endpoint Security:**    [User Data](https://api-docs-v1-perps.katana.network/#endpointSecurityUserData)
+   * > - **API Key Scope:**        [Read](https://api-docs-v1-perps.katana.network/#api-keys)
+   * > - **Pagination:**           `None`
+   * ---
+   *
+   * @returns
+   *  - A {@link katanaperps.KatanaPerpsWalletList KatanaPerpsWalletList} object with the
+   *    addresses of all associated wallets.
+   *
+   * ---
+   *
+   * @see typedoc  [Reference Documentation](https://sdk-js-docs-v1-perps.katana.network/classes/RestAuthenticatedClient.html#getWalletList)
+   * @see request  {@link katanaperps.RestRequestGetWalletList RestRequestGetWalletList}
+   * @see response {@link katanaperps.RestResponseGetWalletList RestResponseGetWalletList}
+   * @see type     {@link katanaperps.KatanaPerpsWalletList KatanaPerpsWalletList}
+   *
+   * @category Wallets & Positions
+   */
+  public async getWalletList(params: katanaPerps.RestRequestGetWalletList) {
+    return this.get<katanaPerps.RestResponseGetWalletList>(
+      '/walletList',
+      params,
+    );
+  }
+
+  /**
    * Returns delegated keys authorized for the requested wallet.
    *
    * ---
