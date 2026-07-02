@@ -44,7 +44,7 @@ export interface KatanaPerpsWebClientEventDataTxSettledPayout
      * @see enum {@link PayoutProgram}
      */
     program: PayoutProgram;
-    asset: 'USDC' | 'iBGT';
+    asset: 'USDC' | 'ETH';
     amountPaid: string;
     nonce: string;
     txHash: string;
