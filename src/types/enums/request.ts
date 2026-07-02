@@ -552,7 +552,7 @@ export type SelfTradePrevention =
  */
 export const PayoutProgram = Object.freeze({
   /**
-   * The rewards programs for points.
+   * The rewards program for points.
    */
   pointsRewards: 'pointsRewards',
   /**
@@ -564,7 +564,7 @@ export const PayoutProgram = Object.freeze({
    */
   referralRewards: 'referralRewards',
   /**
-   * The synthetic farms program
+   * The synthetic farms program.
    */
   syntheticFarms: 'syntheticFarms',
   /**
@@ -575,6 +575,10 @@ export const PayoutProgram = Object.freeze({
    * The Katana Perps Trading Rewards program.
    */
   tradingRewardsV2: 'tradingRewardsV2',
+  /**
+   * The rewards program for builder codes.
+   */
+  builderRewards: 'builderRewards',
 } as const);
 
 export type PayoutProgram = (typeof PayoutProgram)[keyof typeof PayoutProgram];
