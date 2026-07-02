@@ -23,6 +23,7 @@ export * from './GetPositions.js';
 export * from './GetTickers.js';
 export * from './GetTime.js';
 export * from './GetTrades.js';
+export * from './GetWalletList.js';
 export * from './GetWallets.js';
 export * from './GetWithdrawals.js';
 export * from './GetWithdrawalsFromManagedAccount.js';
