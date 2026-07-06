@@ -431,6 +431,7 @@ export interface KatanaPerpsTakerCompetitionV3MilestoneCompetition {
   pnlMaxWinners: number;
   volumeRewardPool: string;
   totalVolume: string;
+  qualifyingVolume: string;
   milestoneTiers: ReadonlyArray<{
     thresholdVolumeUsd: string;
     poolRewardQuantity: string;
