@@ -606,6 +606,33 @@ export function getWithdrawalSignatureTypedData(
   ];
 }
 
+export function getTransferSignatureTypedData(
+  data: types.RestRequestTransferFunds,
+  contractAddress: string,
+  chainId: number,
+  sandbox: boolean,
+): Parameters<SignTypedData> {
+  assertNonceIsValid(data.nonce);
+
+  return [
+    getDomainSeparator(contractAddress, chainId, sandbox),
+    {
+      Transfer: [
+        { name: 'nonce', type: 'uint128' },
+        { name: 'sourceWallet', type: 'address' },
+        { name: 'destinationWallet', type: 'address' },
+        { name: 'quantity', type: 'string' },
+      ],
+    },
+    {
+      nonce: uuidToUint128(data.nonce),
+      sourceWallet: data.wallet,
+      destinationWallet: data.destinationWallet,
+      quantity: data.quantity,
+    },
+  ];
+}
+
 export function getInitialMarginFractionOverrideSettingsSignatureTypedData(
   data: types.RestRequestSetInitialMarginFractionOverride,
   contractAddress: string,

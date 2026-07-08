@@ -27,6 +27,7 @@ export * from './GetWalletList.js';
 export * from './GetWallets.js';
 export * from './GetWithdrawals.js';
 export * from './GetWithdrawalsFromManagedAccount.js';
+export * from './TransferFunds.js';
 export * from './internal.js';
 export * from './Payouts.js';
 export * from './SetInitialMarginFractionOverride.js';
