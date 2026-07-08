@@ -19,6 +19,7 @@ import {
   getWalletAssociationSignatureTypedData,
   getWithdrawalFromManagedAccountByQuantitySignatureTypedData,
   getWithdrawalFromManagedAccountBySharesSignatureTypedData,
+  getTransferSignatureTypedData,
   getWithdrawalSignatureTypedData,
 } from '#signatures';
 import {
@@ -1376,6 +1377,60 @@ export class RestAuthenticatedClient {
       parameters: params,
       signature: await signer(
         ...getWithdrawalSignatureTypedData(
+          params,
+          exchangeContractAddress,
+          chainId,
+          this.#config.sandbox,
+        ),
+      ),
+    });
+  }
+
+  /**
+   * Transfer collateral to another wallet without leaving the exchange.
+   *
+   * ---
+   * **Endpoint Parameters**
+   *
+   * > - **HTTP Request:**         `POST /v1/transfers`
+   * > - **Endpoint Security:**    [Trade](https://api-docs-v1-perps.katana.network/#endpointSecurityTrade)
+   * > - **API Key Scope:**        [Withdraw](https://api-docs-v1-perps.katana.network/#api-keys)
+   * ---
+   *
+   * @example
+   * ```typescript
+   * const transfer = await client.transfer({
+   *   nonce: uuidv1(),
+   *   wallet: '0xA71C4aeeAabBBB8D2910F41C2ca3964b81F7310d',
+   *   destinationWallet: '0x8bC1a9B2b6b1a17c8574c9E3fC5A2c2b1DfF9D1e',
+   *   quantity: '100.00000000',
+   *   maximumGasFee: '0.00000000',
+   * });
+   * ```
+   *
+   * <br />
+   *
+   * ---
+   *
+   * @see request  {@link katanaperps.RestRequestTransferFunds RestRequestTransferFunds}
+   * @see response {@link katanaperps.RestResponseTransferFunds RestResponseTransferFunds}
+   * @see type     {@link katanaperps.KatanaPerpsOutgoingTransfer KatanaPerpsOutgoingTransfer}
+   *
+   * @category Deposits & Withdrawals
+   */
+  public async transfer(
+    params: katanaPerps.RestRequestTransferFunds,
+    signer: undefined | katanaPerps.SignTypedData = this.#signer,
+  ) {
+    ensureSigner(signer);
+
+    const { chainId, exchangeContractAddress } =
+      await this.getContractAndChainId();
+
+    return this.post<katanaPerps.RestResponseTransferFunds>('/transfers', {
+      parameters: params,
+      signature: await signer(
+        ...getTransferSignatureTypedData(
           params,
           exchangeContractAddress,
           chainId,

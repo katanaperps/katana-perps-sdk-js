@@ -613,6 +613,7 @@ export type BridgeTarget = (typeof BridgeTarget)[keyof typeof BridgeTarget];
  */
 export const DepositSource = {
   ...BridgeTarget,
+  EXCHANGE_TRANSFER: 'exchange.transfer',
   KATANA_BUILDER_REWARD: 'katana.builderReward',
   KATANA_POINTS_REWARD: 'katana.pointsReward',
   KATANA_REFERRAL_REWARD: 'katana.referralReward',
