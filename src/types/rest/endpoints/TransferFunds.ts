@@ -45,15 +45,34 @@ export interface RestRequestTransferFunds extends RestRequestByWallet {
  * @category KatanaPerps Interfaces
  */
 export interface KatanaPerpsOutgoingTransfer
-  extends Omit<KatanaPerpsWithdrawal, 'bridgeTarget' | 'vault'> {
+  extends Omit<
+    KatanaPerpsWithdrawal,
+    'bridgeTarget' | 'bridgeTxId' | 'forwarderTxId' | 'katanaTxId' | 'vault'
+  > {
   /**
    * Transfers move collateral between wallets without leaving the exchange
    */
   bridgeTarget: 'exchange.transfer';
+
+  bridgeTxId?: undefined;
+  forwarderTxId?: undefined;
+
+  /**
+   * Transaction id of the transfer transaction on Katana, or null if not yet
+   * assigned (regular deposits are never null here)
+   */
+  katanaTxId: string | null;
+
   /**
    * Address of the wallet that received the transferred funds
    */
   destinationWallet: string;
+
+  /**
+   * No vault is associated with internal transfers
+   *
+   */
+  vault?: undefined;
 }
 
 /**
@@ -80,15 +99,25 @@ export interface KatanaPerpsIncomingTransfer
    * Transfers move collateral between wallets without leaving the exchange
    */
   bridgeSource: 'exchange.transfer';
+  bridgeTxId?: undefined;
+  forwarderTxId?: undefined;
+
   /**
    * Transaction id of the transfer transaction on Katana, or null if not yet
-   * assigned
+   * assigned (regular deposits are never null here)
    */
   katanaTxId: string | null;
+
   /**
    * Address of the wallet that sent the transferred funds
    */
   sourceWallet: string;
+
+  /**
+   * No vault is associated with internal transfers
+   *
+   */
+  vault?: undefined;
 }
 
 /**
