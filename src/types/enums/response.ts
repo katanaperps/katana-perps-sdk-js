@@ -228,6 +228,57 @@ export type MarketStatus = (typeof MarketStatus)[keyof typeof MarketStatus];
 /**
  * @category Enums - Response Properties
  * @enum
+ */
+export const MarketTradingSessionStatus = Object.freeze({
+  /**
+   * No orders or cancels accepted
+   */
+  halted: 'halted',
+  /**
+   * Cancels and gtx orders only
+   */
+  closed: 'closed',
+  /**
+   * Trades and cancels accepted
+   */
+  open: 'open',
+  /**
+   * Same as closed but no withdrawals are accepted
+   */
+  preOpen: 'preOpen',
+  /**
+   * Same as open
+   */
+  preClose: 'preClose',
+} as const);
+
+export type MarketTradingSessionStatus =
+  (typeof MarketTradingSessionStatus)[keyof typeof MarketTradingSessionStatus];
+
+/**
+ * @category Enums - Response Properties
+ * @enum
+ */
+export const MarketType = Object.freeze({
+  /**
+   * 24/7 perpetual futures
+   */
+  perpetual: 'perpetual',
+  /**
+   * 23/5 perpetual futures
+   */
+  perpetual235: 'perpetual235',
+  /**
+   * 24/5 perpetual futures
+   */
+  perpetual245: 'perpetual245',
+} as const);
+
+export type MarketType = (typeof MarketType)[keyof typeof MarketType];
+
+/**
+ * @category Enums - Response Properties
+ * @enum
  *
  * @see related {@link _types.KatanaPerpsOrder KatanaPerpsOrder}
  */

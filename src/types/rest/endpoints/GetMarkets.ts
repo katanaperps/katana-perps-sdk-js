@@ -1,6 +1,8 @@
 import type {
   MarginType,
   MarketStatus,
+  MarketTradingSessionStatus,
+  MarketType,
   RestRequestByMarketOptional,
 } from '#index';
 
@@ -26,15 +28,35 @@ export interface KatanaPerpsMarket {
    */
   market: string;
   /**
-   * Market type, always `perpetual`
+   * Market type
    */
-  type: 'perpetual';
+  type: MarketType;
   /**
    * Market trading status
    *
    * @see {@link MarketStatus}
    */
   status: MarketStatus;
+  /**
+   * Market trading session status
+   *
+   * - Not present for `perpetual` markets
+   *
+   * @see {@link MarketTradingSessionStatus}
+   */
+  tradingSessionStatus?: MarketTradingSessionStatus;
+  /**
+   * Approximated time of the next market close, use `tradingSessionStatus` for definitive status
+   *
+   * - Not present for `perpetual` markets
+   */
+  approximateNextCloseTime?: number;
+  /**
+   * Approximated time of the next market open, use `tradingSessionStatus` for definitive status
+   *
+   * - Not present for `perpetual` markets
+   */
+  approximateNextOpenTime?: number;
   /** Base asset symbol */
   baseAsset: string;
   /** Quote asset symbol */

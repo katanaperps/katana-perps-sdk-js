@@ -33,16 +33,6 @@ export enum ManagedAccountWithdrawalType {
 /**
  * @internal
  */
-export enum MarketType {
-  /**
-   * Orderbook trades accepted
-   */
-  perpetual,
-}
-
-/**
- * @internal
- */
 export enum OrderSelfTradePreventionSigEnum {
   /**
    * Decrement And Cancel (DC) - When two orders from the same user cross, the smaller order will
