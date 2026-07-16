@@ -46,13 +46,15 @@ export interface KatanaPerpsMarket {
    */
   tradingSessionStatus?: MarketTradingSessionStatus;
   /**
-   * Approximated time of the next market close, use `tradingSessionStatus` for definitive status
+   * Approximated time of the next market close, in milliseconds. Use
+   * `tradingSessionStatus` for definitive status
    *
    * - Not present for `perpetual` markets
    */
   approximateNextCloseTime?: number;
   /**
-   * Approximated time of the next market open, use `tradingSessionStatus` for definitive status
+   * Approximated time of the next market open, in milliseconds. Use
+   * `tradingSessionStatus` for definitive status
    *
    * - Not present for `perpetual` markets
    */
