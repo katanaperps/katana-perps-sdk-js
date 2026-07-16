@@ -620,14 +620,14 @@ export function getTransferSignatureTypedData(
       Transfer: [
         { name: 'nonce', type: 'uint128' },
         { name: 'sourceWallet', type: 'address' },
-        { name: 'destinationWallet', type: 'address' },
+        { name: 'targetWallet', type: 'address' },
         { name: 'quantity', type: 'string' },
       ],
     },
     {
       nonce: uuidToUint128(data.nonce),
       sourceWallet: data.wallet,
-      destinationWallet: data.destinationWallet,
+      targetWallet: data.targetWallet,
       quantity: data.quantity,
     },
   ];

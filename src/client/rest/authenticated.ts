@@ -1402,7 +1402,7 @@ export class RestAuthenticatedClient {
    * const transfer = await client.transfer({
    *   nonce: uuidv1(),
    *   wallet: '0xA71C4aeeAabBBB8D2910F41C2ca3964b81F7310d',
-   *   destinationWallet: '0x8bC1a9B2b6b1a17c8574c9E3fC5A2c2b1DfF9D1e',
+   *   targetWallet: '0x8bC1a9B2b6b1a17c8574c9E3fC5A2c2b1DfF9D1e',
    *   quantity: '100.00000000',
    *   maximumGasFee: '0.00000000',
    * });
