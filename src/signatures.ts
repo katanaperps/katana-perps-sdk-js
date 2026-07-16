@@ -620,7 +620,7 @@ export function getTransferSignatureTypedData(
       Transfer: [
         { name: 'nonce', type: 'uint128' },
         { name: 'sourceWallet', type: 'address' },
-        { name: 'targetWallet', type: 'address' },
+        { name: 'destinationWallet', type: 'address' },
         { name: 'quantity', type: 'string' },
       ],
     },
