@@ -26,7 +26,7 @@ export interface RestRequestTransferFunds extends RestRequestByWallet {
   /**
    * Address of the wallet receiving the transferred funds
    */
-  destinationWallet: string;
+  targetWallet: string;
 }
 
 /**
@@ -35,7 +35,7 @@ export interface RestRequestTransferFunds extends RestRequestByWallet {
  * uniformly with withdrawals, with `exchange.transfer` as the
  * {@link KatanaPerpsOutgoingTransfer.bridgeTarget bridgeTarget} and the
  * receiving wallet in
- * {@link KatanaPerpsOutgoingTransfer.destinationWallet destinationWallet}.
+ * {@link KatanaPerpsOutgoingTransfer.targetWallet targetWallet}.
  *
  * @see related {@link KatanaPerpsIncomingTransfer}
  * @see related {@link KatanaPerpsWithdrawal}
@@ -66,7 +66,7 @@ export interface KatanaPerpsOutgoingTransfer
   /**
    * Address of the wallet that received the transferred funds
    */
-  destinationWallet: string;
+  targetWallet: string;
 
   /**
    * No vault is associated with internal transfers
