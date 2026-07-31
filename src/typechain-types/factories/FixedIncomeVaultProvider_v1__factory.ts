@@ -21,6 +21,11 @@ const _abi = [
         name: 'withdrawalLimitWindowSizeInS_',
         type: 'uint64',
       },
+      {
+        internalType: 'uint256',
+        name: 'maximumVaultConfigurations_',
+        type: 'uint256',
+      },
     ],
     stateMutability: 'nonpayable',
     type: 'constructor',
@@ -66,6 +71,11 @@ const _abi = [
       },
     ],
     name: 'DepositQueueLengthExceedsMax',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'DepositorWalletNotExited',
     type: 'error',
   },
   {
@@ -134,6 +144,11 @@ const _abi = [
       },
     ],
     name: 'InvalidDepositIndex',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'InvalidDepositPayload',
     type: 'error',
   },
   {
@@ -270,6 +285,38 @@ const _abi = [
       },
     ],
     name: 'MaximumTotalOwedQuantityAvailableMultiplierToInitiateExitOutOfRange',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'value',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'maxValue',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'minValue',
+        type: 'uint256',
+      },
+    ],
+    name: 'MaximumVaultConfigurationsOutOfRange',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'limit',
+        type: 'uint256',
+      },
+    ],
+    name: 'MaximumVaultConfigurationsReached',
     type: 'error',
   },
   {
@@ -839,6 +886,25 @@ const _abi = [
     inputs: [
       {
         indexed: false,
+        internalType: 'uint256',
+        name: 'previousValue',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'newValue',
+        type: 'uint256',
+      },
+    ],
+    name: 'MaximumVaultConfigurationsChanged',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
         internalType: 'address',
         name: 'previousValue',
         type: 'address',
@@ -913,6 +979,31 @@ const _abi = [
       },
     ],
     name: 'WithdrawalFromManagedAccountCanceled',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'managerWallet',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'depositorWallet',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint64',
+        name: 'quantity',
+        type: 'uint64',
+      },
+    ],
+    name: 'WithdrawalFromManagedAccountForExitedDepositorWalletCanceled',
     type: 'event',
   },
   {
@@ -1153,6 +1244,19 @@ const _abi = [
   },
   {
     inputs: [],
+    name: 'MAX_MAXIMUM_VAULT_CONFIGURATIONS',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
     name: 'MAX_MINIMUM_TOTAL_OWED_QUANTITY_AVAILABLE_MULTIPLIER_TO_ALLOW_MANAGER_WALLET_WITHDRAWAL',
     outputs: [
       {
@@ -1276,6 +1380,19 @@ const _abi = [
         internalType: 'uint64',
         name: '',
         type: 'uint64',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'MIN_MAXIMUM_VAULT_CONFIGURATIONS',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
       },
     ],
     stateMutability: 'view',
@@ -1454,6 +1571,24 @@ const _abi = [
       },
     ],
     name: 'cancelPendingWithdrawal',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'managerWallet',
+        type: 'address',
+      },
+      {
+        internalType: 'bytes32',
+        name: 'withdrawalHash',
+        type: 'bytes32',
+      },
+    ],
+    name: 'cancelPendingWithdrawalForExitedDepositorWallet',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -2218,6 +2353,19 @@ const _abi = [
   },
   {
     inputs: [],
+    name: 'maximumVaultConfigurations',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
     name: 'ownerWallet',
     outputs: [
       {
@@ -2347,6 +2495,19 @@ const _abi = [
       },
     ],
     name: 'setManagedAccountUpgradeBlockTimestampDelay',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'newMaximumVaultConfigurations',
+        type: 'uint256',
+      },
+    ],
+    name: 'setMaximumVaultConfigurations',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
