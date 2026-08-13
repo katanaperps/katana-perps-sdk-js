@@ -87,13 +87,14 @@ export interface KatanaPerpsVault {
    */
   manager: string;
   /**
-   * true if vault was exited on-chain
+   * Timestamp at which the vault was exited on-chain; null if not exited
    */
-  isExited: boolean;
+  exitedTime: number | null;
   /**
-   * true if vault manager wallet was liquidated
+   * Timestamp at which the vault manager wallet was liquidated; null if not
+   * liquidated
    */
-  isLiquidated: boolean;
+  liquidatedTime: number | null;
   /**
    * true if a new configuration is awaiting application
    */
