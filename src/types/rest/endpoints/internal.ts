@@ -1,4 +1,5 @@
 import type {
+  DepositSource,
   PayoutProgram,
   RestRequestByWallet,
   RestRequestByWalletOptional,
@@ -27,6 +28,10 @@ export interface KatanaPerpsVaultDeposit {
    * Quantity of the deposit
    */
   quantity: string;
+  /**
+   * Source of the deposit
+   */
+  bridgeSource: DepositSource;
   /**
    * Timestamp of crediting the deposited funds on the exchange
    */
