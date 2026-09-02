@@ -6,7 +6,10 @@ import type {
 } from '#index';
 import type { RestRequestWithSignature } from '#types/utils';
 import type { KatanaPerpsDeposit } from './GetDeposits';
-import type { KatanaPerpsFill } from './GetFills';
+import type { KatanaPerpsFill, RestRequestGetFills } from './GetFills';
+import type { RestRequestGetFundingPayments } from './GetFundingPayments';
+import type { RestRequestGetHistoricalPnL } from './GetHistoricalPnL';
+import type { RestRequestGetInitialMarginFractionOverride } from './GetInitialMarginFractionOverride';
 import type { KatanaPerpsWithdrawal } from './GetWithdrawals';
 import type { DelegatedKeyParams } from '../../delegatedKeys';
 
@@ -279,6 +282,91 @@ export type RestResponseGetVaultFarmEarnings = {
    */
   quantity: string;
 };
+
+/*
+ * Vault variants of the private read endpoints
+ *
+ * These mirror their public counterparts but identify the queried vault by the
+ * `manager` param rather than `wallet` - the latter is reserved for the
+ * authenticated caller wallet
+ */
+
+/**
+ * @see related {@link RestRequestGetFills}
+ * @see response {@link RestResponseGetFills}
+ *
+ * @hidden
+ */
+export interface RestRequestGetVaultFills
+  extends Omit<RestRequestGetFills, 'wallet'> {
+  /**
+   * Manager wallet address
+   */
+  manager: string;
+}
+
+/**
+ * @see related {@link RestRequestGetFundingPayments}
+ * @see response {@link RestResponseGetFundingPayments}
+ *
+ * @hidden
+ */
+export interface RestRequestGetVaultFundingPayments
+  extends Omit<RestRequestGetFundingPayments, 'wallet'> {
+  /**
+   * Manager wallet address
+   */
+  manager: string;
+}
+
+/**
+ * @see related {@link RestRequestGetHistoricalPnL}
+ * @see response {@link RestResponseGetHistoricalPnL}
+ *
+ * @hidden
+ */
+export interface RestRequestGetVaultHistoricalPnL
+  extends Omit<RestRequestGetHistoricalPnL, 'wallet'> {
+  /**
+   * Manager wallet address
+   */
+  manager: string;
+}
+
+/**
+ * @see related {@link RestRequestGetInitialMarginFractionOverride}
+ * @see response {@link RestResponseGetInitialMarginFractionOverride}
+ *
+ * @hidden
+ */
+export interface RestRequestGetVaultInitialMarginFractionOverride
+  extends Omit<RestRequestGetInitialMarginFractionOverride, 'wallet'> {
+  /**
+   * Manager wallet address
+   */
+  manager: string;
+}
+
+/**
+ * Unlike {@link RestRequestGetWallets}, the vault variant does not accept
+ * `wallets` and requires the vault's `manager`.
+ *
+ * @see response {@link RestResponseGetWallets}
+ *
+ * @hidden
+ */
+export interface RestRequestGetVaultWallets {
+  /**
+   * Manager wallet address
+   */
+  manager: string;
+  /**
+   * If false, do not include a positions array in the response.
+   *
+   * @defaultValue true
+   */
+  includePositions?: boolean;
+}
 
 /*
  * Set vault details
