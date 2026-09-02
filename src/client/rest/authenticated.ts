@@ -1691,6 +1691,149 @@ export class RestAuthenticatedClient {
   }
 
   /**
+   * Third-party vendor integration endpoints (`/vendor/integrations/v1/...`).
+   *
+   * Authenticate with an API key. GET requires **read** scope; POST requires
+   * **trade** scope. These paths are not under `/v1`. Every call must include a
+   * uuid v1 `nonce` (query string on GET, top-level JSON field on POST).
+   *
+   * @category Vendor Integrations
+   */
+  public readonly vendor = Object.freeze({
+    /**
+     * Lists upcoming and active v3 taker competitions.
+     *
+     * ---
+     * **Endpoint Parameters**
+     *
+     * > - **HTTP Request:**         `GET /vendor/integrations/v1/takerCompetitionV3/list`
+     * > - **Endpoint Security:**    [User Data](https://api-docs-v1-perps.katana.network/#endpointSecurityUserData)
+     * > - **API Key Scope:**        [Read](https://api-docs-v1-perps.katana.network/#api-keys)
+     * ---
+     *
+     * @see request  {@link katanaperps.RestRequestGetVendorTakerCompetitionV3List RestRequestGetVendorTakerCompetitionV3List}
+     * @see response {@link katanaperps.RestResponseGetVendorTakerCompetitionV3List RestResponseGetVendorTakerCompetitionV3List}
+     *
+     * @category Vendor Integrations
+     */
+    getTakerCompetitionV3List: async (
+      params: katanaPerps.RestRequestGetVendorTakerCompetitionV3List,
+    ) => {
+      return this.get<katanaPerps.RestResponseGetVendorTakerCompetitionV3List>(
+        '/vendor/integrations/v1/takerCompetitionV3/list',
+        params,
+        this.#vendorIntegrationsAxiosConfig(),
+      );
+    },
+
+    /**
+     * Returns a v3 taker competition by name, including leaderboards and the
+     * optional wallet's registration state.
+     *
+     * ---
+     * **Endpoint Parameters**
+     *
+     * > - **HTTP Request:**         `GET /vendor/integrations/v1/takerCompetitionV3/name/{name}`
+     * > - **Endpoint Security:**    [User Data](https://api-docs-v1-perps.katana.network/#endpointSecurityUserData)
+     * > - **API Key Scope:**        [Read](https://api-docs-v1-perps.katana.network/#api-keys)
+     * ---
+     *
+     * @see request  {@link katanaperps.RestRequestGetVendorTakerCompetitionV3ByName RestRequestGetVendorTakerCompetitionV3ByName}
+     * @see response {@link katanaperps.RestResponseGetVendorTakerCompetitionV3ByName RestResponseGetVendorTakerCompetitionV3ByName}
+     *
+     * @category Vendor Integrations
+     */
+    getTakerCompetitionV3ByName: async ({
+      name,
+      ...params
+    }: katanaPerps.RestRequestGetVendorTakerCompetitionV3ByName) => {
+      return this.get<katanaPerps.RestResponseGetVendorTakerCompetitionV3ByName>(
+        `/vendor/integrations/v1/takerCompetitionV3/name/${encodeURIComponent(name)}`,
+        params,
+        this.#vendorIntegrationsAxiosConfig(),
+      );
+    },
+
+    /**
+     * Registers a wallet in a v3 taker competition.
+     *
+     * ---
+     * **Endpoint Parameters**
+     *
+     * > - **HTTP Request:**         `POST /vendor/integrations/v1/takerCompetitionV3/register`
+     * > - **Endpoint Security:**    [Trade](https://api-docs-v1-perps.katana.network/#endpointSecurityTrade)
+     * > - **API Key Scope:**        [Trade](https://api-docs-v1-perps.katana.network/#api-keys)
+     * ---
+     *
+     * @see request  {@link katanaperps.RestRequestRegisterVendorTakerCompetitionV3 RestRequestRegisterVendorTakerCompetitionV3}
+     * @see response {@link katanaperps.RestResponseRegisterVendorTakerCompetitionV3 RestResponseRegisterVendorTakerCompetitionV3}
+     *
+     * @category Vendor Integrations
+     */
+    registerTakerCompetitionV3: async (
+      params: katanaPerps.RestRequestRegisterVendorTakerCompetitionV3,
+    ) => {
+      return this.post<katanaPerps.RestResponseRegisterVendorTakerCompetitionV3>(
+        '/vendor/integrations/v1/takerCompetitionV3/register',
+        params,
+        this.#vendorIntegrationsAxiosConfig(),
+      );
+    },
+
+    /**
+     * Lists points-program seasons and their periods.
+     *
+     * ---
+     * **Endpoint Parameters**
+     *
+     * > - **HTTP Request:**         `GET /vendor/integrations/v1/pointsProgram/seasons`
+     * > - **Endpoint Security:**    [User Data](https://api-docs-v1-perps.katana.network/#endpointSecurityUserData)
+     * > - **API Key Scope:**        [Read](https://api-docs-v1-perps.katana.network/#api-keys)
+     * ---
+     *
+     * @see request  {@link katanaperps.RestRequestGetVendorPointsProgramSeasons RestRequestGetVendorPointsProgramSeasons}
+     * @see response {@link katanaperps.RestResponseGetVendorPointsProgramSeasons RestResponseGetVendorPointsProgramSeasons}
+     *
+     * @category Vendor Integrations
+     */
+    getPointsProgramSeasons: async (
+      params: katanaPerps.RestRequestGetVendorPointsProgramSeasons,
+    ) => {
+      return this.get<katanaPerps.RestResponseGetVendorPointsProgramSeasons>(
+        '/vendor/integrations/v1/pointsProgram/seasons',
+        params,
+        this.#vendorIntegrationsAxiosConfig(),
+      );
+    },
+
+    /**
+     * Returns points-program status for a wallet.
+     *
+     * ---
+     * **Endpoint Parameters**
+     *
+     * > - **HTTP Request:**         `GET /vendor/integrations/v1/pointsProgram/status`
+     * > - **Endpoint Security:**    [User Data](https://api-docs-v1-perps.katana.network/#endpointSecurityUserData)
+     * > - **API Key Scope:**        [Read](https://api-docs-v1-perps.katana.network/#api-keys)
+     * ---
+     *
+     * @see request  {@link katanaperps.RestRequestGetVendorPointsProgramStatus RestRequestGetVendorPointsProgramStatus}
+     * @see response {@link katanaperps.RestResponseGetVendorPointsProgramStatus RestResponseGetVendorPointsProgramStatus}
+     *
+     * @category Vendor Integrations
+     */
+    getPointsProgramStatus: async (
+      params: katanaPerps.RestRequestGetVendorPointsProgramStatus,
+    ) => {
+      return this.get<katanaPerps.RestResponseGetVendorPointsProgramStatus>(
+        '/vendor/integrations/v1/pointsProgram/status',
+        params,
+        this.#vendorIntegrationsAxiosConfig(),
+      );
+    },
+  });
+
+  /**
    * - All requests within the internal symbol are undocumented internal methods which may change or be removed without notice.
    * - API handling of the parameters used within these methods is likely to change without notice without changes to the SDK to match.
    * - These methods or parameters may require additional permissions to use and result in errors or blocking of your request if used.
@@ -2143,6 +2286,16 @@ export class RestAuthenticatedClient {
       bridgeAdapterContractAddress,
       localDepositAdapterContractAddress,
     } as const;
+  }
+
+  /**
+   * Vendor integration routes live at `/vendor/integrations/v1/...`, not under
+   * the REST client's `/v1` base URL.
+   */
+  #vendorIntegrationsAxiosConfig(): { baseURL: string } {
+    return {
+      baseURL: this.#config.baseURL.replace(/\/v1\/?$/, ''),
+    };
   }
 
   /**
