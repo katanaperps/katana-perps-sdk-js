@@ -31,6 +31,7 @@ export * from './TransferFunds.js';
 export * from './internal.js';
 export * from './Payouts.js';
 export * from './SetInitialMarginFractionOverride.js';
+export * from './VendorIntegrations.js';
 export * from './WithdrawFunds.js';
 export * from './WithdrawFundsFromManagedAccountByQuantity.js';
 export * from './WithdrawFundsFromManagedAccountByShares.js';
