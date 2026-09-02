@@ -1,15 +1,12 @@
-import type { PayoutProgram } from '#types/enums/request';
 import type {
   RestRequestByWallet,
   RestRequestByWalletOptional,
 } from '#types/rest/common/common';
 import type {
-  RestResponseAuthorizeTakerCompetitionV3Payout,
   RestResponseGetKatanaPoints,
   RestResponseGetKatanaPointSeasons,
   RestResponseGetTakerCompetitionV3ByName,
   RestResponseGetTakerCompetitionV3List,
-  RestResponseGetTakerCompetitionV3Payout,
   RestResponseRegisterTakerCompetitionV3,
 } from './internal.js';
 
@@ -44,25 +41,6 @@ export interface RestRequestRegisterVendorTakerCompetitionV3 {
 }
 
 /**
- * Query parameters for `GET /vendor/integrations/v1/takerCompetitionV3/payouts`.
- *
- * @category Vendor Integrations
- */
-export interface RestRequestGetVendorTakerCompetitionV3Payout {
-  wallet: string;
-  program: PayoutProgram;
-  nonce: string;
-}
-
-/**
- * Body for `POST /vendor/integrations/v1/takerCompetitionV3/payouts`.
- *
- * @category Vendor Integrations
- */
-export type RestRequestAuthorizeVendorTakerCompetitionV3Payout =
-  RestRequestGetVendorTakerCompetitionV3Payout;
-
-/**
  * @category Vendor Integrations
  */
 export type RestResponseGetVendorTakerCompetitionV3List =
@@ -79,18 +57,6 @@ export type RestResponseGetVendorTakerCompetitionV3ByName =
  */
 export type RestResponseRegisterVendorTakerCompetitionV3 =
   RestResponseRegisterTakerCompetitionV3;
-
-/**
- * @category Vendor Integrations
- */
-export type RestResponseGetVendorTakerCompetitionV3Payout =
-  RestResponseGetTakerCompetitionV3Payout;
-
-/**
- * @category Vendor Integrations
- */
-export type RestResponseAuthorizeVendorTakerCompetitionV3Payout =
-  RestResponseAuthorizeTakerCompetitionV3Payout;
 
 /**
  * Query parameters for `GET /vendor/integrations/v1/pointsProgram/seasons`.

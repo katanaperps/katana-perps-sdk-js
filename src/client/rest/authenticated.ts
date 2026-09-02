@@ -1781,58 +1781,6 @@ export class RestAuthenticatedClient {
     },
 
     /**
-     * Returns competition-reward payout status for a wallet.
-     *
-     * ---
-     * **Endpoint Parameters**
-     *
-     * > - **HTTP Request:**         `GET /vendor/integrations/v1/takerCompetitionV3/payouts`
-     * > - **Endpoint Security:**    [User Data](https://api-docs-v1-perps.katana.network/#endpointSecurityUserData)
-     * > - **API Key Scope:**        [Read](https://api-docs-v1-perps.katana.network/#api-keys)
-     * ---
-     *
-     * @see request  {@link katanaperps.RestRequestGetVendorTakerCompetitionV3Payout RestRequestGetVendorTakerCompetitionV3Payout}
-     * @see response {@link katanaperps.RestResponseGetVendorTakerCompetitionV3Payout RestResponseGetVendorTakerCompetitionV3Payout}
-     *
-     * @category Vendor Integrations
-     */
-    getTakerCompetitionV3Payout: async (
-      params: katanaPerps.RestRequestGetVendorTakerCompetitionV3Payout,
-    ) => {
-      return this.get<katanaPerps.RestResponseGetVendorTakerCompetitionV3Payout>(
-        '/vendor/integrations/v1/takerCompetitionV3/payouts',
-        params,
-        this.#vendorIntegrationsAxiosConfig(),
-      );
-    },
-
-    /**
-     * Claims competition-reward payouts for a wallet.
-     *
-     * ---
-     * **Endpoint Parameters**
-     *
-     * > - **HTTP Request:**         `POST /vendor/integrations/v1/takerCompetitionV3/payouts`
-     * > - **Endpoint Security:**    [Trade](https://api-docs-v1-perps.katana.network/#endpointSecurityTrade)
-     * > - **API Key Scope:**        [Trade](https://api-docs-v1-perps.katana.network/#api-keys)
-     * ---
-     *
-     * @see request  {@link katanaperps.RestRequestAuthorizeVendorTakerCompetitionV3Payout RestRequestAuthorizeVendorTakerCompetitionV3Payout}
-     * @see response {@link katanaperps.RestResponseAuthorizeVendorTakerCompetitionV3Payout RestResponseAuthorizeVendorTakerCompetitionV3Payout}
-     *
-     * @category Vendor Integrations
-     */
-    authorizeTakerCompetitionV3Payout: async (
-      params: katanaPerps.RestRequestAuthorizeVendorTakerCompetitionV3Payout,
-    ) => {
-      return this.post<katanaPerps.RestResponseAuthorizeVendorTakerCompetitionV3Payout>(
-        '/vendor/integrations/v1/takerCompetitionV3/payouts',
-        params,
-        this.#vendorIntegrationsAxiosConfig(),
-      );
-    },
-
-    /**
      * Lists points-program seasons and their periods.
      *
      * ---
