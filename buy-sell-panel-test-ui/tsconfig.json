@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    // tsc resolves the SDK against its built .d.ts so skipLibCheck silences the
+    // SDK's internal source; Vite bundles from src (see vite.config.ts).
+    "paths": {
+      "#*": ["../dist/*"]
+    }
+  },
+  "include": ["src", "vite.config.ts"]
+}

@@ -13,13 +13,18 @@ const _abi = [
     inputs: [
       {
         internalType: 'address',
-        name: 'exchange_',
+        name: 'custodian_',
         type: 'address',
       },
       {
         internalType: 'uint64',
         name: 'withdrawalLimitWindowSizeInS_',
         type: 'uint64',
+      },
+      {
+        internalType: 'uint256',
+        name: 'maximumVaultConfigurations_',
+        type: 'uint256',
       },
     ],
     stateMutability: 'nonpayable',
@@ -66,6 +71,11 @@ const _abi = [
       },
     ],
     name: 'DepositQueueLengthExceedsMax',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'DepositorWalletNotExited',
     type: 'error',
   },
   {
@@ -138,7 +148,17 @@ const _abi = [
   },
   {
     inputs: [],
+    name: 'InvalidDepositPayload',
+    type: 'error',
+  },
+  {
+    inputs: [],
     name: 'InvalidDepositorWallet',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'InvalidManagedAccountProvider',
     type: 'error',
   },
   {
@@ -170,6 +190,27 @@ const _abi = [
       },
     ],
     name: 'InvalidWithdrawalHash',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'value',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'maxValue',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'minValue',
+        type: 'uint256',
+      },
+    ],
+    name: 'ManagedAccountUpgradeBlockTimestampDelayInSOutOfRange',
     type: 'error',
   },
   {
@@ -249,6 +290,38 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: 'uint256',
+        name: 'value',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'maxValue',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'minValue',
+        type: 'uint256',
+      },
+    ],
+    name: 'MaximumVaultConfigurationsOutOfRange',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'limit',
+        type: 'uint256',
+      },
+    ],
+    name: 'MaximumVaultConfigurationsReached',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
         internalType: 'uint64',
         name: 'value',
         type: 'uint64',
@@ -285,28 +358,7 @@ const _abi = [
         type: 'uint64',
       },
     ],
-    name: 'MinimumUnappliedWithdrawalAgeInSToInitiateExitOutOfRange',
-    type: 'error',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint64',
-        name: 'value',
-        type: 'uint64',
-      },
-      {
-        internalType: 'uint64',
-        name: 'maxValue',
-        type: 'uint64',
-      },
-      {
-        internalType: 'uint64',
-        name: 'minValue',
-        type: 'uint64',
-      },
-    ],
-    name: 'MinimumWithdrawalQuantityOutOfRange',
+    name: 'MinimumUnappliedDepositOrWithdrawalAgeInSToInitiateExitOutOfRange',
     type: 'error',
   },
   {
@@ -593,6 +645,43 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
+        indexed: true,
+        internalType: 'address',
+        name: 'managerWallet',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'depositorWallet',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint64',
+        name: 'quantity',
+        type: 'uint64',
+      },
+      {
+        indexed: false,
+        internalType: 'uint64',
+        name: 'newWalletOwedQuantity',
+        type: 'uint64',
+      },
+      {
+        indexed: false,
+        internalType: 'uint64',
+        name: 'newVaultTotalOwedQuantity',
+        type: 'uint64',
+      },
+    ],
+    name: 'DepositToManagedAccountApplied',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: false,
         internalType: 'uint64',
         name: 'depositIndex',
@@ -784,6 +873,19 @@ const _abi = [
     inputs: [
       {
         indexed: false,
+        internalType: 'address',
+        name: 'managerWallet',
+        type: 'address',
+      },
+    ],
+    name: 'ManagerWalletLiquidated',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
         internalType: 'uint256',
         name: 'previousValue',
         type: 'uint256',
@@ -795,57 +897,7 @@ const _abi = [
         type: 'uint256',
       },
     ],
-    name: 'MinimumWithdrawalQuantityChanged',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: 'address',
-        name: 'managerWallet',
-        type: 'address',
-      },
-      {
-        indexed: false,
-        internalType: 'address',
-        name: 'depositorWallet',
-        type: 'address',
-      },
-      {
-        indexed: false,
-        internalType: 'uint64',
-        name: 'quantity',
-        type: 'uint64',
-      },
-      {
-        indexed: false,
-        internalType: 'uint64',
-        name: 'newWalletOwedQuantity',
-        type: 'uint64',
-      },
-      {
-        indexed: false,
-        internalType: 'uint64',
-        name: 'newVaultTotalOwedQuantity',
-        type: 'uint64',
-      },
-    ],
-    name: 'VaultDeposited',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: 'address',
-        name: 'managerWallet',
-        type: 'address',
-      },
-    ],
-    name: 'VaultLiquidated',
+    name: 'MaximumVaultConfigurationsChanged',
     type: 'event',
   },
   {
@@ -927,6 +979,31 @@ const _abi = [
       },
     ],
     name: 'WithdrawalFromManagedAccountCanceled',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'managerWallet',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'depositorWallet',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint64',
+        name: 'quantity',
+        type: 'uint64',
+      },
+    ],
+    name: 'WithdrawalFromManagedAccountForExitedDepositorWalletCanceled',
     type: 'event',
   },
   {
@@ -1128,6 +1205,19 @@ const _abi = [
   },
   {
     inputs: [],
+    name: 'MAX_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
     name: 'MAX_MAXIMUM_NET_DEPOSITS',
     outputs: [
       {
@@ -1154,6 +1244,19 @@ const _abi = [
   },
   {
     inputs: [],
+    name: 'MAX_MAXIMUM_VAULT_CONFIGURATIONS',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
     name: 'MAX_MINIMUM_TOTAL_OWED_QUANTITY_AVAILABLE_MULTIPLIER_TO_ALLOW_MANAGER_WALLET_WITHDRAWAL',
     outputs: [
       {
@@ -1167,20 +1270,7 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'MAX_MINIMUM_UNAPPLIED_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MAX_MINIMUM_WITHDRAWAL_QUANTITY',
+    name: 'MAX_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
     outputs: [
       {
         internalType: 'uint64',
@@ -1258,6 +1348,19 @@ const _abi = [
   },
   {
     inputs: [],
+    name: 'MIN_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
     name: 'MIN_MAXIMUM_NET_DEPOSITS',
     outputs: [
       {
@@ -1284,6 +1387,19 @@ const _abi = [
   },
   {
     inputs: [],
+    name: 'MIN_MAXIMUM_VAULT_CONFIGURATIONS',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
     name: 'MIN_MINIMUM_TOTAL_OWED_QUANTITY_AVAILABLE_MULTIPLIER_TO_ALLOW_MANAGER_WALLET_WITHDRAWAL',
     outputs: [
       {
@@ -1297,20 +1413,7 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'MIN_MINIMUM_UNAPPLIED_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MIN_MINIMUM_WITHDRAWAL_QUANTITY',
+    name: 'MIN_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
     outputs: [
       {
         internalType: 'uint64',
@@ -1475,6 +1578,37 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: 'address',
+        name: 'managerWallet',
+        type: 'address',
+      },
+      {
+        internalType: 'bytes32',
+        name: 'withdrawalHash',
+        type: 'bytes32',
+      },
+    ],
+    name: 'cancelPendingWithdrawalForExitedDepositorWallet',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'custodian',
+    outputs: [
+      {
+        internalType: 'contract ICustodian',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
         internalType: 'uint64',
         name: 'depositIndex',
         type: 'uint64',
@@ -1521,19 +1655,6 @@ const _abi = [
     name: 'emitEventsForFrontOfDepositAndWithdrawalQueues',
     outputs: [],
     stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'exchange',
-    outputs: [
-      {
-        internalType: 'contract IExchange',
-        name: '',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'view',
     type: 'function',
   },
   {
@@ -1757,7 +1878,7 @@ const _abi = [
           },
           {
             internalType: 'uint64',
-            name: 'minimumUnappliedWithdrawalAgeInSToInitiateExit',
+            name: 'minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit',
             type: 'uint64',
           },
           {
@@ -1851,6 +1972,11 @@ const _abi = [
             name: 'payload',
             type: 'bytes',
           },
+          {
+            internalType: 'uint64',
+            name: 'addedToQueueAtTimestampInS',
+            type: 'uint64',
+          },
         ],
         internalType: 'struct VaultDepositQueue.Item',
         name: '',
@@ -1923,6 +2049,11 @@ const _abi = [
           },
           {
             internalType: 'uint64',
+            name: 'exitedDepositorPendingDepositQuantity',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
             name: 'exitedTotalOwedQuantity',
             type: 'uint64',
           },
@@ -1933,7 +2064,7 @@ const _abi = [
           },
           {
             internalType: 'uint64',
-            name: 'netDeposits',
+            name: 'depositorNetDeposits',
             type: 'uint64',
           },
           {
@@ -1953,7 +2084,7 @@ const _abi = [
           },
           {
             internalType: 'uint64',
-            name: 'totalPendingDepositQuantity',
+            name: 'depositorPendingDepositQuantity',
             type: 'uint64',
           },
           {
@@ -1990,7 +2121,7 @@ const _abi = [
               },
               {
                 internalType: 'uint64',
-                name: 'minimumUnappliedWithdrawalAgeInSToInitiateExit',
+                name: 'minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit',
                 type: 'uint64',
               },
               {
@@ -2222,12 +2353,12 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'minimumWithdrawalQuantity',
+    name: 'maximumVaultConfigurations',
     outputs: [
       {
-        internalType: 'uint64',
+        internalType: 'uint256',
         name: '',
-        type: 'uint64',
+        type: 'uint256',
       },
     ],
     stateMutability: 'view',
@@ -2371,12 +2502,12 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: 'uint64',
-        name: 'newMinimumWithdrawalQuantity',
-        type: 'uint64',
+        internalType: 'uint256',
+        name: 'newMaximumVaultConfigurations',
+        type: 'uint256',
       },
     ],
-    name: 'setMinimumWithdrawalQuantity',
+    name: 'setMaximumVaultConfigurations',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -2469,7 +2600,7 @@ const _abi = [
           },
           {
             internalType: 'uint64',
-            name: 'minimumUnappliedWithdrawalAgeInSToInitiateExit',
+            name: 'minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit',
             type: 'uint64',
           },
           {

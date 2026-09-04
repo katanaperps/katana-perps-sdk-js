@@ -431,7 +431,7 @@ export interface KatanaPerpsStargateForwarder_v1 extends BaseContract {
   vbUSDCOFTAdapter: TypedContractMethod<[], [string], 'view'>;
 
   withdrawNativeAsset: TypedContractMethod<
-    [destinationWallet: AddressLike, quantity: BigNumberish],
+    [destinationContractOrWallet: AddressLike, quantity: BigNumberish],
     [void],
     'nonpayable'
   >;
@@ -554,7 +554,7 @@ export interface KatanaPerpsStargateForwarder_v1 extends BaseContract {
   getFunction(
     nameOrSignature: 'withdrawNativeAsset',
   ): TypedContractMethod<
-    [destinationWallet: AddressLike, quantity: BigNumberish],
+    [destinationContractOrWallet: AddressLike, quantity: BigNumberish],
     [void],
     'nonpayable'
   >;

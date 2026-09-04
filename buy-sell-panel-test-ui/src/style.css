@@ -1,0 +1,401 @@
+:root {
+  --bg: #0e1117;
+  --panel: #161b22;
+  --panel-2: #1c232d;
+  --border: #2a323d;
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --accent: #2f81f7;
+  --buy: #3fb950;
+  --buy-bg: rgba(63, 185, 80, 0.12);
+  --sell: #f85149;
+  --sell-bg: rgba(248, 81, 73, 0.12);
+  --warn: #d29922;
+  --warn-bg: rgba(210, 153, 34, 0.15);
+  --ok: #3fb950;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+}
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  background: var(--panel-2);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.92em;
+}
+
+.app-header {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+}
+.app-header h1 {
+  font-size: 16px;
+  margin: 0;
+}
+.app-header .subtitle {
+  color: var(--muted);
+  font-size: 12px;
+}
+.app-header #reset {
+  margin-left: auto;
+}
+
+#app {
+  display: grid;
+  grid-template-columns: minmax(340px, 1fr) minmax(320px, 0.9fr) minmax(360px, 1.1fr);
+  gap: 14px;
+  padding: 14px;
+  align-items: start;
+}
+@media (max-width: 1100px) {
+  #app {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+.panel > h2 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin: 0 0 10px;
+  font-weight: 600;
+}
+.panel .panel-note {
+  color: var(--muted);
+  font-size: 11px;
+  margin: -4px 0 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 8px;
+}
+.field > label {
+  color: var(--muted);
+  font-size: 11px;
+}
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 10px;
+}
+.grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px 10px;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 5px;
+  padding: 5px 7px;
+  font-size: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  width: 100%;
+}
+input:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+button {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 5px;
+  padding: 5px 9px;
+  font-size: 12px;
+  cursor: pointer;
+}
+button:hover {
+  border-color: var(--accent);
+}
+button.ghost {
+  background: transparent;
+}
+button.danger {
+  color: var(--sell);
+  border-color: transparent;
+  padding: 2px 6px;
+}
+button.add {
+  width: 100%;
+  border-style: dashed;
+  color: var(--muted);
+}
+
+.seg {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+/* When placed inside a column field (e.g. Time in force), don't stretch to
+   the field's full width — size to the buttons' content. */
+.field > .seg {
+  align-self: flex-start;
+}
+.seg button {
+  border: none;
+  border-radius: 0;
+  background: var(--panel-2);
+  padding: 6px 12px;
+}
+.seg button.active {
+  background: var(--accent);
+  color: #fff;
+}
+.seg.buysell button.active.buy {
+  background: var(--buy);
+}
+.seg.buysell button.active.sell {
+  background: var(--sell);
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text);
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+.checkbox input {
+  width: auto;
+}
+
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.slider-row .pct {
+  font-family: ui-monospace, monospace;
+  min-width: 42px;
+  text-align: right;
+}
+
+/* Order book */
+.book table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.book th {
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 10px;
+  text-transform: uppercase;
+  text-align: right;
+  padding: 2px 4px;
+}
+.book td {
+  padding: 1px 3px;
+}
+.book .lvl {
+  position: relative;
+}
+.book .lvl input[type="text"] {
+  padding: 3px 5px;
+  font-size: 11px;
+  background: transparent;
+  border-color: transparent;
+}
+.book .lvl input[type="text"]:hover,
+.book .lvl input[type="text"]:focus {
+  border-color: var(--border);
+  background: var(--panel-2);
+}
+.book .lvl input[type="text"].invalid,
+.book .lvl input[type="text"].invalid:focus {
+  border-color: var(--sell);
+  background: var(--sell-bg);
+}
+.book .lvl .price-cell {
+  width: 33%;
+}
+.book .lvl.ask .price-cell input {
+  color: var(--sell);
+}
+.book .lvl.bid .price-cell input {
+  color: var(--buy);
+}
+.book-error {
+  margin-top: 8px;
+  color: var(--sell);
+  font-size: 11px;
+}
+.book .depth {
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  right: 0;
+  z-index: 0;
+  border-radius: 3px;
+  /* Decorative overlay only; must not intercept clicks on the price input. */
+  pointer-events: none;
+}
+.book .lvl.ask .depth {
+  background: var(--sell-bg);
+}
+.book .lvl.bid .depth {
+  background: var(--buy-bg);
+}
+.book .lvl > td {
+  position: relative;
+  z-index: 1;
+}
+.book .lvl.crossable {
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+  border-radius: 3px;
+}
+.book .lvl .own-cell {
+  width: 1%;
+  white-space: nowrap;
+  text-align: center;
+}
+.book .lvl .badge {
+  font-size: 9px;
+  color: var(--accent);
+}
+.book .lvl.selftrade .badge::after {
+  content: "self";
+}
+.book .spread {
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
+  padding: 6px 0;
+  border-top: 1px dashed var(--border);
+  border-bottom: 1px dashed var(--border);
+}
+
+/* Results */
+.result-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px 14px;
+}
+.kv {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--border);
+}
+.kv .k {
+  color: var(--muted);
+}
+.kv .v {
+  font-family: ui-monospace, monospace;
+  text-align: right;
+}
+.kv .v.pos {
+  color: var(--sell);
+}
+.kv .v.neg {
+  color: var(--buy);
+}
+.flags {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 8px;
+}
+.flag {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: ui-monospace, monospace;
+}
+.flag.on {
+  background: var(--warn-bg);
+  border-color: var(--warn);
+  color: var(--warn);
+}
+.flag.on.info {
+  background: rgba(47, 129, 247, 0.15);
+  border-color: var(--accent);
+  color: #79c0ff;
+}
+.raw {
+  margin-top: 10px;
+}
+.raw summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 11px;
+}
+.raw pre {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px;
+  overflow: auto;
+  font-size: 11px;
+  font-family: ui-monospace, monospace;
+  max-height: 280px;
+}
+.derived .kv .v {
+  color: var(--text);
+}
+.row-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.pos-row {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px;
+  margin-bottom: 8px;
+  background: var(--panel-2);
+}
+.muted {
+  color: var(--muted);
+}
+.sectionTitle {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin: 0 0 6px;
+}
