@@ -67,6 +67,32 @@ export interface KatanaPerpsWebClientEventDataTxSettledWithdraw
   };
 }
 
+export interface KatanaPerpsWebClientEventDataTxSettledWithdrawFromManagedAccount
+  extends KatanaPerpsWebClientEventDataTxSettledBase {
+  /**
+   * @inheritDoc
+   */
+  readonly action: typeof WebClientEventTxSettledAction.withdrawFromManagedAccount;
+  /**
+   * @inheritDoc
+   */
+  readonly payload: {
+    withdrawalId: string;
+    /**
+     * Manager wallet of the vault the withdrawal was made from
+     */
+    manager: string;
+    asset: 'USDC';
+    txHash: string;
+    didWithdrawalFail: boolean;
+    /**
+     * Human-readable trading engine failure reason; null unless
+     * `didWithdrawalFail` is true
+     */
+    failureReason: string | null;
+  };
+}
+
 export interface KatanaPerpsWebClientEventDataTxSettledExecuteTrade
   extends KatanaPerpsWebClientEventDataTxSettledBase {
   /**
@@ -87,4 +113,5 @@ export interface KatanaPerpsWebClientEventDataTxSettledExecuteTrade
 export type KatanaPerpsWebClientEventDataTxSettled =
   | KatanaPerpsWebClientEventDataTxSettledPayout
   | KatanaPerpsWebClientEventDataTxSettledWithdraw
+  | KatanaPerpsWebClientEventDataTxSettledWithdrawFromManagedAccount
   | KatanaPerpsWebClientEventDataTxSettledExecuteTrade;

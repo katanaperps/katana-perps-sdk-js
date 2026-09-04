@@ -429,6 +429,7 @@ export type WebClientEventExchangeStatusAction =
 export const WebClientEventTxSettledAction = {
   payout: 'payout',
   withdraw: 'withdraw',
+  withdrawFromManagedAccount: 'withdrawFromManagedAccount',
   executeTrade: 'executeTrade',
 } as const;
 
