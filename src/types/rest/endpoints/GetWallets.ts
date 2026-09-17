@@ -1,4 +1,5 @@
 import type { RestRequestByWalletOptional, KatanaPerpsPosition } from '#index';
+import type { VaultType } from './internal.js';
 
 /**
  * - HTTP Request: `GET /v1/wallets`
@@ -98,6 +99,11 @@ export interface KatanaPerpsWallet {
    * wallet is a vault manager
    */
   managedAccountProvider?: string;
+  /**
+   * Type of the vault managed by the wallet. Field is only present if the
+   * wallet is a vault manager
+   */
+  vaultType?: VaultType;
   /**
    * Vault name if specified
    */
