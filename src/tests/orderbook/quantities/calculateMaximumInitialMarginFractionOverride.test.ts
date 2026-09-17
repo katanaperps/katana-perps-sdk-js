@@ -31,6 +31,7 @@ const market: KatanaPerpsMarket = {
   basePositionSize: '1.00000000',
   incrementalPositionSize: '0.10000000',
   incrementalInitialMarginFraction: '0.01000000',
+  marginType: 'cross',
   makerFeeRate: '0.00000000',
   takerFeeRate: '0.00000000',
   volume24h: '0.00000000',

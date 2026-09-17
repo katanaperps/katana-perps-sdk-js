@@ -3,6 +3,7 @@ import type {
   RestRequestByWallet,
   BridgeTarget,
   ChainTransactionStatus,
+  KatanaPerpsOutgoingTransfer,
 } from '#index';
 
 /**
@@ -97,7 +98,9 @@ export interface KatanaPerpsWithdrawal {
  *
  * @category KatanaPerps - Get Withdrawals
  */
-export type RestResponseGetWithdrawal = KatanaPerpsWithdrawal;
+export type RestResponseGetWithdrawal =
+  | KatanaPerpsWithdrawal
+  | KatanaPerpsOutgoingTransfer;
 
 /**
  * @see type {@link KatanaPerpsWithdrawal}
@@ -106,4 +109,4 @@ export type RestResponseGetWithdrawal = KatanaPerpsWithdrawal;
  *
  * @category KatanaPerps - Get Withdrawals
  */
-export type RestResponseGetWithdrawals = KatanaPerpsWithdrawal[];
+export type RestResponseGetWithdrawals = RestResponseGetWithdrawal[];

@@ -36,6 +36,25 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: 'address[]',
+        name: 'managerWallets',
+        type: 'address[]',
+      },
+    ],
+    name: 'loadTotalQuantitiesOwedByVaults',
+    outputs: [
+      {
+        internalType: 'uint64[]',
+        name: 'loadTotalQuantitiesOwedByVaultsResults',
+        type: 'uint64[]',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
         internalType: 'address',
         name: 'managerWallet',
         type: 'address',
@@ -77,7 +96,7 @@ const _abi = [
           },
           {
             internalType: 'uint64',
-            name: 'minimumUnappliedWithdrawalAgeInSToInitiateExit',
+            name: 'minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit',
             type: 'uint64',
           },
           {
@@ -185,25 +204,6 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: 'address[]',
-        name: 'managerWallets',
-        type: 'address[]',
-      },
-    ],
-    name: 'loadVaultDeposits',
-    outputs: [
-      {
-        internalType: 'uint64[]',
-        name: 'loadVaultDepositsResults',
-        type: 'uint64[]',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
         internalType: 'address',
         name: 'managerWallet',
         type: 'address',
@@ -229,7 +229,7 @@ const _abi = [
             type: 'uint64',
           },
         ],
-        internalType: 'struct LoadVaultWithdrawalQueueResult[]',
+        internalType: 'struct VaultWithdrawQueueItem[]',
         name: 'loadVaultWithdrawalQueueResults',
         type: 'tuple[]',
       },

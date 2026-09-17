@@ -588,11 +588,6 @@ const _abi = [
         name: 'minimumDepositToManagedAccountQuantityInAssetUnits_',
         type: 'uint64',
       },
-      {
-        internalType: 'uint64',
-        name: 'minimumWithdrawQuantityMultiplier_',
-        type: 'uint64',
-      },
     ],
     name: 'setComposeParameters',
     outputs: [],

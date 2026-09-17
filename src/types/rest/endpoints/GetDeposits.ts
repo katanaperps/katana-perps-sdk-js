@@ -100,7 +100,9 @@ export interface KatanaPerpsDeposit {
  *
  * @category KatanaPerps - Get Deposits
  */
-export type RestResponseGetDeposit = KatanaPerpsDeposit;
+export type RestResponseGetDeposit =
+  | KatanaPerpsDeposit
+  | katanaPerps.KatanaPerpsIncomingTransfer;
 
 /**
  * Returns deposits according to the request parameters.
@@ -112,4 +114,4 @@ export type RestResponseGetDeposit = KatanaPerpsDeposit;
  *
  * @category KatanaPerps - Get Deposits
  */
-export type RestResponseGetDeposits = KatanaPerpsDeposit[];
+export type RestResponseGetDeposits = RestResponseGetDeposit[];

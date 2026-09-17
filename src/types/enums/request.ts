@@ -552,7 +552,7 @@ export type SelfTradePrevention =
  */
 export const PayoutProgram = Object.freeze({
   /**
-   * The rewards programs for points.
+   * The rewards program for points.
    */
   pointsRewards: 'pointsRewards',
   /**
@@ -564,7 +564,7 @@ export const PayoutProgram = Object.freeze({
    */
   referralRewards: 'referralRewards',
   /**
-   * The synthetic farms program
+   * The synthetic farms program.
    */
   syntheticFarms: 'syntheticFarms',
   /**
@@ -575,6 +575,10 @@ export const PayoutProgram = Object.freeze({
    * The Katana Perps Trading Rewards program.
    */
   tradingRewardsV2: 'tradingRewardsV2',
+  /**
+   * The rewards program for builder codes.
+   */
+  builderRewards: 'builderRewards',
 } as const);
 
 export type PayoutProgram = (typeof PayoutProgram)[keyof typeof PayoutProgram];
@@ -609,7 +613,13 @@ export type BridgeTarget = (typeof BridgeTarget)[keyof typeof BridgeTarget];
  */
 export const DepositSource = {
   ...BridgeTarget,
+  EXCHANGE_TRANSFER: 'exchange.transfer',
+  KATANA_BUILDER_REWARD: 'katana.builderReward',
+  KATANA_LOOPBACK_FROM_VAULT_TO_WALLET: 'katana.loopbackFromVaultToWallet',
+  KATANA_LOOPBACK_FROM_WALLET_TO_VAULT: 'katana.loopbackFromWalletToVault',
+  KATANA_POINTS_REWARD: 'katana.pointsReward',
   KATANA_REFERRAL_REWARD: 'katana.referralReward',
+  KATANA_TRADING_COMPETITION_REWARD: 'katana.tradingCompetitionReward',
   KATANA_WALLET_BANKROLL: 'katana.walletBankroll',
 } as const;
 

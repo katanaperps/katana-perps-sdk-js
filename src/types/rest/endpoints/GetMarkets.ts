@@ -1,4 +1,10 @@
-import type { MarketStatus, RestRequestByMarketOptional } from '#index';
+import type {
+  MarginType,
+  MarketStatus,
+  MarketTradingSessionStatus,
+  MarketType,
+  RestRequestByMarketOptional,
+} from '#index';
 
 /**
  * GET markets
@@ -22,15 +28,37 @@ export interface KatanaPerpsMarket {
    */
   market: string;
   /**
-   * Market type, always `perpetual`
+   * Market type
    */
-  type: 'perpetual';
+  type: MarketType;
   /**
    * Market trading status
    *
    * @see {@link MarketStatus}
    */
   status: MarketStatus;
+  /**
+   * Market trading session status
+   *
+   * - Not present for `perpetual` markets
+   *
+   * @see {@link MarketTradingSessionStatus}
+   */
+  tradingSessionStatus?: MarketTradingSessionStatus;
+  /**
+   * Approximated time of the next market close, in milliseconds. Use
+   * `tradingSessionStatus` for definitive status
+   *
+   * - Not present for `perpetual` markets
+   */
+  approximateNextCloseTime?: number;
+  /**
+   * Approximated time of the next market open, in milliseconds. Use
+   * `tradingSessionStatus` for definitive status
+   *
+   * - Not present for `perpetual` markets
+   */
+  approximateNextOpenTime?: number;
   /** Base asset symbol */
   baseAsset: string;
   /** Quote asset symbol */
@@ -117,6 +145,12 @@ export interface KatanaPerpsMarket {
    *     - increases the {@link initialMarginFraction} by {@link incrementalInitialMarginFraction} (this value)
    */
   incrementalInitialMarginFraction: string;
+  /**
+   * Type of margin
+   *
+   * @see {@link MarginType}
+   */
+  marginType: MarginType;
   /**
    * Default maker trade fee rate for the market
    *

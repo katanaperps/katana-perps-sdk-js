@@ -132,6 +132,7 @@ function transformOrderFill(
       }
     : {}),
     fee: short.f,
+    builderFee: short.bf,
     ...(isWebSocketResponseOrderFillShortGeneral(short) ?
       {
         liquidity: short.l,

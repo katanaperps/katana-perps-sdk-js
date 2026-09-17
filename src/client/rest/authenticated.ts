@@ -13,12 +13,12 @@ import {
   getInitialMarginFractionOverrideSettingsSignatureTypedData,
   getOrderCancellationSignatureTypedData,
   getOrderSignatureTypedData,
-  getRemoveVaultXConnectionSignatureTypedData,
   getSetVaultDetailsSignatureTypedData,
   getSetVaultXConnectionSignatureTypedData,
   getWalletAssociationSignatureTypedData,
   getWithdrawalFromManagedAccountByQuantitySignatureTypedData,
   getWithdrawalFromManagedAccountBySharesSignatureTypedData,
+  getTransferSignatureTypedData,
   getWithdrawalSignatureTypedData,
 } from '#signatures';
 import {
@@ -126,9 +126,9 @@ export interface RestAuthenticatedClientOptions {
    */
   chainId?: number;
   /**
-   * Optionally provide the `bridgeAdapterContractAddress` as returned by the public clients
+   * Optionally provide the `stargateBridgeAdapterV1KatanaContractAddress` as returned by the public clients
    * {@link RestPublicClient.getExchange getExchange} response's
-   * {@link katanaperps.KatanaPerpsExchange.bridgeAdapterContractAddress bridgeAdapterContractAddress}
+   * {@link katanaperps.KatanaPerpsExchange.bridgeAdapters.stargateBridgeAdapterV1KatanaContractAddress stargateBridgeAdapterV1KatanaContractAddress}
    * property.
    *
    * - If not provided, this will be fetched and cached automatically from the public client before
@@ -137,6 +137,18 @@ export interface RestAuthenticatedClientOptions {
    * @internal
    */
   bridgeAdapterContractAddress?: string;
+  /**
+   * Optionally provide the `localDepositAdapterV1KatanaContractAddress` as returned by the public clients
+   * {@link RestPublicClient.getExchange getExchange} response's
+   * {@link katanaperps.KatanaPerpsExchange.bridgeAdapters.localDepositAdapterV1KatanaContractAddress localDepositAdapterV1KatanaContractAddress}
+   * property.
+   *
+   * - If not provided, this will be fetched and cached automatically from the public client before
+   *   making the first request which requires it.
+   *
+   * @internal
+   */
+  localDepositAdapterContractAddress?: string;
   /**
    * - Changing this value will likely result in a broken client, internal use only.
    *
@@ -256,6 +268,7 @@ export class RestAuthenticatedClient {
     exchangeContractAddress: string;
     chainId: number;
     bridgeAdapterContractAddress: string;
+    localDepositAdapterContractAddress: string;
   }>;
 
   /**
@@ -319,6 +332,7 @@ export class RestAuthenticatedClient {
       exchangeContractAddress,
       chainId,
       bridgeAdapterContractAddress,
+      localDepositAdapterContractAddress,
       autoCreateHmacHeader = true,
     } = options;
 
@@ -340,6 +354,7 @@ export class RestAuthenticatedClient {
       baseURL,
       sandbox,
       bridgeAdapterContractAddress,
+      localDepositAdapterContractAddress,
       exchangeContractAddress,
       chainId,
       autoCreateHmacHeader,
@@ -578,6 +593,39 @@ export class RestAuthenticatedClient {
    */
   public async getWallets(params: katanaPerps.RestRequestGetWallets) {
     return this.get<katanaPerps.RestResponseGetWallets>('/wallets', params);
+  }
+
+  /**
+   * Returns all wallet addresses associated with the API key used to make the
+   * request, sorted alphabetically.
+   *
+   * ---
+   * **Endpoint Parameters**
+   *
+   * > - **HTTP Request:**         `GET /v1/walletList`
+   * > - **Endpoint Security:**    [User Data](https://api-docs-v1-perps.katana.network/#endpointSecurityUserData)
+   * > - **API Key Scope:**        [Read](https://api-docs-v1-perps.katana.network/#api-keys)
+   * > - **Pagination:**           `None`
+   * ---
+   *
+   * @returns
+   *  - A {@link katanaperps.KatanaPerpsWalletList KatanaPerpsWalletList} object with the
+   *    addresses of all associated wallets.
+   *
+   * ---
+   *
+   * @see typedoc  [Reference Documentation](https://sdk-js-docs-v1-perps.katana.network/classes/RestAuthenticatedClient.html#getWalletList)
+   * @see request  {@link katanaperps.RestRequestGetWalletList RestRequestGetWalletList}
+   * @see response {@link katanaperps.RestResponseGetWalletList RestResponseGetWalletList}
+   * @see type     {@link katanaperps.KatanaPerpsWalletList KatanaPerpsWalletList}
+   *
+   * @category Wallets & Positions
+   */
+  public async getWalletList(params: katanaPerps.RestRequestGetWalletList) {
+    return this.get<katanaPerps.RestResponseGetWalletList>(
+      '/walletList',
+      params,
+    );
   }
 
   /**
@@ -1353,6 +1401,60 @@ export class RestAuthenticatedClient {
   }
 
   /**
+   * Transfer collateral to another wallet without leaving the exchange.
+   *
+   * ---
+   * **Endpoint Parameters**
+   *
+   * > - **HTTP Request:**         `POST /v1/transfers`
+   * > - **Endpoint Security:**    [Trade](https://api-docs-v1-perps.katana.network/#endpointSecurityTrade)
+   * > - **API Key Scope:**        [Withdraw](https://api-docs-v1-perps.katana.network/#api-keys)
+   * ---
+   *
+   * @example
+   * ```typescript
+   * const transfer = await client.transfer({
+   *   nonce: uuidv1(),
+   *   wallet: '0xA71C4aeeAabBBB8D2910F41C2ca3964b81F7310d',
+   *   targetWallet: '0x8bC1a9B2b6b1a17c8574c9E3fC5A2c2b1DfF9D1e',
+   *   quantity: '100.00000000',
+   *   maximumGasFee: '0.00000000',
+   * });
+   * ```
+   *
+   * <br />
+   *
+   * ---
+   *
+   * @see request  {@link katanaperps.RestRequestTransferFunds RestRequestTransferFunds}
+   * @see response {@link katanaperps.RestResponseTransferFunds RestResponseTransferFunds}
+   * @see type     {@link katanaperps.KatanaPerpsOutgoingTransfer KatanaPerpsOutgoingTransfer}
+   *
+   * @category Deposits & Withdrawals
+   */
+  public async transfer(
+    params: katanaPerps.RestRequestTransferFunds,
+    signer: undefined | katanaPerps.SignTypedData = this.#signer,
+  ) {
+    ensureSigner(signer);
+
+    const { chainId, exchangeContractAddress } =
+      await this.getContractAndChainId();
+
+    return this.post<katanaPerps.RestResponseTransferFunds>('/transfers', {
+      parameters: params,
+      signature: await signer(
+        ...getTransferSignatureTypedData(
+          params,
+          exchangeContractAddress,
+          chainId,
+          this.#config.sandbox,
+        ),
+      ),
+    });
+  }
+
+  /**
    * Returns information about a single withdrawal matching the request.
    *
    * ---
@@ -1589,6 +1691,149 @@ export class RestAuthenticatedClient {
   }
 
   /**
+   * Third-party vendor integration endpoints (`/vendor/integrations/v1/...`).
+   *
+   * Authenticate with an API key. GET requires **read** scope; POST requires
+   * **trade** scope. These paths are not under `/v1`. Every call must include a
+   * uuid v1 `nonce` (query string on GET, top-level JSON field on POST).
+   *
+   * @category Vendor Integrations
+   */
+  public readonly vendor = Object.freeze({
+    /**
+     * Lists upcoming and active v3 taker competitions.
+     *
+     * ---
+     * **Endpoint Parameters**
+     *
+     * > - **HTTP Request:**         `GET /vendor/integrations/v1/takerCompetitionV3/list`
+     * > - **Endpoint Security:**    [User Data](https://api-docs-v1-perps.katana.network/#endpointSecurityUserData)
+     * > - **API Key Scope:**        [Read](https://api-docs-v1-perps.katana.network/#api-keys)
+     * ---
+     *
+     * @see request  {@link katanaperps.RestRequestGetVendorTakerCompetitionV3List RestRequestGetVendorTakerCompetitionV3List}
+     * @see response {@link katanaperps.RestResponseGetVendorTakerCompetitionV3List RestResponseGetVendorTakerCompetitionV3List}
+     *
+     * @category Vendor Integrations
+     */
+    getTakerCompetitionV3List: async (
+      params: katanaPerps.RestRequestGetVendorTakerCompetitionV3List,
+    ) => {
+      return this.get<katanaPerps.RestResponseGetVendorTakerCompetitionV3List>(
+        '/vendor/integrations/v1/takerCompetitionV3/list',
+        params,
+        this.#vendorIntegrationsAxiosConfig(),
+      );
+    },
+
+    /**
+     * Returns a v3 taker competition by name, including leaderboards and the
+     * optional wallet's registration state.
+     *
+     * ---
+     * **Endpoint Parameters**
+     *
+     * > - **HTTP Request:**         `GET /vendor/integrations/v1/takerCompetitionV3/name/{name}`
+     * > - **Endpoint Security:**    [User Data](https://api-docs-v1-perps.katana.network/#endpointSecurityUserData)
+     * > - **API Key Scope:**        [Read](https://api-docs-v1-perps.katana.network/#api-keys)
+     * ---
+     *
+     * @see request  {@link katanaperps.RestRequestGetVendorTakerCompetitionV3ByName RestRequestGetVendorTakerCompetitionV3ByName}
+     * @see response {@link katanaperps.RestResponseGetVendorTakerCompetitionV3ByName RestResponseGetVendorTakerCompetitionV3ByName}
+     *
+     * @category Vendor Integrations
+     */
+    getTakerCompetitionV3ByName: async ({
+      name,
+      ...params
+    }: katanaPerps.RestRequestGetVendorTakerCompetitionV3ByName) => {
+      return this.get<katanaPerps.RestResponseGetVendorTakerCompetitionV3ByName>(
+        `/vendor/integrations/v1/takerCompetitionV3/name/${encodeURIComponent(name)}`,
+        params,
+        this.#vendorIntegrationsAxiosConfig(),
+      );
+    },
+
+    /**
+     * Registers a wallet in a v3 taker competition.
+     *
+     * ---
+     * **Endpoint Parameters**
+     *
+     * > - **HTTP Request:**         `POST /vendor/integrations/v1/takerCompetitionV3/register`
+     * > - **Endpoint Security:**    [Trade](https://api-docs-v1-perps.katana.network/#endpointSecurityTrade)
+     * > - **API Key Scope:**        [Trade](https://api-docs-v1-perps.katana.network/#api-keys)
+     * ---
+     *
+     * @see request  {@link katanaperps.RestRequestRegisterVendorTakerCompetitionV3 RestRequestRegisterVendorTakerCompetitionV3}
+     * @see response {@link katanaperps.RestResponseRegisterVendorTakerCompetitionV3 RestResponseRegisterVendorTakerCompetitionV3}
+     *
+     * @category Vendor Integrations
+     */
+    registerTakerCompetitionV3: async (
+      params: katanaPerps.RestRequestRegisterVendorTakerCompetitionV3,
+    ) => {
+      return this.post<katanaPerps.RestResponseRegisterVendorTakerCompetitionV3>(
+        '/vendor/integrations/v1/takerCompetitionV3/register',
+        params,
+        this.#vendorIntegrationsAxiosConfig(),
+      );
+    },
+
+    /**
+     * Lists points-program seasons and their periods.
+     *
+     * ---
+     * **Endpoint Parameters**
+     *
+     * > - **HTTP Request:**         `GET /vendor/integrations/v1/pointsProgram/seasons`
+     * > - **Endpoint Security:**    [User Data](https://api-docs-v1-perps.katana.network/#endpointSecurityUserData)
+     * > - **API Key Scope:**        [Read](https://api-docs-v1-perps.katana.network/#api-keys)
+     * ---
+     *
+     * @see request  {@link katanaperps.RestRequestGetVendorPointsProgramSeasons RestRequestGetVendorPointsProgramSeasons}
+     * @see response {@link katanaperps.RestResponseGetVendorPointsProgramSeasons RestResponseGetVendorPointsProgramSeasons}
+     *
+     * @category Vendor Integrations
+     */
+    getPointsProgramSeasons: async (
+      params: katanaPerps.RestRequestGetVendorPointsProgramSeasons,
+    ) => {
+      return this.get<katanaPerps.RestResponseGetVendorPointsProgramSeasons>(
+        '/vendor/integrations/v1/pointsProgram/seasons',
+        params,
+        this.#vendorIntegrationsAxiosConfig(),
+      );
+    },
+
+    /**
+     * Returns points-program status for a wallet.
+     *
+     * ---
+     * **Endpoint Parameters**
+     *
+     * > - **HTTP Request:**         `GET /vendor/integrations/v1/pointsProgram/status`
+     * > - **Endpoint Security:**    [User Data](https://api-docs-v1-perps.katana.network/#endpointSecurityUserData)
+     * > - **API Key Scope:**        [Read](https://api-docs-v1-perps.katana.network/#api-keys)
+     * ---
+     *
+     * @see request  {@link katanaperps.RestRequestGetVendorPointsProgramStatus RestRequestGetVendorPointsProgramStatus}
+     * @see response {@link katanaperps.RestResponseGetVendorPointsProgramStatus RestResponseGetVendorPointsProgramStatus}
+     *
+     * @category Vendor Integrations
+     */
+    getPointsProgramStatus: async (
+      params: katanaPerps.RestRequestGetVendorPointsProgramStatus,
+    ) => {
+      return this.get<katanaPerps.RestResponseGetVendorPointsProgramStatus>(
+        '/vendor/integrations/v1/pointsProgram/status',
+        params,
+        this.#vendorIntegrationsAxiosConfig(),
+      );
+    },
+  });
+
+  /**
    * - All requests within the internal symbol are undocumented internal methods which may change or be removed without notice.
    * - API handling of the parameters used within these methods is likely to change without notice without changes to the SDK to match.
    * - These methods or parameters may require additional permissions to use and result in errors or blocking of your request if used.
@@ -1643,6 +1888,79 @@ export class RestAuthenticatedClient {
       );
 
       return result;
+    },
+
+    getTakerCompetitionV3List: async (
+      params: katanaPerps.RestRequestGetTakerCompetitionV3List = {},
+    ) => {
+      return this.get<katanaPerps.RestResponseGetTakerCompetitionV3List>(
+        '/internal/takerCompetitionV3/list',
+        params,
+      );
+    },
+
+    getTakerCompetitionV3ByName: async ({
+      name,
+      ...params
+    }: katanaPerps.RestRequestGetTakerCompetitionV3ByName) => {
+      return this.get<katanaPerps.RestResponseGetTakerCompetitionV3ByName>(
+        `/internal/takerCompetitionV3/name/${encodeURIComponent(name)}`,
+        params,
+      );
+    },
+
+    registerTakerCompetitionV3: async (
+      params: katanaPerps.RestRequestRegisterTakerCompetitionV3,
+    ) => {
+      return this.post<katanaPerps.RestResponseRegisterTakerCompetitionV3>(
+        '/internal/takerCompetitionV3/register',
+        params,
+      );
+    },
+
+    setTakerCompetitionV3DisplayName: async (
+      params: katanaPerps.RestRequestSetTakerCompetitionV3DisplayName,
+    ) => {
+      return this.post<katanaPerps.RestResponseSetTakerCompetitionV3DisplayName>(
+        '/internal/takerCompetitionV3/displayName',
+        params,
+      );
+    },
+
+    getTakerCompetitionV3Payout: async (
+      params: katanaPerps.RestRequestGetTakerCompetitionV3Payout,
+    ) => {
+      return this.get<katanaPerps.RestResponseGetTakerCompetitionV3Payout>(
+        '/internal/takerCompetitionV3/payouts',
+        params,
+      );
+    },
+
+    authorizeTakerCompetitionV3Payout: async (
+      params: katanaPerps.RestRequestAuthorizeTakerCompetitionV3Payout,
+    ) => {
+      return this.post<katanaPerps.RestResponseAuthorizeTakerCompetitionV3Payout>(
+        '/internal/takerCompetitionV3/payouts',
+        params,
+      );
+    },
+
+    getBuilderRewards: async (
+      params: katanaPerps.RestRequestGetBuilderRewards,
+    ) => {
+      return this.get<katanaPerps.RestResponseGetBuilderRewards>(
+        '/internal/builderRewards',
+        params,
+      );
+    },
+
+    getBuilderRewardsDailyFees: async (
+      params: katanaPerps.RestRequestGetBuilderRewardsDailyFees,
+    ) => {
+      return this.get<katanaPerps.RestResponseGetBuilderRewardsDailyFees>(
+        '/internal/builderRewards/dailyFees',
+        params,
+      );
     },
 
     getXChallenge: async (
@@ -1793,24 +2111,8 @@ export class RestAuthenticatedClient {
 
     removeVaultXConnection: async (
       params: katanaPerps.RestRequestRemoveVaultXConnection,
-      signer: undefined | katanaPerps.SignTypedData = this.#signer,
     ) => {
-      ensureSigner(signer);
-
-      const { chainId, exchangeContractAddress } =
-        await this.getContractAndChainId();
-
-      await this.delete('/internal/vaults/xconnection', {
-        parameters: params,
-        signature: await signer(
-          ...getRemoveVaultXConnectionSignatureTypedData(
-            params,
-            exchangeContractAddress,
-            chainId,
-            this.#config.sandbox,
-          ),
-        ),
-      });
+      await this.delete('/internal/vaults/xconnection', params);
     },
 
     setVaultXConnection: async (
@@ -1928,11 +2230,21 @@ export class RestAuthenticatedClient {
     chainId: number;
     exchangeContractAddress: string;
     bridgeAdapterContractAddress: string;
+    localDepositAdapterContractAddress: string;
   }> {
-    let { chainId, exchangeContractAddress, bridgeAdapterContractAddress } =
-      this.#config;
+    let {
+      chainId,
+      exchangeContractAddress,
+      bridgeAdapterContractAddress,
+      localDepositAdapterContractAddress,
+    } = this.#config;
 
-    if (!chainId || !exchangeContractAddress || !bridgeAdapterContractAddress) {
+    if (
+      !chainId ||
+      !exchangeContractAddress ||
+      !bridgeAdapterContractAddress ||
+      !localDepositAdapterContractAddress
+    ) {
       if (!this.#exchange) {
         this.#exchange = await this.public.getExchange();
       }
@@ -1950,11 +2262,21 @@ export class RestAuthenticatedClient {
         this.#exchange.bridgeAdapters.stargateBridgeAdapterV1KatanaContractAddress;
       bridgeAdapterContractAddress ??=
         this.#config.bridgeAdapterContractAddress;
+
+      this.#config.localDepositAdapterContractAddress ??=
+        this.#exchange.bridgeAdapters.localDepositAdapterV1KatanaContractAddress;
+      localDepositAdapterContractAddress ??=
+        this.#config.localDepositAdapterContractAddress;
     }
 
-    if (!chainId || !exchangeContractAddress || !bridgeAdapterContractAddress) {
+    if (
+      !chainId ||
+      !exchangeContractAddress ||
+      !bridgeAdapterContractAddress ||
+      !localDepositAdapterContractAddress
+    ) {
       throw new Error(
-        `Could not determine chainId (${typeof chainId}) or exchangeContractAddress (${typeof exchangeContractAddress}) or bridgeAdapterContractAddress (${typeof bridgeAdapterContractAddress})`,
+        `Could not determine chainId (${typeof chainId}) or exchangeContractAddress (${typeof exchangeContractAddress}) or bridgeAdapterContractAddress (${typeof bridgeAdapterContractAddress} or localDepositAdapterContractAddress (${typeof localDepositAdapterContractAddress})`,
       );
     }
 
@@ -1962,7 +2284,18 @@ export class RestAuthenticatedClient {
       chainId,
       exchangeContractAddress,
       bridgeAdapterContractAddress,
+      localDepositAdapterContractAddress,
     } as const;
+  }
+
+  /**
+   * Vendor integration routes live at `/vendor/integrations/v1/...`, not under
+   * the REST client's `/v1` base URL.
+   */
+  #vendorIntegrationsAxiosConfig(): { baseURL: string } {
+    return {
+      baseURL: this.#config.baseURL.replace(/\/v1\/?$/, ''),
+    };
   }
 
   /**

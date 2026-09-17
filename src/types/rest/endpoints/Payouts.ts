@@ -1,4 +1,5 @@
 import type { PayoutProgram, RestRequestByWallet } from '#index';
+import type { EmptyObj } from '#types/utils';
 
 /**
  * Payout distribution fields to be provided to the escrow contract's `distribute` function.
@@ -69,6 +70,11 @@ export interface RestRequestGetPayouts extends RestRequestByWallet {
 /**
  * Get Payout Program Authorization
  *
+ * - Programs paid out via the v1 Escrow contract return a signed authorization for the
+ *   wallet to claim on the escrow contract.
+ * - Programs paid out by direct deposit (e.g. {@link PayoutProgram.builderRewards builderRewards})
+ *   deposit the payout to the exchange on behalf of the wallet and return an empty object.
+ *
  * ---
  *
  * @example
@@ -135,8 +141,11 @@ export interface KatanaPerpsPayoutProgram {
   assetSymbol: string;
   /**
    * Address of the escrow contract for the {@link PayoutProgram payout program}
+   *
+   * - Only present for programs paid out via the v1 Escrow contract; omitted for
+   *   programs paid out by direct deposit to the exchange.
    */
-  escrowContractAddress: string;
+  escrowContractAddress?: string;
   /**
    * Total quantity earned for the requested wallet for the {@link PayoutProgram payout program}
    *
@@ -152,14 +161,15 @@ export interface KatanaPerpsPayoutProgram {
   /**
    * Total quantity owed to the requested wallet for the {@link PayoutProgram payout program}
    *
-   * - **Minimums:** There is a minimum quantity of 1 asset unit that must be earned before a payout can be authorized
-   * - **Logical Flow:** When ({@link quantityEarned} - {@link quantityPaid}) `< 1`, then `quantityOwed` will be `0` and an `authorize` call can not be made.
+   * - **Minimums:** Each program has a minimum quantity that must be earned before a payout can be made
+   * - **Logical Flow:** When ({@link quantityEarned} - {@link quantityPaid}) is below the program minimum, `quantityOwed` will be `0` and a payout cannot be made.
    * - **Format:** Asset Units
    */
   quantityOwed: string;
   /**
    * Indicates whether there is likely to be a pending earnings distribution tx that has not been mined yet.
    *
+   * - Only applicable to programs paid out via the v1 Escrow contract.
    * - This is for internal use and may change without notice.
    *
    * @internal
@@ -179,6 +189,13 @@ export interface KatanaPerpsPayoutProgram {
 export interface KatanaPerpsPayoutProgramAuthorization
   extends Omit<KatanaPerpsPayoutProgram, `quantity${string}`> {
   /**
+   * Address of the escrow contract for the {@link PayoutProgram payout program}
+   *
+   * - Always present, as authorizations are only generated for programs paid out
+   *   via the v1 Escrow contract.
+   */
+  escrowContractAddress: string;
+  /**
    * Payout distribution fields to be provided to the {@link KatanaPerpsPayoutProgram.escrowContractAddress escrow contract's} `distribute` function
    *
    * @see {@link KatanaPerpsPayoutDistribution}
@@ -189,7 +206,7 @@ export interface KatanaPerpsPayoutProgramAuthorization
 /**
  * @see [API Documentation](https://api-docs-v1-perps.katana.network/#get-payouts)
  * @see type {@link KatanaPerpsPayoutProgram}
- * @see request {@link RestRequestAuthorizePayout}
+ * @see request {@link RestRequestGetPayouts}
  * @see related {@link RestResponseAuthorizePayout}
  *
  * @category KatanaPerps - Get Payouts
@@ -197,10 +214,20 @@ export interface KatanaPerpsPayoutProgramAuthorization
 export type RestResponseGetPayouts = KatanaPerpsPayoutProgram;
 
 /**
+ * The response depends on how the requested program pays out:
+ *
+ * - Programs paid out via the v1 Escrow contract return a signed
+ *   {@link KatanaPerpsPayoutProgramAuthorization authorization}, which the wallet uses
+ *   to claim the payout on the escrow contract.
+ * - Programs paid out by direct deposit return an empty object, as the payout is
+ *   deposited to the exchange on behalf of the wallet with no further action needed.
+ *
  * @see [API Documentation](https://api-docs-v1-perps.katana.network/#authorize-payout)
  * @see type {@link KatanaPerpsPayoutProgramAuthorization}
- * @see request {@link RestRequestGetPayouts}
+ * @see request {@link RestRequestAuthorizePayout}
  *
  * @category KatanaPerps - Authorize Payout
  */
-export type RestResponseAuthorizePayout = KatanaPerpsPayoutProgramAuthorization;
+export type RestResponseAuthorizePayout =
+  | KatanaPerpsPayoutProgramAuthorization
+  | EmptyObj;

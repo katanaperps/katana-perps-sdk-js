@@ -103,6 +103,10 @@ export interface WebSocketResponseOrderFillShortBase {
    */
   f?: KatanaPerpsOrderFillEventDataGeneral['fee'];
   /**
+   * @see inflated {@link KatanaPerpsOrderFillEventData.builderFee}
+   */
+  bf?: KatanaPerpsOrderFillEventDataBase['builderFee'];
+  /**
    * @see inflated {@link KatanaPerpsOrderFillEventData.action}
    */
   a: KatanaPerpsOrderFillEventDataGeneral['action'];
