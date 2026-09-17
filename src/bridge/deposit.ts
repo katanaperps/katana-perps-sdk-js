@@ -27,14 +27,20 @@ export enum DepositBridgeAdapterPayloadType {
 }
 
 export type AddManagedAccountBridgePayloadParameters = {
-  fixedIncomeVaultProviderAddress: string;
+  managedAccountProviderAddress: string;
   managerWallet: string;
-  addManagedAccountPayload: string; // encoded using getEncodedFixedIncomeVaultConfigurationFields
+  /**
+   * Provider-specific configuration for the new vault, encoded with the
+   * encoder matching the provider type, e.g.
+   * {@link encodeFixedIncomeVaultConfigurationFields} or
+   * {@link encodeProfitShareVaultConfigurationFields}
+   */
+  addManagedAccountPayload: string;
 };
 
 export type DepositToManagedAccountBridgePayloadParameters = {
   depositorWallet: string;
-  fixedIncomeVaultProviderAddress: string;
+  managedAccountProviderAddress: string;
   managerWallet: string;
 };
 
@@ -500,7 +506,7 @@ export function encodeDepositBridgeAdapterPayload(
     | Pick<
         AddManagedAccountParameters,
         | 'bridgePayloadType'
-        | 'fixedIncomeVaultProviderAddress'
+        | 'managedAccountProviderAddress'
         | 'managerWallet'
         | 'addManagedAccountPayload'
       >
@@ -508,7 +514,7 @@ export function encodeDepositBridgeAdapterPayload(
         DepositToManagedAccountParameters,
         | 'bridgePayloadType'
         | 'depositorWallet'
-        | 'fixedIncomeVaultProviderAddress'
+        | 'managedAccountProviderAddress'
         | 'managerWallet'
       >
     | Pick<DepositToWalletParameters, 'bridgePayloadType' | 'depositorWallet'>,
@@ -523,7 +529,7 @@ export function encodeDepositBridgeAdapterPayload(
         DepositBridgeAdapterPayloadType.addManagedAccount,
         [
           sourceConfig.layerZeroEndpointId,
-          parameters.fixedIncomeVaultProviderAddress,
+          parameters.managedAccountProviderAddress,
           parameters.managerWallet,
           parameters.addManagedAccountPayload,
           '0x',
@@ -543,7 +549,7 @@ export function encodeDepositBridgeAdapterPayload(
         [
           sourceConfig.layerZeroEndpointId,
           parameters.depositorWallet,
-          parameters.fixedIncomeVaultProviderAddress,
+          parameters.managedAccountProviderAddress,
           parameters.managerWallet,
           '0x', // depositPayload
         ],
