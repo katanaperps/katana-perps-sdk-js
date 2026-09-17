@@ -13,8 +13,18 @@ const _abi = [
     inputs: [
       {
         internalType: 'address',
-        name: 'exchange_',
+        name: 'custodian_',
         type: 'address',
+      },
+      {
+        internalType: 'uint64',
+        name: 'withdrawalLimitWindowSizeInS_',
+        type: 'uint64',
+      },
+      {
+        internalType: 'uint256',
+        name: 'maximumVaultConfigurations_',
+        type: 'uint256',
       },
     ],
     stateMutability: 'nonpayable',
@@ -71,22 +81,6 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: 'uint64',
-        name: 'value',
-        type: 'uint64',
-      },
-      {
-        internalType: 'uint64',
-        name: 'maxValue',
-        type: 'uint64',
-      },
-    ],
-    name: 'DepositFeeMultiplierOutOfRange',
-    type: 'error',
-  },
-  {
-    inputs: [
-      {
         internalType: 'uint128',
         name: 'maxValue',
         type: 'uint128',
@@ -97,34 +91,12 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'Duplicate',
+    name: 'DepositorWalletNotExited',
     type: 'error',
   },
   {
     inputs: [],
-    name: 'ECDSAInvalidSignature',
-    type: 'error',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: 'length',
-        type: 'uint256',
-      },
-    ],
-    name: 'ECDSAInvalidSignatureLength',
-    type: 'error',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'bytes32',
-        name: 's',
-        type: 'bytes32',
-      },
-    ],
-    name: 'ECDSAInvalidSignatureS',
+    name: 'Duplicate',
     type: 'error',
   },
   {
@@ -170,27 +142,6 @@ const _abi = [
     type: 'error',
   },
   {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'managerWallet',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: 'actualTimestampInS',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'expectedTimestampInS',
-        type: 'uint256',
-      },
-    ],
-    name: 'IntervalTickTooSoon',
-    type: 'error',
-  },
-  {
     inputs: [],
     name: 'InvalidContractAddress',
     type: 'error',
@@ -208,7 +159,17 @@ const _abi = [
   },
   {
     inputs: [],
+    name: 'InvalidDepositPayload',
+    type: 'error',
+  },
+  {
+    inputs: [],
     name: 'InvalidDepositorWallet',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'InvalidManagedAccountProvider',
     type: 'error',
   },
   {
@@ -261,17 +222,22 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: 'uint64',
+        internalType: 'uint256',
         name: 'value',
-        type: 'uint64',
+        type: 'uint256',
       },
       {
-        internalType: 'uint64',
+        internalType: 'uint256',
         name: 'maxValue',
-        type: 'uint64',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'minValue',
+        type: 'uint256',
       },
     ],
-    name: 'ManagementFeeMultiplierOutOfRange',
+    name: 'ManagedAccountUpgradeBlockTimestampDelayInSOutOfRange',
     type: 'error',
   },
   {
@@ -286,13 +252,8 @@ const _abi = [
         name: 'maxValue',
         type: 'uint64',
       },
-      {
-        internalType: 'uint64',
-        name: 'minValue',
-        type: 'uint64',
-      },
     ],
-    name: 'ManagementFeePeriodOutOfRange',
+    name: 'ManagementFeeMultiplierOutOfRange',
     type: 'error',
   },
   {
@@ -351,22 +312,33 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: 'uint64',
+        internalType: 'uint256',
         name: 'value',
-        type: 'uint64',
+        type: 'uint256',
       },
       {
-        internalType: 'uint64',
+        internalType: 'uint256',
         name: 'maxValue',
-        type: 'uint64',
+        type: 'uint256',
       },
       {
-        internalType: 'uint64',
+        internalType: 'uint256',
         name: 'minValue',
-        type: 'uint64',
+        type: 'uint256',
       },
     ],
-    name: 'MinimumUnappliedWithdrawalAgeInSToInitiateExitOutOfRange',
+    name: 'MaximumVaultConfigurationsOutOfRange',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'limit',
+        type: 'uint256',
+      },
+    ],
+    name: 'MaximumVaultConfigurationsReached',
     type: 'error',
   },
   {
@@ -387,7 +359,7 @@ const _abi = [
         type: 'uint64',
       },
     ],
-    name: 'MinimumWithdrawalQuantityOutOfRange',
+    name: 'MinimumUnappliedDepositOrWithdrawalAgeInSToInitiateExitOutOfRange',
     type: 'error',
   },
   {
@@ -428,12 +400,23 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'NotFound',
+    name: 'NotImplemented',
     type: 'error',
   },
   {
-    inputs: [],
-    name: 'NotImplemented',
+    inputs: [
+      {
+        internalType: 'uint8',
+        name: 'bits',
+        type: 'uint8',
+      },
+      {
+        internalType: 'uint256',
+        name: 'value',
+        type: 'uint256',
+      },
+    ],
+    name: 'SafeCastOverflowedUintDowncast',
     type: 'error',
   },
   {
@@ -555,6 +538,64 @@ const _abi = [
   {
     inputs: [],
     name: 'WithdrawalCancellationNotAllowed',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint64',
+        name: 'value',
+        type: 'uint64',
+      },
+      {
+        internalType: 'uint64',
+        name: 'maxValue',
+        type: 'uint64',
+      },
+      {
+        internalType: 'uint64',
+        name: 'minValue',
+        type: 'uint64',
+      },
+    ],
+    name: 'WithdrawalLimitPercentForDepositorsOutOfRange',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint64',
+        name: 'value',
+        type: 'uint64',
+      },
+      {
+        internalType: 'uint64',
+        name: 'maxValue',
+        type: 'uint64',
+      },
+      {
+        internalType: 'uint64',
+        name: 'minValue',
+        type: 'uint64',
+      },
+    ],
+    name: 'WithdrawalLimitPercentForVaultOutOfRange',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint64',
+        name: 'value',
+        type: 'uint64',
+      },
+      {
+        internalType: 'uint64',
+        name: 'maxValue',
+        type: 'uint64',
+      },
+    ],
+    name: 'WithdrawalLimitWindowSizeInSOutOfRange',
     type: 'error',
   },
   {
@@ -796,6 +837,19 @@ const _abi = [
     inputs: [
       {
         indexed: false,
+        internalType: 'address',
+        name: 'managerWallet',
+        type: 'address',
+      },
+    ],
+    name: 'ManagerWalletLiquidated',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
         internalType: 'uint256',
         name: 'previousValue',
         type: 'uint256',
@@ -807,20 +861,7 @@ const _abi = [
         type: 'uint256',
       },
     ],
-    name: 'MinimumWithdrawalQuantityChanged',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: 'address',
-        name: 'managerWallet',
-        type: 'address',
-      },
-    ],
-    name: 'VaultLiquidated',
+    name: 'MaximumVaultConfigurationsChanged',
     type: 'event',
   },
   {
@@ -945,6 +986,31 @@ const _abi = [
       },
     ],
     name: 'WithdrawalFromManagedAccountCanceled',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'managerWallet',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'depositorWallet',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint64',
+        name: 'shares',
+        type: 'uint64',
+      },
+    ],
+    name: 'WithdrawalFromManagedAccountForExitedDepositorWalletCanceled',
     type: 'event',
   },
   {
@@ -1133,6 +1199,19 @@ const _abi = [
   },
   {
     inputs: [],
+    name: 'MANAGEMENT_FEE_PERIOD_IN_S',
+    outputs: [
+      {
+        internalType: 'uint64',
+        name: '',
+        type: 'uint64',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
     name: 'MAX_CARRY_FEE_MULTIPLIER',
     outputs: [
       {
@@ -1146,12 +1225,12 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'MAX_DEPOSIT_FEE_MULTIPLIER',
+    name: 'MAX_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
     outputs: [
       {
-        internalType: 'uint64',
+        internalType: 'uint256',
         name: '',
-        type: 'uint64',
+        type: 'uint256',
       },
     ],
     stateMutability: 'view',
@@ -1160,19 +1239,6 @@ const _abi = [
   {
     inputs: [],
     name: 'MAX_MANAGEMENT_FEE_MULTIPLIER',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MAX_MANAGEMENT_FEE_PERIOD_IN_S',
     outputs: [
       {
         internalType: 'uint64',
@@ -1198,7 +1264,20 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'MAX_MINIMUM_UNAPPLIED_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
+    name: 'MAX_MAXIMUM_VAULT_CONFIGURATIONS',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'MAX_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
     outputs: [
       {
         internalType: 'uint64',
@@ -1211,7 +1290,7 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'MAX_MINIMUM_WITHDRAWAL_QUANTITY',
+    name: 'MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS',
     outputs: [
       {
         internalType: 'uint64',
@@ -1224,12 +1303,51 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'MIN_MANAGEMENT_FEE_PERIOD_IN_S',
+    name: 'MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT',
     outputs: [
       {
         internalType: 'uint64',
         name: '',
         type: 'uint64',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'MAX_WITHDRAWAL_LIMIT_WINDOW_SIZE_IN_S',
+    outputs: [
+      {
+        internalType: 'uint64',
+        name: '',
+        type: 'uint64',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'MINIMUM_WITHDRAWAL_MAXIMUM_GAS_FEE',
+    outputs: [
+      {
+        internalType: 'uint64',
+        name: '',
+        type: 'uint64',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'MIN_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
       },
     ],
     stateMutability: 'view',
@@ -1250,38 +1368,51 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'MIN_MINIMUM_UNAPPLIED_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MIN_MINIMUM_WITHDRAWAL_QUANTITY',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'WORD_SIZE_IN_BYTES',
+    name: 'MIN_MAXIMUM_VAULT_CONFIGURATIONS',
     outputs: [
       {
         internalType: 'uint256',
         name: '',
         type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'MIN_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
+    outputs: [
+      {
+        internalType: 'uint64',
+        name: '',
+        type: 'uint64',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS',
+    outputs: [
+      {
+        internalType: 'uint64',
+        name: '',
+        type: 'uint64',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT',
+    outputs: [
+      {
+        internalType: 'uint64',
+        name: '',
+        type: 'uint64',
       },
     ],
     stateMutability: 'view',
@@ -1402,6 +1533,37 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: 'address',
+        name: 'managerWallet',
+        type: 'address',
+      },
+      {
+        internalType: 'bytes32',
+        name: 'withdrawalHash',
+        type: 'bytes32',
+      },
+    ],
+    name: 'cancelPendingWithdrawalForExitedDepositorWallet',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'custodian',
+    outputs: [
+      {
+        internalType: 'contract ICustodian',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
         internalType: 'uint64',
         name: 'depositIndex',
         type: 'uint64',
@@ -1451,19 +1613,6 @@ const _abi = [
     type: 'function',
   },
   {
-    inputs: [],
-    name: 'exchange',
-    outputs: [
-      {
-        internalType: 'contract IExchange',
-        name: '',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
     inputs: [
       {
         internalType: 'address',
@@ -1492,19 +1641,6 @@ const _abi = [
       },
     ],
     name: 'initiateManagedAccountUpgrade',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'bytes',
-        name: 'payload',
-        type: 'bytes',
-      },
-    ],
-    name: 'intervalTick',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -1616,6 +1752,16 @@ const _abi = [
           },
           {
             internalType: 'uint64',
+            name: 'maximumWithdrawalSharesAllowedInLimitWindow',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
+            name: 'pendingDepositQuantity',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
             name: 'sharesLockedForWithdrawal',
             type: 'uint64',
           },
@@ -1624,10 +1770,77 @@ const _abi = [
             name: 'totalShares',
             type: 'uint64',
           },
+          {
+            internalType: 'uint64',
+            name: 'withdrawalLimitWindowStartTimestampInS',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
+            name: 'withdrawalSharesUsedInLimitWindow',
+            type: 'uint64',
+          },
         ],
         internalType:
           'struct ProfitShareVaultProvider_v1.VaultBalanceForWallet',
         name: '',
+        type: 'tuple',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'managerWallet',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: 'depositorWallet',
+        type: 'address',
+      },
+    ],
+    name: 'loadVaultBalanceForWalletSummary',
+    outputs: [
+      {
+        components: [
+          {
+            internalType: 'uint64',
+            name: 'costBasis',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
+            name: 'pendingDepositQuantity',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
+            name: 'sharesAvailableToWithdraw',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
+            name: 'sharesLockedForWithdrawal',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
+            name: 'totalShares',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
+            name: 'withdrawalLimitWindowEndTimestampInS',
+            type: 'uint64',
+          },
+        ],
+        internalType:
+          'struct ProfitShareVaultProvider_v1.VaultBalanceForWalletSummary',
+        name: 'summary',
         type: 'tuple',
       },
     ],
@@ -1685,6 +1898,11 @@ const _abi = [
             internalType: 'bytes',
             name: 'payload',
             type: 'bytes',
+          },
+          {
+            internalType: 'uint64',
+            name: 'addedToQueueAtTimestampInS',
+            type: 'uint64',
           },
         ],
         internalType: 'struct VaultDepositQueue.Item',
@@ -1755,17 +1973,7 @@ const _abi = [
               },
               {
                 internalType: 'uint64',
-                name: 'depositFeeMultiplier',
-                type: 'uint64',
-              },
-              {
-                internalType: 'uint64',
                 name: 'managementFeeMultiplier',
-                type: 'uint64',
-              },
-              {
-                internalType: 'uint64',
-                name: 'managementFeePeriodInS',
                 type: 'uint64',
               },
               {
@@ -1775,7 +1983,17 @@ const _abi = [
               },
               {
                 internalType: 'uint64',
-                name: 'minimumUnappliedWithdrawalAgeInSToInitiateExit',
+                name: 'minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit',
+                type: 'uint64',
+              },
+              {
+                internalType: 'uint64',
+                name: 'withdrawalLimitPercentForDepositors',
+                type: 'uint64',
+              },
+              {
+                internalType: 'uint64',
+                name: 'withdrawalLimitPercentForVault',
                 type: 'uint64',
               },
             ],
@@ -1786,7 +2004,32 @@ const _abi = [
           },
           {
             internalType: 'uint64',
-            name: 'netDeposits',
+            name: 'exitedAccountValue',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
+            name: 'exitedAtTimestampInS',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
+            name: 'exitedPendingDepositQuantity',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
+            name: 'exitedTotalShares',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
+            name: 'depositorNetDeposits',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
+            name: 'depositorPendingDepositQuantity',
             type: 'uint64',
           },
           {
@@ -2017,12 +2260,12 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'minimumWithdrawalQuantity',
+    name: 'maximumVaultConfigurations',
     outputs: [
       {
-        internalType: 'uint64',
+        internalType: 'uint256',
         name: '',
-        type: 'uint64',
+        type: 'uint256',
       },
     ],
     stateMutability: 'view',
@@ -2166,12 +2409,12 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: 'uint64',
-        name: 'newMinimumWithdrawalQuantity',
-        type: 'uint64',
+        internalType: 'uint256',
+        name: 'newMaximumVaultConfigurations',
+        type: 'uint256',
       },
     ],
-    name: 'setMinimumWithdrawalQuantity',
+    name: 'setMaximumVaultConfigurations',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -2244,17 +2487,7 @@ const _abi = [
           },
           {
             internalType: 'uint64',
-            name: 'depositFeeMultiplier',
-            type: 'uint64',
-          },
-          {
-            internalType: 'uint64',
             name: 'managementFeeMultiplier',
-            type: 'uint64',
-          },
-          {
-            internalType: 'uint64',
-            name: 'managementFeePeriodInS',
             type: 'uint64',
           },
           {
@@ -2264,7 +2497,17 @@ const _abi = [
           },
           {
             internalType: 'uint64',
-            name: 'minimumUnappliedWithdrawalAgeInSToInitiateExit',
+            name: 'minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
+            name: 'withdrawalLimitPercentForDepositors',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
+            name: 'withdrawalLimitPercentForVault',
             type: 'uint64',
           },
         ],
@@ -2463,6 +2706,19 @@ const _abi = [
         internalType: 'address',
         name: '',
         type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'withdrawalLimitWindowSizeInS',
+    outputs: [
+      {
+        internalType: 'uint64',
+        name: '',
+        type: 'uint64',
       },
     ],
     stateMutability: 'view',

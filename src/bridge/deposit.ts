@@ -87,12 +87,11 @@ export type FixedIncomeVaultConfigurationFields = {
   withdrawalLimitPercentForVaultInPips: bigint;
 };
 
-export const fixedIncomeVaultConfigurationFieldsLength =
-  32 + 32 + 32 + 32 + 32 + 32 + 32 + 32 + 32 + 32; // tuple header + address + uint64 + uint64 + uint64 + uint64 + uint64 + uint64 + uint64 + uint64
-
+/**
+ * Byte lengths of the ABI-encoded loopback deposit payloads carried by
+ * Katana-to-Katana withdrawals, used to validate a payload before decoding it
+ */
 export const depositBridgeAdapterPayloadLengths = {
-  [DepositBridgeAdapterPayloadType.addManagedAccount]:
-    32 + 32 + 32 + 32 + 32 + 32 + fixedIncomeVaultConfigurationFieldsLength, // uint8 + tuple header + uint32 + address + address + bytes length + bytes
   [DepositBridgeAdapterPayloadType.depositToManagedAccount]:
     32 + 32 + 32 + 32 + 32 + 32 + 32 + 32, // uint8 + tuple header + uint32 + address + address + address + bytes length + bytes
   [DepositBridgeAdapterPayloadType.depositToWallet]: 32 + 32 + 32, // uint8 + uint32 + address

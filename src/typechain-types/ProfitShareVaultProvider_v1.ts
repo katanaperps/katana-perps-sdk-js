@@ -131,46 +131,83 @@ export type WithdrawalFromManagedAccountStructOutput = [
 export declare namespace ProfitShareVaultProvider_v1 {
   export type VaultBalanceForWalletStruct = {
     costBasis: BigNumberish;
+    maximumWithdrawalSharesAllowedInLimitWindow: BigNumberish;
+    pendingDepositQuantity: BigNumberish;
     sharesLockedForWithdrawal: BigNumberish;
     totalShares: BigNumberish;
+    withdrawalLimitWindowStartTimestampInS: BigNumberish;
+    withdrawalSharesUsedInLimitWindow: BigNumberish;
   };
 
   export type VaultBalanceForWalletStructOutput = [
     costBasis: bigint,
+    maximumWithdrawalSharesAllowedInLimitWindow: bigint,
+    pendingDepositQuantity: bigint,
     sharesLockedForWithdrawal: bigint,
     totalShares: bigint,
+    withdrawalLimitWindowStartTimestampInS: bigint,
+    withdrawalSharesUsedInLimitWindow: bigint,
   ] & {
     costBasis: bigint;
+    maximumWithdrawalSharesAllowedInLimitWindow: bigint;
+    pendingDepositQuantity: bigint;
     sharesLockedForWithdrawal: bigint;
     totalShares: bigint;
+    withdrawalLimitWindowStartTimestampInS: bigint;
+    withdrawalSharesUsedInLimitWindow: bigint;
+  };
+
+  export type VaultBalanceForWalletSummaryStruct = {
+    costBasis: BigNumberish;
+    pendingDepositQuantity: BigNumberish;
+    sharesAvailableToWithdraw: BigNumberish;
+    sharesLockedForWithdrawal: BigNumberish;
+    totalShares: BigNumberish;
+    withdrawalLimitWindowEndTimestampInS: BigNumberish;
+  };
+
+  export type VaultBalanceForWalletSummaryStructOutput = [
+    costBasis: bigint,
+    pendingDepositQuantity: bigint,
+    sharesAvailableToWithdraw: bigint,
+    sharesLockedForWithdrawal: bigint,
+    totalShares: bigint,
+    withdrawalLimitWindowEndTimestampInS: bigint,
+  ] & {
+    costBasis: bigint;
+    pendingDepositQuantity: bigint;
+    sharesAvailableToWithdraw: bigint;
+    sharesLockedForWithdrawal: bigint;
+    totalShares: bigint;
+    withdrawalLimitWindowEndTimestampInS: bigint;
   };
 
   export type VaultConfigurationFieldsStruct = {
     managerWallet: AddressLike;
     carryFeeMultiplier: BigNumberish;
-    depositFeeMultiplier: BigNumberish;
     managementFeeMultiplier: BigNumberish;
-    managementFeePeriodInS: BigNumberish;
     maximumNetDeposits: BigNumberish;
-    minimumUnappliedWithdrawalAgeInSToInitiateExit: BigNumberish;
+    minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit: BigNumberish;
+    withdrawalLimitPercentForDepositors: BigNumberish;
+    withdrawalLimitPercentForVault: BigNumberish;
   };
 
   export type VaultConfigurationFieldsStructOutput = [
     managerWallet: string,
     carryFeeMultiplier: bigint,
-    depositFeeMultiplier: bigint,
     managementFeeMultiplier: bigint,
-    managementFeePeriodInS: bigint,
     maximumNetDeposits: bigint,
-    minimumUnappliedWithdrawalAgeInSToInitiateExit: bigint,
+    minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit: bigint,
+    withdrawalLimitPercentForDepositors: bigint,
+    withdrawalLimitPercentForVault: bigint,
   ] & {
     managerWallet: string;
     carryFeeMultiplier: bigint;
-    depositFeeMultiplier: bigint;
     managementFeeMultiplier: bigint;
-    managementFeePeriodInS: bigint;
     maximumNetDeposits: bigint;
-    minimumUnappliedWithdrawalAgeInSToInitiateExit: bigint;
+    minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit: bigint;
+    withdrawalLimitPercentForDepositors: bigint;
+    withdrawalLimitPercentForVault: bigint;
   };
 
   export type VaultSummaryStruct = {
@@ -178,7 +215,12 @@ export declare namespace ProfitShareVaultProvider_v1 {
     isExited: boolean;
     isLiquidated: boolean;
     configurationFields: ProfitShareVaultProvider_v1.VaultConfigurationFieldsStruct;
-    netDeposits: BigNumberish;
+    exitedAccountValue: BigNumberish;
+    exitedAtTimestampInS: BigNumberish;
+    exitedPendingDepositQuantity: BigNumberish;
+    exitedTotalShares: BigNumberish;
+    depositorNetDeposits: BigNumberish;
+    depositorPendingDepositQuantity: BigNumberish;
     numDepositorWallets: BigNumberish;
     sharePrice: BigNumberish;
     totalShares: BigNumberish;
@@ -189,7 +231,12 @@ export declare namespace ProfitShareVaultProvider_v1 {
     isExited: boolean,
     isLiquidated: boolean,
     configurationFields: ProfitShareVaultProvider_v1.VaultConfigurationFieldsStructOutput,
-    netDeposits: bigint,
+    exitedAccountValue: bigint,
+    exitedAtTimestampInS: bigint,
+    exitedPendingDepositQuantity: bigint,
+    exitedTotalShares: bigint,
+    depositorNetDeposits: bigint,
+    depositorPendingDepositQuantity: bigint,
     numDepositorWallets: bigint,
     sharePrice: bigint,
     totalShares: bigint,
@@ -198,7 +245,12 @@ export declare namespace ProfitShareVaultProvider_v1 {
     isExited: boolean;
     isLiquidated: boolean;
     configurationFields: ProfitShareVaultProvider_v1.VaultConfigurationFieldsStructOutput;
-    netDeposits: bigint;
+    exitedAccountValue: bigint;
+    exitedAtTimestampInS: bigint;
+    exitedPendingDepositQuantity: bigint;
+    exitedTotalShares: bigint;
+    depositorNetDeposits: bigint;
+    depositorPendingDepositQuantity: bigint;
     numDepositorWallets: bigint;
     sharePrice: bigint;
     totalShares: bigint;
@@ -214,6 +266,7 @@ export declare namespace VaultDepositQueue {
     managerWallet: AddressLike;
     managedAccount: AddressLike;
     payload: BytesLike;
+    addedToQueueAtTimestampInS: BigNumberish;
   };
 
   export type ItemStructOutput = [
@@ -224,6 +277,7 @@ export declare namespace VaultDepositQueue {
     managerWallet: string,
     managedAccount: string,
     payload: string,
+    addedToQueueAtTimestampInS: bigint,
   ] & {
     index: bigint;
     quantity: bigint;
@@ -232,6 +286,7 @@ export declare namespace VaultDepositQueue {
     managerWallet: string;
     managedAccount: string;
     payload: string;
+    addedToQueueAtTimestampInS: bigint;
   };
 }
 
@@ -239,44 +294,50 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
   getFunction(
     nameOrSignature:
       | 'INITIAL_SHARE_PRICE'
+      | 'MANAGEMENT_FEE_PERIOD_IN_S'
       | 'MAX_CARRY_FEE_MULTIPLIER'
-      | 'MAX_DEPOSIT_FEE_MULTIPLIER'
+      | 'MAX_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S'
       | 'MAX_MANAGEMENT_FEE_MULTIPLIER'
-      | 'MAX_MANAGEMENT_FEE_PERIOD_IN_S'
       | 'MAX_MAXIMUM_NET_DEPOSITS'
-      | 'MAX_MINIMUM_UNAPPLIED_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT'
-      | 'MAX_MINIMUM_WITHDRAWAL_QUANTITY'
-      | 'MIN_MANAGEMENT_FEE_PERIOD_IN_S'
+      | 'MAX_MAXIMUM_VAULT_CONFIGURATIONS'
+      | 'MAX_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT'
+      | 'MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS'
+      | 'MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT'
+      | 'MAX_WITHDRAWAL_LIMIT_WINDOW_SIZE_IN_S'
+      | 'MINIMUM_WITHDRAWAL_MAXIMUM_GAS_FEE'
+      | 'MIN_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S'
       | 'MIN_MAXIMUM_NET_DEPOSITS'
-      | 'MIN_MINIMUM_UNAPPLIED_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT'
-      | 'MIN_MINIMUM_WITHDRAWAL_QUANTITY'
-      | 'WORD_SIZE_IN_BYTES'
+      | 'MIN_MAXIMUM_VAULT_CONFIGURATIONS'
+      | 'MIN_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT'
+      | 'MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS'
+      | 'MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT'
       | 'addManagedAccount'
       | 'adminWallet'
       | 'applyPendingDeposit'
       | 'applyPendingWithdrawal'
       | 'cancelManagedAccountUpgrade'
       | 'cancelPendingWithdrawal'
+      | 'cancelPendingWithdrawalForExitedDepositorWallet'
+      | 'custodian'
       | 'deposit'
       | 'emitEventsForFrontOfDepositAndWithdrawalQueues'
-      | 'exchange'
       | 'exitWallet'
       | 'finalizeManagedAccountUpgrade'
       | 'initiateManagedAccountUpgrade'
-      | 'intervalTick'
       | 'isAddManagedAccountEnabled'
       | 'isApplyDepositEnabled'
       | 'isDepositEnabled'
       | 'liquidateManagerWallet'
       | 'loadSharePrice'
       | 'loadVaultBalanceForWallet'
+      | 'loadVaultBalanceForWalletSummary'
       | 'loadVaultDepositQueueItem'
       | 'loadVaultDepositQueueLength'
       | 'loadVaultSummary'
       | 'loadVaultWithdrawQueueItem'
       | 'loadVaultWithdrawQueueLength'
       | 'managedAccountUpgradeBlockTimestampDelayInS'
-      | 'minimumWithdrawalQuantity'
+      | 'maximumVaultConfigurations'
       | 'ownerWallet'
       | 'removeAdmin'
       | 'removeOwner'
@@ -287,7 +348,7 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
       | 'setDepositEnabled'
       | 'setDepositEnabledAdmin'
       | 'setManagedAccountUpgradeBlockTimestampDelay'
-      | 'setMinimumWithdrawalQuantity'
+      | 'setMaximumVaultConfigurations'
       | 'setOwner'
       | 'setWithdrawalDispatcher'
       | 'skim'
@@ -295,7 +356,8 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
       | 'withdrawByQuantity'
       | 'withdrawByShares'
       | 'withdrawExit'
-      | 'withdrawalDispatcherWallet',
+      | 'withdrawalDispatcherWallet'
+      | 'withdrawalLimitWindowSizeInS',
   ): FunctionFragment;
 
   getEvent(
@@ -313,12 +375,13 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
       | 'ManagedAccountUpgradeCanceled'
       | 'ManagedAccountUpgradeFinalized'
       | 'ManagedAccountUpgradeInitiated'
-      | 'MinimumWithdrawalQuantityChanged'
-      | 'VaultLiquidated'
+      | 'ManagerWalletLiquidated'
+      | 'MaximumVaultConfigurationsChanged'
       | 'VaultSharesBurned'
       | 'VaultSharesMinted'
       | 'WithdrawalDispatcherChanged'
       | 'WithdrawalFromManagedAccountCanceled'
+      | 'WithdrawalFromManagedAccountForExitedDepositorWalletCanceled'
       | 'WithdrawalFromManagedAccountReadyToApply',
   ): EventFragment;
 
@@ -327,11 +390,15 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
     values?: undefined,
   ): string;
   encodeFunctionData(
+    functionFragment: 'MANAGEMENT_FEE_PERIOD_IN_S',
+    values?: undefined,
+  ): string;
+  encodeFunctionData(
     functionFragment: 'MAX_CARRY_FEE_MULTIPLIER',
     values?: undefined,
   ): string;
   encodeFunctionData(
-    functionFragment: 'MAX_DEPOSIT_FEE_MULTIPLIER',
+    functionFragment: 'MAX_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
     values?: undefined,
   ): string;
   encodeFunctionData(
@@ -339,23 +406,35 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
     values?: undefined,
   ): string;
   encodeFunctionData(
-    functionFragment: 'MAX_MANAGEMENT_FEE_PERIOD_IN_S',
-    values?: undefined,
-  ): string;
-  encodeFunctionData(
     functionFragment: 'MAX_MAXIMUM_NET_DEPOSITS',
     values?: undefined,
   ): string;
   encodeFunctionData(
-    functionFragment: 'MAX_MINIMUM_UNAPPLIED_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
+    functionFragment: 'MAX_MAXIMUM_VAULT_CONFIGURATIONS',
     values?: undefined,
   ): string;
   encodeFunctionData(
-    functionFragment: 'MAX_MINIMUM_WITHDRAWAL_QUANTITY',
+    functionFragment: 'MAX_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
     values?: undefined,
   ): string;
   encodeFunctionData(
-    functionFragment: 'MIN_MANAGEMENT_FEE_PERIOD_IN_S',
+    functionFragment: 'MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS',
+    values?: undefined,
+  ): string;
+  encodeFunctionData(
+    functionFragment: 'MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT',
+    values?: undefined,
+  ): string;
+  encodeFunctionData(
+    functionFragment: 'MAX_WITHDRAWAL_LIMIT_WINDOW_SIZE_IN_S',
+    values?: undefined,
+  ): string;
+  encodeFunctionData(
+    functionFragment: 'MINIMUM_WITHDRAWAL_MAXIMUM_GAS_FEE',
+    values?: undefined,
+  ): string;
+  encodeFunctionData(
+    functionFragment: 'MIN_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
     values?: undefined,
   ): string;
   encodeFunctionData(
@@ -363,15 +442,19 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
     values?: undefined,
   ): string;
   encodeFunctionData(
-    functionFragment: 'MIN_MINIMUM_UNAPPLIED_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
+    functionFragment: 'MIN_MAXIMUM_VAULT_CONFIGURATIONS',
     values?: undefined,
   ): string;
   encodeFunctionData(
-    functionFragment: 'MIN_MINIMUM_WITHDRAWAL_QUANTITY',
+    functionFragment: 'MIN_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
     values?: undefined,
   ): string;
   encodeFunctionData(
-    functionFragment: 'WORD_SIZE_IN_BYTES',
+    functionFragment: 'MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS',
+    values?: undefined,
+  ): string;
+  encodeFunctionData(
+    functionFragment: 'MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT',
     values?: undefined,
   ): string;
   encodeFunctionData(
@@ -399,6 +482,11 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
     values: [BigNumberish, AddressLike, BytesLike],
   ): string;
   encodeFunctionData(
+    functionFragment: 'cancelPendingWithdrawalForExitedDepositorWallet',
+    values: [AddressLike, BytesLike],
+  ): string;
+  encodeFunctionData(functionFragment: 'custodian', values?: undefined): string;
+  encodeFunctionData(
     functionFragment: 'deposit',
     values: [
       BigNumberish,
@@ -413,7 +501,6 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
     functionFragment: 'emitEventsForFrontOfDepositAndWithdrawalQueues',
     values: [AddressLike],
   ): string;
-  encodeFunctionData(functionFragment: 'exchange', values?: undefined): string;
   encodeFunctionData(
     functionFragment: 'exitWallet',
     values: [AddressLike],
@@ -424,10 +511,6 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: 'initiateManagedAccountUpgrade',
-    values: [BytesLike],
-  ): string;
-  encodeFunctionData(
-    functionFragment: 'intervalTick',
     values: [BytesLike],
   ): string;
   encodeFunctionData(
@@ -455,6 +538,10 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
     values: [AddressLike, AddressLike],
   ): string;
   encodeFunctionData(
+    functionFragment: 'loadVaultBalanceForWalletSummary',
+    values: [AddressLike, AddressLike],
+  ): string;
+  encodeFunctionData(
     functionFragment: 'loadVaultDepositQueueItem',
     values: [AddressLike, BigNumberish],
   ): string;
@@ -479,7 +566,7 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
     values?: undefined,
   ): string;
   encodeFunctionData(
-    functionFragment: 'minimumWithdrawalQuantity',
+    functionFragment: 'maximumVaultConfigurations',
     values?: undefined,
   ): string;
   encodeFunctionData(
@@ -523,7 +610,7 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
     values: [BigNumberish],
   ): string;
   encodeFunctionData(
-    functionFragment: 'setMinimumWithdrawalQuantity',
+    functionFragment: 'setMaximumVaultConfigurations',
     values: [BigNumberish],
   ): string;
   encodeFunctionData(
@@ -555,9 +642,17 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
     functionFragment: 'withdrawalDispatcherWallet',
     values?: undefined,
   ): string;
+  encodeFunctionData(
+    functionFragment: 'withdrawalLimitWindowSizeInS',
+    values?: undefined,
+  ): string;
 
   decodeFunctionResult(
     functionFragment: 'INITIAL_SHARE_PRICE',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: 'MANAGEMENT_FEE_PERIOD_IN_S',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
@@ -565,7 +660,7 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'MAX_DEPOSIT_FEE_MULTIPLIER',
+    functionFragment: 'MAX_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
@@ -573,23 +668,35 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'MAX_MANAGEMENT_FEE_PERIOD_IN_S',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
     functionFragment: 'MAX_MAXIMUM_NET_DEPOSITS',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'MAX_MINIMUM_UNAPPLIED_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
+    functionFragment: 'MAX_MAXIMUM_VAULT_CONFIGURATIONS',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'MAX_MINIMUM_WITHDRAWAL_QUANTITY',
+    functionFragment: 'MAX_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'MIN_MANAGEMENT_FEE_PERIOD_IN_S',
+    functionFragment: 'MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: 'MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: 'MAX_WITHDRAWAL_LIMIT_WINDOW_SIZE_IN_S',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: 'MINIMUM_WITHDRAWAL_MAXIMUM_GAS_FEE',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: 'MIN_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
@@ -597,15 +704,19 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'MIN_MINIMUM_UNAPPLIED_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
+    functionFragment: 'MIN_MAXIMUM_VAULT_CONFIGURATIONS',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'MIN_MINIMUM_WITHDRAWAL_QUANTITY',
+    functionFragment: 'MIN_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'WORD_SIZE_IN_BYTES',
+    functionFragment: 'MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: 'MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
@@ -632,12 +743,16 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
     functionFragment: 'cancelPendingWithdrawal',
     data: BytesLike,
   ): Result;
+  decodeFunctionResult(
+    functionFragment: 'cancelPendingWithdrawalForExitedDepositorWallet',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(functionFragment: 'custodian', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'deposit', data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: 'emitEventsForFrontOfDepositAndWithdrawalQueues',
     data: BytesLike,
   ): Result;
-  decodeFunctionResult(functionFragment: 'exchange', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'exitWallet', data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: 'finalizeManagedAccountUpgrade',
@@ -645,10 +760,6 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: 'initiateManagedAccountUpgrade',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: 'intervalTick',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
@@ -676,6 +787,10 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
+    functionFragment: 'loadVaultBalanceForWalletSummary',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
     functionFragment: 'loadVaultDepositQueueItem',
     data: BytesLike,
   ): Result;
@@ -700,7 +815,7 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'minimumWithdrawalQuantity',
+    functionFragment: 'maximumVaultConfigurations',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
@@ -741,7 +856,7 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'setMinimumWithdrawalQuantity',
+    functionFragment: 'setMaximumVaultConfigurations',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(functionFragment: 'setOwner', data: BytesLike): Result;
@@ -768,6 +883,10 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: 'withdrawalDispatcherWallet',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: 'withdrawalLimitWindowSizeInS',
     data: BytesLike,
   ): Result;
 }
@@ -966,7 +1085,19 @@ export namespace ManagedAccountUpgradeInitiatedEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export namespace MinimumWithdrawalQuantityChangedEvent {
+export namespace ManagerWalletLiquidatedEvent {
+  export type InputTuple = [managerWallet: AddressLike];
+  export type OutputTuple = [managerWallet: string];
+  export interface OutputObject {
+    managerWallet: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace MaximumVaultConfigurationsChangedEvent {
   export type InputTuple = [
     previousValue: BigNumberish,
     newValue: BigNumberish,
@@ -975,18 +1106,6 @@ export namespace MinimumWithdrawalQuantityChangedEvent {
   export interface OutputObject {
     previousValue: bigint;
     newValue: bigint;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
-
-export namespace VaultLiquidatedEvent {
-  export type InputTuple = [managerWallet: AddressLike];
-  export type OutputTuple = [managerWallet: string];
-  export interface OutputObject {
-    managerWallet: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -1088,6 +1207,28 @@ export namespace WithdrawalFromManagedAccountCanceledEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
+export namespace WithdrawalFromManagedAccountForExitedDepositorWalletCanceledEvent {
+  export type InputTuple = [
+    managerWallet: AddressLike,
+    depositorWallet: AddressLike,
+    shares: BigNumberish,
+  ];
+  export type OutputTuple = [
+    managerWallet: string,
+    depositorWallet: string,
+    shares: bigint,
+  ];
+  export interface OutputObject {
+    managerWallet: string;
+    depositorWallet: string;
+    shares: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
 export namespace WithdrawalFromManagedAccountReadyToApplyEvent {
   export type InputTuple = [
     withdrawal: WithdrawalFromManagedAccountStruct,
@@ -1155,37 +1296,75 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
 
   INITIAL_SHARE_PRICE: TypedContractMethod<[], [bigint], 'view'>;
 
+  MANAGEMENT_FEE_PERIOD_IN_S: TypedContractMethod<[], [bigint], 'view'>;
+
   MAX_CARRY_FEE_MULTIPLIER: TypedContractMethod<[], [bigint], 'view'>;
 
-  MAX_DEPOSIT_FEE_MULTIPLIER: TypedContractMethod<[], [bigint], 'view'>;
+  MAX_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S: TypedContractMethod<
+    [],
+    [bigint],
+    'view'
+  >;
 
   MAX_MANAGEMENT_FEE_MULTIPLIER: TypedContractMethod<[], [bigint], 'view'>;
 
-  MAX_MANAGEMENT_FEE_PERIOD_IN_S: TypedContractMethod<[], [bigint], 'view'>;
-
   MAX_MAXIMUM_NET_DEPOSITS: TypedContractMethod<[], [bigint], 'view'>;
 
-  MAX_MINIMUM_UNAPPLIED_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT: TypedContractMethod<
+  MAX_MAXIMUM_VAULT_CONFIGURATIONS: TypedContractMethod<[], [bigint], 'view'>;
+
+  MAX_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT: TypedContractMethod<
     [],
     [bigint],
     'view'
   >;
 
-  MAX_MINIMUM_WITHDRAWAL_QUANTITY: TypedContractMethod<[], [bigint], 'view'>;
+  MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS: TypedContractMethod<
+    [],
+    [bigint],
+    'view'
+  >;
 
-  MIN_MANAGEMENT_FEE_PERIOD_IN_S: TypedContractMethod<[], [bigint], 'view'>;
+  MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT: TypedContractMethod<
+    [],
+    [bigint],
+    'view'
+  >;
+
+  MAX_WITHDRAWAL_LIMIT_WINDOW_SIZE_IN_S: TypedContractMethod<
+    [],
+    [bigint],
+    'view'
+  >;
+
+  MINIMUM_WITHDRAWAL_MAXIMUM_GAS_FEE: TypedContractMethod<[], [bigint], 'view'>;
+
+  MIN_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S: TypedContractMethod<
+    [],
+    [bigint],
+    'view'
+  >;
 
   MIN_MAXIMUM_NET_DEPOSITS: TypedContractMethod<[], [bigint], 'view'>;
 
-  MIN_MINIMUM_UNAPPLIED_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT: TypedContractMethod<
+  MIN_MAXIMUM_VAULT_CONFIGURATIONS: TypedContractMethod<[], [bigint], 'view'>;
+
+  MIN_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT: TypedContractMethod<
     [],
     [bigint],
     'view'
   >;
 
-  MIN_MINIMUM_WITHDRAWAL_QUANTITY: TypedContractMethod<[], [bigint], 'view'>;
+  MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS: TypedContractMethod<
+    [],
+    [bigint],
+    'view'
+  >;
 
-  WORD_SIZE_IN_BYTES: TypedContractMethod<[], [bigint], 'view'>;
+  MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT: TypedContractMethod<
+    [],
+    [bigint],
+    'view'
+  >;
 
   addManagedAccount: TypedContractMethod<
     [managerWallet: AddressLike, payload: BytesLike],
@@ -1228,6 +1407,14 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
     'nonpayable'
   >;
 
+  cancelPendingWithdrawalForExitedDepositorWallet: TypedContractMethod<
+    [managerWallet: AddressLike, withdrawalHash: BytesLike],
+    [void],
+    'nonpayable'
+  >;
+
+  custodian: TypedContractMethod<[], [string], 'view'>;
+
   deposit: TypedContractMethod<
     [
       depositIndex: BigNumberish,
@@ -1247,8 +1434,6 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
     'nonpayable'
   >;
 
-  exchange: TypedContractMethod<[], [string], 'view'>;
-
   exitWallet: TypedContractMethod<
     [managerWallet: AddressLike],
     [void],
@@ -1262,8 +1447,6 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
     [void],
     'nonpayable'
   >;
-
-  intervalTick: TypedContractMethod<[payload: BytesLike], [void], 'nonpayable'>;
 
   isAddManagedAccountEnabled: TypedContractMethod<[], [boolean], 'view'>;
 
@@ -1294,6 +1477,12 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
   loadVaultBalanceForWallet: TypedContractMethod<
     [managerWallet: AddressLike, depositorWallet: AddressLike],
     [ProfitShareVaultProvider_v1.VaultBalanceForWalletStructOutput],
+    'view'
+  >;
+
+  loadVaultBalanceForWalletSummary: TypedContractMethod<
+    [managerWallet: AddressLike, depositorWallet: AddressLike],
+    [ProfitShareVaultProvider_v1.VaultBalanceForWalletSummaryStructOutput],
     'view'
   >;
 
@@ -1333,7 +1522,7 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
     'view'
   >;
 
-  minimumWithdrawalQuantity: TypedContractMethod<[], [bigint], 'view'>;
+  maximumVaultConfigurations: TypedContractMethod<[], [bigint], 'view'>;
 
   ownerWallet: TypedContractMethod<[], [string], 'view'>;
 
@@ -1379,8 +1568,8 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
     'nonpayable'
   >;
 
-  setMinimumWithdrawalQuantity: TypedContractMethod<
-    [newMinimumWithdrawalQuantity: BigNumberish],
+  setMaximumVaultConfigurations: TypedContractMethod<
+    [newMaximumVaultConfigurations: BigNumberish],
     [void],
     'nonpayable'
   >;
@@ -1431,6 +1620,8 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
 
   withdrawalDispatcherWallet: TypedContractMethod<[], [string], 'view'>;
 
+  withdrawalLimitWindowSizeInS: TypedContractMethod<[], [bigint], 'view'>;
+
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment,
   ): T;
@@ -1439,40 +1630,55 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
     nameOrSignature: 'INITIAL_SHARE_PRICE',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
+    nameOrSignature: 'MANAGEMENT_FEE_PERIOD_IN_S',
+  ): TypedContractMethod<[], [bigint], 'view'>;
+  getFunction(
     nameOrSignature: 'MAX_CARRY_FEE_MULTIPLIER',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
-    nameOrSignature: 'MAX_DEPOSIT_FEE_MULTIPLIER',
+    nameOrSignature: 'MAX_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
     nameOrSignature: 'MAX_MANAGEMENT_FEE_MULTIPLIER',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
-    nameOrSignature: 'MAX_MANAGEMENT_FEE_PERIOD_IN_S',
-  ): TypedContractMethod<[], [bigint], 'view'>;
-  getFunction(
     nameOrSignature: 'MAX_MAXIMUM_NET_DEPOSITS',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
-    nameOrSignature: 'MAX_MINIMUM_UNAPPLIED_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
+    nameOrSignature: 'MAX_MAXIMUM_VAULT_CONFIGURATIONS',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
-    nameOrSignature: 'MAX_MINIMUM_WITHDRAWAL_QUANTITY',
+    nameOrSignature: 'MAX_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
-    nameOrSignature: 'MIN_MANAGEMENT_FEE_PERIOD_IN_S',
+    nameOrSignature: 'MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS',
+  ): TypedContractMethod<[], [bigint], 'view'>;
+  getFunction(
+    nameOrSignature: 'MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT',
+  ): TypedContractMethod<[], [bigint], 'view'>;
+  getFunction(
+    nameOrSignature: 'MAX_WITHDRAWAL_LIMIT_WINDOW_SIZE_IN_S',
+  ): TypedContractMethod<[], [bigint], 'view'>;
+  getFunction(
+    nameOrSignature: 'MINIMUM_WITHDRAWAL_MAXIMUM_GAS_FEE',
+  ): TypedContractMethod<[], [bigint], 'view'>;
+  getFunction(
+    nameOrSignature: 'MIN_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
     nameOrSignature: 'MIN_MAXIMUM_NET_DEPOSITS',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
-    nameOrSignature: 'MIN_MINIMUM_UNAPPLIED_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
+    nameOrSignature: 'MIN_MAXIMUM_VAULT_CONFIGURATIONS',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
-    nameOrSignature: 'MIN_MINIMUM_WITHDRAWAL_QUANTITY',
+    nameOrSignature: 'MIN_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
-    nameOrSignature: 'WORD_SIZE_IN_BYTES',
+    nameOrSignature: 'MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS',
+  ): TypedContractMethod<[], [bigint], 'view'>;
+  getFunction(
+    nameOrSignature: 'MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
     nameOrSignature: 'addManagedAccount',
@@ -1522,6 +1728,16 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
     'nonpayable'
   >;
   getFunction(
+    nameOrSignature: 'cancelPendingWithdrawalForExitedDepositorWallet',
+  ): TypedContractMethod<
+    [managerWallet: AddressLike, withdrawalHash: BytesLike],
+    [void],
+    'nonpayable'
+  >;
+  getFunction(
+    nameOrSignature: 'custodian',
+  ): TypedContractMethod<[], [string], 'view'>;
+  getFunction(
     nameOrSignature: 'deposit',
   ): TypedContractMethod<
     [
@@ -1539,9 +1755,6 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
     nameOrSignature: 'emitEventsForFrontOfDepositAndWithdrawalQueues',
   ): TypedContractMethod<[managerWallet: AddressLike], [void], 'nonpayable'>;
   getFunction(
-    nameOrSignature: 'exchange',
-  ): TypedContractMethod<[], [string], 'view'>;
-  getFunction(
     nameOrSignature: 'exitWallet',
   ): TypedContractMethod<[managerWallet: AddressLike], [void], 'nonpayable'>;
   getFunction(
@@ -1549,9 +1762,6 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
   ): TypedContractMethod<[], [void], 'nonpayable'>;
   getFunction(
     nameOrSignature: 'initiateManagedAccountUpgrade',
-  ): TypedContractMethod<[payload: BytesLike], [void], 'nonpayable'>;
-  getFunction(
-    nameOrSignature: 'intervalTick',
   ): TypedContractMethod<[payload: BytesLike], [void], 'nonpayable'>;
   getFunction(
     nameOrSignature: 'isAddManagedAccountEnabled',
@@ -1573,6 +1783,13 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
   ): TypedContractMethod<
     [managerWallet: AddressLike, depositorWallet: AddressLike],
     [ProfitShareVaultProvider_v1.VaultBalanceForWalletStructOutput],
+    'view'
+  >;
+  getFunction(
+    nameOrSignature: 'loadVaultBalanceForWalletSummary',
+  ): TypedContractMethod<
+    [managerWallet: AddressLike, depositorWallet: AddressLike],
+    [ProfitShareVaultProvider_v1.VaultBalanceForWalletSummaryStructOutput],
     'view'
   >;
   getFunction(
@@ -1606,7 +1823,7 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
     nameOrSignature: 'managedAccountUpgradeBlockTimestampDelayInS',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
-    nameOrSignature: 'minimumWithdrawalQuantity',
+    nameOrSignature: 'maximumVaultConfigurations',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
     nameOrSignature: 'ownerWallet',
@@ -1651,9 +1868,9 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
     'nonpayable'
   >;
   getFunction(
-    nameOrSignature: 'setMinimumWithdrawalQuantity',
+    nameOrSignature: 'setMaximumVaultConfigurations',
   ): TypedContractMethod<
-    [newMinimumWithdrawalQuantity: BigNumberish],
+    [newMaximumVaultConfigurations: BigNumberish],
     [void],
     'nonpayable'
   >;
@@ -1711,6 +1928,9 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
   getFunction(
     nameOrSignature: 'withdrawalDispatcherWallet',
   ): TypedContractMethod<[], [string], 'view'>;
+  getFunction(
+    nameOrSignature: 'withdrawalLimitWindowSizeInS',
+  ): TypedContractMethod<[], [bigint], 'view'>;
 
   getEvent(
     key: 'AddManagedAccountsDisabledAdmin',
@@ -1804,18 +2024,18 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
     ManagedAccountUpgradeInitiatedEvent.OutputObject
   >;
   getEvent(
-    key: 'MinimumWithdrawalQuantityChanged',
+    key: 'ManagerWalletLiquidated',
   ): TypedContractEvent<
-    MinimumWithdrawalQuantityChangedEvent.InputTuple,
-    MinimumWithdrawalQuantityChangedEvent.OutputTuple,
-    MinimumWithdrawalQuantityChangedEvent.OutputObject
+    ManagerWalletLiquidatedEvent.InputTuple,
+    ManagerWalletLiquidatedEvent.OutputTuple,
+    ManagerWalletLiquidatedEvent.OutputObject
   >;
   getEvent(
-    key: 'VaultLiquidated',
+    key: 'MaximumVaultConfigurationsChanged',
   ): TypedContractEvent<
-    VaultLiquidatedEvent.InputTuple,
-    VaultLiquidatedEvent.OutputTuple,
-    VaultLiquidatedEvent.OutputObject
+    MaximumVaultConfigurationsChangedEvent.InputTuple,
+    MaximumVaultConfigurationsChangedEvent.OutputTuple,
+    MaximumVaultConfigurationsChangedEvent.OutputObject
   >;
   getEvent(
     key: 'VaultSharesBurned',
@@ -1844,6 +2064,13 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
     WithdrawalFromManagedAccountCanceledEvent.InputTuple,
     WithdrawalFromManagedAccountCanceledEvent.OutputTuple,
     WithdrawalFromManagedAccountCanceledEvent.OutputObject
+  >;
+  getEvent(
+    key: 'WithdrawalFromManagedAccountForExitedDepositorWalletCanceled',
+  ): TypedContractEvent<
+    WithdrawalFromManagedAccountForExitedDepositorWalletCanceledEvent.InputTuple,
+    WithdrawalFromManagedAccountForExitedDepositorWalletCanceledEvent.OutputTuple,
+    WithdrawalFromManagedAccountForExitedDepositorWalletCanceledEvent.OutputObject
   >;
   getEvent(
     key: 'WithdrawalFromManagedAccountReadyToApply',
@@ -1997,26 +2224,26 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
       ManagedAccountUpgradeInitiatedEvent.OutputObject
     >;
 
-    'MinimumWithdrawalQuantityChanged(uint256,uint256)': TypedContractEvent<
-      MinimumWithdrawalQuantityChangedEvent.InputTuple,
-      MinimumWithdrawalQuantityChangedEvent.OutputTuple,
-      MinimumWithdrawalQuantityChangedEvent.OutputObject
+    'ManagerWalletLiquidated(address)': TypedContractEvent<
+      ManagerWalletLiquidatedEvent.InputTuple,
+      ManagerWalletLiquidatedEvent.OutputTuple,
+      ManagerWalletLiquidatedEvent.OutputObject
     >;
-    MinimumWithdrawalQuantityChanged: TypedContractEvent<
-      MinimumWithdrawalQuantityChangedEvent.InputTuple,
-      MinimumWithdrawalQuantityChangedEvent.OutputTuple,
-      MinimumWithdrawalQuantityChangedEvent.OutputObject
+    ManagerWalletLiquidated: TypedContractEvent<
+      ManagerWalletLiquidatedEvent.InputTuple,
+      ManagerWalletLiquidatedEvent.OutputTuple,
+      ManagerWalletLiquidatedEvent.OutputObject
     >;
 
-    'VaultLiquidated(address)': TypedContractEvent<
-      VaultLiquidatedEvent.InputTuple,
-      VaultLiquidatedEvent.OutputTuple,
-      VaultLiquidatedEvent.OutputObject
+    'MaximumVaultConfigurationsChanged(uint256,uint256)': TypedContractEvent<
+      MaximumVaultConfigurationsChangedEvent.InputTuple,
+      MaximumVaultConfigurationsChangedEvent.OutputTuple,
+      MaximumVaultConfigurationsChangedEvent.OutputObject
     >;
-    VaultLiquidated: TypedContractEvent<
-      VaultLiquidatedEvent.InputTuple,
-      VaultLiquidatedEvent.OutputTuple,
-      VaultLiquidatedEvent.OutputObject
+    MaximumVaultConfigurationsChanged: TypedContractEvent<
+      MaximumVaultConfigurationsChangedEvent.InputTuple,
+      MaximumVaultConfigurationsChangedEvent.OutputTuple,
+      MaximumVaultConfigurationsChangedEvent.OutputObject
     >;
 
     'VaultSharesBurned(address,address,uint64,uint64,uint64,uint64)': TypedContractEvent<
@@ -2061,6 +2288,17 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
       WithdrawalFromManagedAccountCanceledEvent.InputTuple,
       WithdrawalFromManagedAccountCanceledEvent.OutputTuple,
       WithdrawalFromManagedAccountCanceledEvent.OutputObject
+    >;
+
+    'WithdrawalFromManagedAccountForExitedDepositorWalletCanceled(address,address,uint64)': TypedContractEvent<
+      WithdrawalFromManagedAccountForExitedDepositorWalletCanceledEvent.InputTuple,
+      WithdrawalFromManagedAccountForExitedDepositorWalletCanceledEvent.OutputTuple,
+      WithdrawalFromManagedAccountForExitedDepositorWalletCanceledEvent.OutputObject
+    >;
+    WithdrawalFromManagedAccountForExitedDepositorWalletCanceled: TypedContractEvent<
+      WithdrawalFromManagedAccountForExitedDepositorWalletCanceledEvent.InputTuple,
+      WithdrawalFromManagedAccountForExitedDepositorWalletCanceledEvent.OutputTuple,
+      WithdrawalFromManagedAccountForExitedDepositorWalletCanceledEvent.OutputObject
     >;
 
     'WithdrawalFromManagedAccountReadyToApply(tuple,uint64,uint256)': TypedContractEvent<
