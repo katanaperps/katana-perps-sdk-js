@@ -87,6 +87,16 @@ export type FixedIncomeVaultConfigurationFields = {
   withdrawalLimitPercentForVaultInPips: bigint;
 };
 
+export type ProfitShareVaultConfigurationFields = {
+  managerWallet: string;
+  carryFeeMultiplierInPips: bigint;
+  managementFeeMultiplierInPips: bigint;
+  maximumNetDepositsInPips: bigint;
+  minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit: number;
+  withdrawalLimitPercentForDepositorsInPips: bigint;
+  withdrawalLimitPercentForVaultInPips: bigint;
+};
+
 /**
  * Byte lengths of the ABI-encoded loopback deposit payloads carried by
  * Katana-to-Katana withdrawals, used to validate a payload before decoding it
@@ -573,6 +583,25 @@ export function encodeFixedIncomeVaultConfigurationFields(
         configurationFields.maximumTotalOwedQuantityAvailableForExitWithdrawalMultiplierNeededToInitiateExitInPips,
         configurationFields.minimumTotalOwedQuantityAvailableForExitWithdrawalMultiplierToAllowManagerWalletWithdrawalInPips,
         configurationFields.minimumUnappliedWithdrawalAgeInSNeededToInitiateExit,
+        configurationFields.withdrawalLimitPercentForDepositorsInPips,
+        configurationFields.withdrawalLimitPercentForVaultInPips,
+      ],
+    ],
+  );
+}
+
+export function encodeProfitShareVaultConfigurationFields(
+  configurationFields: ProfitShareVaultConfigurationFields,
+) {
+  return ethers.AbiCoder.defaultAbiCoder().encode(
+    ['tuple(address,uint64,uint64,uint64,uint64,uint64,uint64)'],
+    [
+      [
+        configurationFields.managerWallet,
+        configurationFields.carryFeeMultiplierInPips,
+        configurationFields.managementFeeMultiplierInPips,
+        configurationFields.maximumNetDepositsInPips,
+        configurationFields.minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit,
         configurationFields.withdrawalLimitPercentForDepositorsInPips,
         configurationFields.withdrawalLimitPercentForVaultInPips,
       ],
