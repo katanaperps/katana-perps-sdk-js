@@ -121,6 +121,14 @@ export interface KatanaPerpsExchange {
      * Address of Fixed Income Vault Provider aggregator V1 contract
      */
     fixedIncomeVaultProviderStateAggregatorV1ContractAddress: string;
+    /**
+     * Address of Profit Share Vault Provider V1 contract
+     */
+    profitShareVaultProviderV1ContractAddress: string;
+    /**
+     * Address of Profit Share Vault Provider aggregator V1 contract
+     */
+    profitShareVaultProviderStateAggregatorV1ContractAddress: string;
   };
 }
 
