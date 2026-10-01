@@ -75,6 +75,11 @@ const _abi = [
           },
           {
             internalType: 'uint64',
+            name: 'initialDepositTimestampInS',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
             name: 'sharePrice',
             type: 'uint64',
           },
@@ -112,6 +117,11 @@ const _abi = [
           {
             internalType: 'uint64',
             name: 'costBasis',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
+            name: 'initialDepositTimestampInS',
             type: 'uint64',
           },
           {

@@ -33,15 +33,22 @@ export type LoadSharePricesAndTotalSharesResultStructOutput = [
 
 export type LoadVaultDepositorsResultStruct = {
   costBasis: BigNumberish;
+  initialDepositTimestampInS: BigNumberish;
   sharePrice: BigNumberish;
   totalShares: BigNumberish;
 };
 
 export type LoadVaultDepositorsResultStructOutput = [
   costBasis: bigint,
+  initialDepositTimestampInS: bigint,
   sharePrice: bigint,
   totalShares: bigint,
-] & { costBasis: bigint; sharePrice: bigint; totalShares: bigint };
+] & {
+  costBasis: bigint;
+  initialDepositTimestampInS: bigint;
+  sharePrice: bigint;
+  totalShares: bigint;
+};
 
 export type VaultWithdrawQueueItemStruct = {
   nonce: BigNumberish;

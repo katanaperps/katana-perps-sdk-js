@@ -1752,6 +1752,11 @@ const _abi = [
           },
           {
             internalType: 'uint64',
+            name: 'initialDepositTimestampInS',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
             name: 'maximumWithdrawalSharesAllowedInLimitWindow',
             type: 'uint64',
           },
@@ -1810,6 +1815,11 @@ const _abi = [
           {
             internalType: 'uint64',
             name: 'costBasis',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
+            name: 'initialDepositTimestampInS',
             type: 'uint64',
           },
           {
@@ -2597,7 +2607,7 @@ const _abi = [
     ],
     name: 'withdrawByQuantity',
     outputs: [],
-    stateMutability: 'view',
+    stateMutability: 'pure',
     type: 'function',
   },
   {
