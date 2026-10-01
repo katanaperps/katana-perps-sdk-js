@@ -131,6 +131,7 @@ export type WithdrawalFromManagedAccountStructOutput = [
 export declare namespace ProfitShareVaultProvider_v1 {
   export type VaultBalanceForWalletStruct = {
     costBasis: BigNumberish;
+    initialDepositTimestampInS: BigNumberish;
     maximumWithdrawalSharesAllowedInLimitWindow: BigNumberish;
     pendingDepositQuantity: BigNumberish;
     sharesLockedForWithdrawal: BigNumberish;
@@ -141,6 +142,7 @@ export declare namespace ProfitShareVaultProvider_v1 {
 
   export type VaultBalanceForWalletStructOutput = [
     costBasis: bigint,
+    initialDepositTimestampInS: bigint,
     maximumWithdrawalSharesAllowedInLimitWindow: bigint,
     pendingDepositQuantity: bigint,
     sharesLockedForWithdrawal: bigint,
@@ -149,6 +151,7 @@ export declare namespace ProfitShareVaultProvider_v1 {
     withdrawalSharesUsedInLimitWindow: bigint,
   ] & {
     costBasis: bigint;
+    initialDepositTimestampInS: bigint;
     maximumWithdrawalSharesAllowedInLimitWindow: bigint;
     pendingDepositQuantity: bigint;
     sharesLockedForWithdrawal: bigint;
@@ -159,6 +162,7 @@ export declare namespace ProfitShareVaultProvider_v1 {
 
   export type VaultBalanceForWalletSummaryStruct = {
     costBasis: BigNumberish;
+    initialDepositTimestampInS: BigNumberish;
     pendingDepositQuantity: BigNumberish;
     sharesAvailableToWithdraw: BigNumberish;
     sharesLockedForWithdrawal: BigNumberish;
@@ -168,6 +172,7 @@ export declare namespace ProfitShareVaultProvider_v1 {
 
   export type VaultBalanceForWalletSummaryStructOutput = [
     costBasis: bigint,
+    initialDepositTimestampInS: bigint,
     pendingDepositQuantity: bigint,
     sharesAvailableToWithdraw: bigint,
     sharesLockedForWithdrawal: bigint,
@@ -175,6 +180,7 @@ export declare namespace ProfitShareVaultProvider_v1 {
     withdrawalLimitWindowEndTimestampInS: bigint,
   ] & {
     costBasis: bigint;
+    initialDepositTimestampInS: bigint;
     pendingDepositQuantity: bigint;
     sharesAvailableToWithdraw: bigint;
     sharesLockedForWithdrawal: bigint;

@@ -90,10 +90,9 @@ export interface KatanaPerpsVaultBase {
    */
   provider: string;
   /**
-   * Address of the state aggregator contract of the vault's provider
-   * instance; null for provider types without one
+   * Address of the state aggregator contract of the vault's provider instance
    */
-  stateAggregator: string | null;
+  stateAggregator: string;
   /**
    * Manager wallet address
    */
