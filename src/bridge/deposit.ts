@@ -27,14 +27,20 @@ export enum DepositBridgeAdapterPayloadType {
 }
 
 export type AddManagedAccountBridgePayloadParameters = {
-  fixedIncomeVaultProviderAddress: string;
+  managedAccountProviderAddress: string;
   managerWallet: string;
-  addManagedAccountPayload: string; // encoded using getEncodedFixedIncomeVaultConfigurationFields
+  /**
+   * Provider-specific configuration for the new vault, encoded with the
+   * encoder matching the provider type, e.g.
+   * {@link encodeFixedIncomeVaultConfigurationFields} or
+   * {@link encodeProfitShareVaultConfigurationFields}
+   */
+  addManagedAccountPayload: string;
 };
 
 export type DepositToManagedAccountBridgePayloadParameters = {
   depositorWallet: string;
-  fixedIncomeVaultProviderAddress: string;
+  managedAccountProviderAddress: string;
   managerWallet: string;
 };
 
@@ -87,12 +93,21 @@ export type FixedIncomeVaultConfigurationFields = {
   withdrawalLimitPercentForVaultInPips: bigint;
 };
 
-export const fixedIncomeVaultConfigurationFieldsLength =
-  32 + 32 + 32 + 32 + 32 + 32 + 32 + 32 + 32 + 32; // tuple header + address + uint64 + uint64 + uint64 + uint64 + uint64 + uint64 + uint64 + uint64
+export type ProfitShareVaultConfigurationFields = {
+  managerWallet: string;
+  carryFeeMultiplierInPips: bigint;
+  managementFeeMultiplierInPips: bigint;
+  maximumNetDepositsInPips: bigint;
+  minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit: number;
+  withdrawalLimitPercentForDepositorsInPips: bigint;
+  withdrawalLimitPercentForVaultInPips: bigint;
+};
 
+/**
+ * Byte lengths of the ABI-encoded loopback deposit payloads carried by
+ * Katana-to-Katana withdrawals, used to validate a payload before decoding it
+ */
 export const depositBridgeAdapterPayloadLengths = {
-  [DepositBridgeAdapterPayloadType.addManagedAccount]:
-    32 + 32 + 32 + 32 + 32 + 32 + fixedIncomeVaultConfigurationFieldsLength, // uint8 + tuple header + uint32 + address + address + bytes length + bytes
   [DepositBridgeAdapterPayloadType.depositToManagedAccount]:
     32 + 32 + 32 + 32 + 32 + 32 + 32 + 32, // uint8 + tuple header + uint32 + address + address + address + bytes length + bytes
   [DepositBridgeAdapterPayloadType.depositToWallet]: 32 + 32 + 32, // uint8 + uint32 + address
@@ -491,7 +506,7 @@ export function encodeDepositBridgeAdapterPayload(
     | Pick<
         AddManagedAccountParameters,
         | 'bridgePayloadType'
-        | 'fixedIncomeVaultProviderAddress'
+        | 'managedAccountProviderAddress'
         | 'managerWallet'
         | 'addManagedAccountPayload'
       >
@@ -499,7 +514,7 @@ export function encodeDepositBridgeAdapterPayload(
         DepositToManagedAccountParameters,
         | 'bridgePayloadType'
         | 'depositorWallet'
-        | 'fixedIncomeVaultProviderAddress'
+        | 'managedAccountProviderAddress'
         | 'managerWallet'
       >
     | Pick<DepositToWalletParameters, 'bridgePayloadType' | 'depositorWallet'>,
@@ -514,7 +529,7 @@ export function encodeDepositBridgeAdapterPayload(
         DepositBridgeAdapterPayloadType.addManagedAccount,
         [
           sourceConfig.layerZeroEndpointId,
-          parameters.fixedIncomeVaultProviderAddress,
+          parameters.managedAccountProviderAddress,
           parameters.managerWallet,
           parameters.addManagedAccountPayload,
           '0x',
@@ -534,7 +549,7 @@ export function encodeDepositBridgeAdapterPayload(
         [
           sourceConfig.layerZeroEndpointId,
           parameters.depositorWallet,
-          parameters.fixedIncomeVaultProviderAddress,
+          parameters.managedAccountProviderAddress,
           parameters.managerWallet,
           '0x', // depositPayload
         ],
@@ -574,6 +589,25 @@ export function encodeFixedIncomeVaultConfigurationFields(
         configurationFields.maximumTotalOwedQuantityAvailableForExitWithdrawalMultiplierNeededToInitiateExitInPips,
         configurationFields.minimumTotalOwedQuantityAvailableForExitWithdrawalMultiplierToAllowManagerWalletWithdrawalInPips,
         configurationFields.minimumUnappliedWithdrawalAgeInSNeededToInitiateExit,
+        configurationFields.withdrawalLimitPercentForDepositorsInPips,
+        configurationFields.withdrawalLimitPercentForVaultInPips,
+      ],
+    ],
+  );
+}
+
+export function encodeProfitShareVaultConfigurationFields(
+  configurationFields: ProfitShareVaultConfigurationFields,
+) {
+  return ethers.AbiCoder.defaultAbiCoder().encode(
+    ['tuple(address,uint64,uint64,uint64,uint64,uint64,uint64)'],
+    [
+      [
+        configurationFields.managerWallet,
+        configurationFields.carryFeeMultiplierInPips,
+        configurationFields.managementFeeMultiplierInPips,
+        configurationFields.maximumNetDepositsInPips,
+        configurationFields.minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit,
         configurationFields.withdrawalLimitPercentForDepositorsInPips,
         configurationFields.withdrawalLimitPercentForVaultInPips,
       ],

@@ -84,17 +84,15 @@ export interface RestRequestGetVaults {
 /**
  * @hidden
  */
-export interface KatanaPerpsVault {
-  type: VaultType;
+export interface KatanaPerpsVaultBase {
   /**
    * Address of the managed account provider contract
    */
   provider: string;
   /**
-   * Address of the state aggregator contract of the vault's provider
-   * instance; null for provider types without one
+   * Address of the state aggregator contract of the vault's provider instance
    */
-  stateAggregator: string | null;
+  stateAggregator: string;
   /**
    * Manager wallet address
    */
@@ -137,6 +135,22 @@ export interface KatanaPerpsVault {
    */
   managerXProfileImageUrl: string;
   /**
+   * Vault farm APY in decimal notation with 8 decimals.
+   * For example, `1.00%` is expressed as `0.01000000`.
+   */
+  apyFarm: string | null;
+  /**
+   * Vault TVL
+   */
+  tvl: string;
+}
+
+/**
+ * @hidden
+ */
+export interface KatanaPerpsFixedIncomeVault extends KatanaPerpsVaultBase {
+  type: 'fixedIncomeVaultV1';
+  /**
    * Total vault APY in decimal notation with 8 decimals.
    * For example, `1.00%` is expressed as `0.01000000`.
    */
@@ -147,19 +161,32 @@ export interface KatanaPerpsVault {
    */
   apyFixed: string;
   /**
-   * Vault farm APY in decimal notation with 8 decimals.
-   * For example, `1.00%` is expressed as `0.01000000`.
-   */
-  apyFarm: string | null;
-  /**
-   * Vault TVL
-   */
-  tvl: string;
-  /**
    * Total account value / depositor obligations
    */
   collateralization: string;
 }
+
+/**
+ * @hidden
+ */
+export interface KatanaPerpsProfitShareVault extends KatanaPerpsVaultBase {
+  type: 'profitShareVaultV1';
+  /**
+   * Current share price in quote terms.
+   */
+  sharePrice: string;
+  /**
+   * Total PnL for the vault since its first deposit in quote terms
+   */
+  pnl: string;
+}
+
+/**
+ * @hidden
+ */
+export type KatanaPerpsVault =
+  | KatanaPerpsFixedIncomeVault
+  | KatanaPerpsProfitShareVault;
 
 /**
  * @hidden
