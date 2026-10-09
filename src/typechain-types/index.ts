@@ -13,6 +13,8 @@ export type { FixedIncomeVaultProvider_v1 } from './FixedIncomeVaultProvider_v1'
 export type { IOFT } from './IOFT';
 export type { IVaultComposerSync } from './IVaultComposerSync';
 export type { KatanaPerpsStargateForwarder_v1 } from './KatanaPerpsStargateForwarder_v1';
+export type { ProfitShareVaultProviderStateAggregator_v1 } from './ProfitShareVaultProviderStateAggregator_v1';
+export type { ProfitShareVaultProvider_v1 } from './ProfitShareVaultProvider_v1';
 export * as factories from './factories';
 export { EarningsEscrow_v2__factory } from './factories/EarningsEscrow_v2__factory';
 export { EarningsEscrow__factory } from './factories/EarningsEscrow__factory';
@@ -26,3 +28,5 @@ export { FixedIncomeVaultProviderStateAggregator_v1__factory } from './factories
 export { IOFT__factory } from './factories/IOFT__factory';
 export { IVaultComposerSync__factory } from './factories/IVaultComposerSync__factory';
 export { KatanaPerpsStargateForwarder_v1__factory } from './factories/KatanaPerpsStargateForwarder_v1__factory';
+export { ProfitShareVaultProvider_v1__factory } from './factories/ProfitShareVaultProvider_v1__factory';
+export { ProfitShareVaultProviderStateAggregator_v1__factory } from './factories/ProfitShareVaultProviderStateAggregator_v1__factory';

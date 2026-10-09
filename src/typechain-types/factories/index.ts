@@ -13,3 +13,5 @@ export { FixedIncomeVaultProvider_v1__factory } from './FixedIncomeVaultProvider
 export { IOFT__factory } from './IOFT__factory';
 export { IVaultComposerSync__factory } from './IVaultComposerSync__factory';
 export { KatanaPerpsStargateForwarder_v1__factory } from './KatanaPerpsStargateForwarder_v1__factory';
+export { ProfitShareVaultProviderStateAggregator_v1__factory } from './ProfitShareVaultProviderStateAggregator_v1__factory';
+export { ProfitShareVaultProvider_v1__factory } from './ProfitShareVaultProvider_v1__factory';

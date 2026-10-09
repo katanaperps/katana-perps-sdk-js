@@ -23,8 +23,6 @@ export type DecodedWithdrawalBridgeAdapterPayload = {
  */
 export type EncodedWithdrawalBridgeAdapterPayload = string;
 
-export const withdrawalBridgeAdapterPayloadLength = 4; // uint32(4)
-
 /**
  * Decode an ABI-encoded hex string representing bridged withdrawal parameters
  */
