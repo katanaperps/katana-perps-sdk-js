@@ -220,6 +220,7 @@ export declare namespace ProfitShareVaultProvider_v1 {
     isDepositEnabled: boolean;
     isExited: boolean;
     isLiquidated: boolean;
+    exchangeCarryFeeMultiplier: BigNumberish;
     configurationFields: ProfitShareVaultProvider_v1.VaultConfigurationFieldsStruct;
     exitedAccountValue: BigNumberish;
     exitedAtTimestampInS: BigNumberish;
@@ -236,6 +237,7 @@ export declare namespace ProfitShareVaultProvider_v1 {
     isDepositEnabled: boolean,
     isExited: boolean,
     isLiquidated: boolean,
+    exchangeCarryFeeMultiplier: bigint,
     configurationFields: ProfitShareVaultProvider_v1.VaultConfigurationFieldsStructOutput,
     exitedAccountValue: bigint,
     exitedAtTimestampInS: bigint,
@@ -250,6 +252,7 @@ export declare namespace ProfitShareVaultProvider_v1 {
     isDepositEnabled: boolean;
     isExited: boolean;
     isLiquidated: boolean;
+    exchangeCarryFeeMultiplier: bigint;
     configurationFields: ProfitShareVaultProvider_v1.VaultConfigurationFieldsStructOutput;
     exitedAccountValue: bigint;
     exitedAtTimestampInS: bigint;
@@ -299,24 +302,10 @@ export declare namespace VaultDepositQueue {
 export interface ProfitShareVaultProvider_v1Interface extends Interface {
   getFunction(
     nameOrSignature:
-      | 'INITIAL_SHARE_PRICE'
-      | 'MANAGEMENT_FEE_PERIOD_IN_S'
-      | 'MAX_CARRY_FEE_MULTIPLIER'
       | 'MAX_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S'
-      | 'MAX_MANAGEMENT_FEE_MULTIPLIER'
-      | 'MAX_MAXIMUM_NET_DEPOSITS'
       | 'MAX_MAXIMUM_VAULT_CONFIGURATIONS'
-      | 'MAX_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT'
-      | 'MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS'
-      | 'MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT'
-      | 'MAX_WITHDRAWAL_LIMIT_WINDOW_SIZE_IN_S'
-      | 'MINIMUM_WITHDRAWAL_MAXIMUM_GAS_FEE'
       | 'MIN_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S'
-      | 'MIN_MAXIMUM_NET_DEPOSITS'
       | 'MIN_MAXIMUM_VAULT_CONFIGURATIONS'
-      | 'MIN_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT'
-      | 'MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS'
-      | 'MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT'
       | 'addManagedAccount'
       | 'adminWallet'
       | 'applyPendingDeposit'
@@ -326,6 +315,8 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
       | 'cancelPendingWithdrawalForExitedDepositorWallet'
       | 'custodian'
       | 'deposit'
+      | 'domainSeparatorV4'
+      | 'eip712Domain'
       | 'emitEventsForFrontOfDepositAndWithdrawalQueues'
       | 'exitWallet'
       | 'finalizeManagedAccountUpgrade'
@@ -353,6 +344,7 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
       | 'setAdmin'
       | 'setDepositEnabled'
       | 'setDepositEnabledAdmin'
+      | 'setExchangeCarryFeeMultiplier'
       | 'setManagedAccountUpgradeBlockTimestampDelay'
       | 'setMaximumVaultConfigurations'
       | 'setOwner'
@@ -370,11 +362,15 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
     nameOrSignatureOrTopic:
       | 'AddManagedAccountsDisabledAdmin'
       | 'AddManagedAccountsEnabledAdmin'
+      | 'CarryFeeDepositFailed'
       | 'DepositToManagedAccountReadyToApply'
       | 'DepositsDisabled'
       | 'DepositsDisabledAdmin'
       | 'DepositsEnabled'
       | 'DepositsEnabledAdmin'
+      | 'EIP712DomainChanged'
+      | 'ExchangeCarryFeeDepositFailed'
+      | 'ExchangeCarryFeeMultiplierChanged'
       | 'LiquidatedVaultPendingDepositRefundFailed'
       | 'ManagedAccountAdded'
       | 'ManagedAccountUpgradeBlockTimestampDelayChanged'
@@ -392,27 +388,7 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
   ): EventFragment;
 
   encodeFunctionData(
-    functionFragment: 'INITIAL_SHARE_PRICE',
-    values?: undefined,
-  ): string;
-  encodeFunctionData(
-    functionFragment: 'MANAGEMENT_FEE_PERIOD_IN_S',
-    values?: undefined,
-  ): string;
-  encodeFunctionData(
-    functionFragment: 'MAX_CARRY_FEE_MULTIPLIER',
-    values?: undefined,
-  ): string;
-  encodeFunctionData(
     functionFragment: 'MAX_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
-    values?: undefined,
-  ): string;
-  encodeFunctionData(
-    functionFragment: 'MAX_MANAGEMENT_FEE_MULTIPLIER',
-    values?: undefined,
-  ): string;
-  encodeFunctionData(
-    functionFragment: 'MAX_MAXIMUM_NET_DEPOSITS',
     values?: undefined,
   ): string;
   encodeFunctionData(
@@ -420,47 +396,11 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
     values?: undefined,
   ): string;
   encodeFunctionData(
-    functionFragment: 'MAX_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
-    values?: undefined,
-  ): string;
-  encodeFunctionData(
-    functionFragment: 'MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS',
-    values?: undefined,
-  ): string;
-  encodeFunctionData(
-    functionFragment: 'MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT',
-    values?: undefined,
-  ): string;
-  encodeFunctionData(
-    functionFragment: 'MAX_WITHDRAWAL_LIMIT_WINDOW_SIZE_IN_S',
-    values?: undefined,
-  ): string;
-  encodeFunctionData(
-    functionFragment: 'MINIMUM_WITHDRAWAL_MAXIMUM_GAS_FEE',
-    values?: undefined,
-  ): string;
-  encodeFunctionData(
     functionFragment: 'MIN_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
     values?: undefined,
   ): string;
   encodeFunctionData(
-    functionFragment: 'MIN_MAXIMUM_NET_DEPOSITS',
-    values?: undefined,
-  ): string;
-  encodeFunctionData(
     functionFragment: 'MIN_MAXIMUM_VAULT_CONFIGURATIONS',
-    values?: undefined,
-  ): string;
-  encodeFunctionData(
-    functionFragment: 'MIN_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
-    values?: undefined,
-  ): string;
-  encodeFunctionData(
-    functionFragment: 'MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS',
-    values?: undefined,
-  ): string;
-  encodeFunctionData(
-    functionFragment: 'MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT',
     values?: undefined,
   ): string;
   encodeFunctionData(
@@ -502,6 +442,14 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
       AddressLike,
       BytesLike,
     ],
+  ): string;
+  encodeFunctionData(
+    functionFragment: 'domainSeparatorV4',
+    values?: undefined,
+  ): string;
+  encodeFunctionData(
+    functionFragment: 'eip712Domain',
+    values?: undefined,
   ): string;
   encodeFunctionData(
     functionFragment: 'emitEventsForFrontOfDepositAndWithdrawalQueues',
@@ -612,6 +560,10 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
     values: [boolean, boolean],
   ): string;
   encodeFunctionData(
+    functionFragment: 'setExchangeCarryFeeMultiplier',
+    values: [AddressLike, BigNumberish],
+  ): string;
+  encodeFunctionData(
     functionFragment: 'setManagedAccountUpgradeBlockTimestampDelay',
     values: [BigNumberish],
   ): string;
@@ -654,27 +606,7 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
   ): string;
 
   decodeFunctionResult(
-    functionFragment: 'INITIAL_SHARE_PRICE',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: 'MANAGEMENT_FEE_PERIOD_IN_S',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: 'MAX_CARRY_FEE_MULTIPLIER',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
     functionFragment: 'MAX_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: 'MAX_MANAGEMENT_FEE_MULTIPLIER',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: 'MAX_MAXIMUM_NET_DEPOSITS',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
@@ -682,47 +614,11 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'MAX_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: 'MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: 'MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: 'MAX_WITHDRAWAL_LIMIT_WINDOW_SIZE_IN_S',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: 'MINIMUM_WITHDRAWAL_MAXIMUM_GAS_FEE',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
     functionFragment: 'MIN_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'MIN_MAXIMUM_NET_DEPOSITS',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
     functionFragment: 'MIN_MAXIMUM_VAULT_CONFIGURATIONS',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: 'MIN_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: 'MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: 'MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT',
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
@@ -755,6 +651,14 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: 'custodian', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'deposit', data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: 'domainSeparatorV4',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: 'eip712Domain',
+    data: BytesLike,
+  ): Result;
   decodeFunctionResult(
     functionFragment: 'emitEventsForFrontOfDepositAndWithdrawalQueues',
     data: BytesLike,
@@ -858,6 +762,10 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
     data: BytesLike,
   ): Result;
   decodeFunctionResult(
+    functionFragment: 'setExchangeCarryFeeMultiplier',
+    data: BytesLike,
+  ): Result;
+  decodeFunctionResult(
     functionFragment: 'setManagedAccountUpgradeBlockTimestampDelay',
     data: BytesLike,
   ): Result;
@@ -911,6 +819,28 @@ export namespace AddManagedAccountsEnabledAdminEvent {
   export type InputTuple = [];
   export type OutputTuple = [];
   export interface OutputObject {}
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace CarryFeeDepositFailedEvent {
+  export type InputTuple = [
+    managerWallet: AddressLike,
+    quantityInAssetUnits: BigNumberish,
+    errorData: BytesLike,
+  ];
+  export type OutputTuple = [
+    managerWallet: string,
+    quantityInAssetUnits: bigint,
+    errorData: string,
+  ];
+  export interface OutputObject {
+    managerWallet: string;
+    quantityInAssetUnits: bigint;
+    errorData: string;
+  }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
   export type Log = TypedEventLog<Event>;
@@ -992,6 +922,63 @@ export namespace DepositsEnabledAdminEvent {
   export type InputTuple = [];
   export type OutputTuple = [];
   export interface OutputObject {}
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace EIP712DomainChangedEvent {
+  export type InputTuple = [];
+  export type OutputTuple = [];
+  export interface OutputObject {}
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace ExchangeCarryFeeDepositFailedEvent {
+  export type InputTuple = [
+    managerWallet: AddressLike,
+    feeWallet: AddressLike,
+    quantityInAssetUnits: BigNumberish,
+    errorData: BytesLike,
+  ];
+  export type OutputTuple = [
+    managerWallet: string,
+    feeWallet: string,
+    quantityInAssetUnits: bigint,
+    errorData: string,
+  ];
+  export interface OutputObject {
+    managerWallet: string;
+    feeWallet: string;
+    quantityInAssetUnits: bigint;
+    errorData: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace ExchangeCarryFeeMultiplierChangedEvent {
+  export type InputTuple = [
+    managerWallet: AddressLike,
+    previousValue: BigNumberish,
+    newValue: BigNumberish,
+  ];
+  export type OutputTuple = [
+    managerWallet: string,
+    previousValue: bigint,
+    newValue: bigint,
+  ];
+  export interface OutputObject {
+    managerWallet: string;
+    previousValue: bigint;
+    newValue: bigint;
+  }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
   export type Log = TypedEventLog<Event>;
@@ -1300,49 +1287,13 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
     event?: TCEvent,
   ): Promise<this>;
 
-  INITIAL_SHARE_PRICE: TypedContractMethod<[], [bigint], 'view'>;
-
-  MANAGEMENT_FEE_PERIOD_IN_S: TypedContractMethod<[], [bigint], 'view'>;
-
-  MAX_CARRY_FEE_MULTIPLIER: TypedContractMethod<[], [bigint], 'view'>;
-
   MAX_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S: TypedContractMethod<
     [],
     [bigint],
     'view'
   >;
 
-  MAX_MANAGEMENT_FEE_MULTIPLIER: TypedContractMethod<[], [bigint], 'view'>;
-
-  MAX_MAXIMUM_NET_DEPOSITS: TypedContractMethod<[], [bigint], 'view'>;
-
   MAX_MAXIMUM_VAULT_CONFIGURATIONS: TypedContractMethod<[], [bigint], 'view'>;
-
-  MAX_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT: TypedContractMethod<
-    [],
-    [bigint],
-    'view'
-  >;
-
-  MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS: TypedContractMethod<
-    [],
-    [bigint],
-    'view'
-  >;
-
-  MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT: TypedContractMethod<
-    [],
-    [bigint],
-    'view'
-  >;
-
-  MAX_WITHDRAWAL_LIMIT_WINDOW_SIZE_IN_S: TypedContractMethod<
-    [],
-    [bigint],
-    'view'
-  >;
-
-  MINIMUM_WITHDRAWAL_MAXIMUM_GAS_FEE: TypedContractMethod<[], [bigint], 'view'>;
 
   MIN_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S: TypedContractMethod<
     [],
@@ -1350,27 +1301,7 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
     'view'
   >;
 
-  MIN_MAXIMUM_NET_DEPOSITS: TypedContractMethod<[], [bigint], 'view'>;
-
   MIN_MAXIMUM_VAULT_CONFIGURATIONS: TypedContractMethod<[], [bigint], 'view'>;
-
-  MIN_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT: TypedContractMethod<
-    [],
-    [bigint],
-    'view'
-  >;
-
-  MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS: TypedContractMethod<
-    [],
-    [bigint],
-    'view'
-  >;
-
-  MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT: TypedContractMethod<
-    [],
-    [bigint],
-    'view'
-  >;
 
   addManagedAccount: TypedContractMethod<
     [managerWallet: AddressLike, payload: BytesLike],
@@ -1428,10 +1359,28 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
       sourceWallet: AddressLike,
       depositorWallet: AddressLike,
       managerWallet: AddressLike,
-      payload: BytesLike,
+      managedAccountProviderPayload: BytesLike,
     ],
     [void],
     'nonpayable'
+  >;
+
+  domainSeparatorV4: TypedContractMethod<[], [string], 'view'>;
+
+  eip712Domain: TypedContractMethod<
+    [],
+    [
+      [string, string, string, bigint, string, string, bigint[]] & {
+        fields: string;
+        name: string;
+        version: string;
+        chainId: bigint;
+        verifyingContract: string;
+        salt: string;
+        extensions: bigint[];
+      },
+    ],
+    'view'
   >;
 
   emitEventsForFrontOfDepositAndWithdrawalQueues: TypedContractMethod<
@@ -1568,6 +1517,12 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
     'nonpayable'
   >;
 
+  setExchangeCarryFeeMultiplier: TypedContractMethod<
+    [managerWallet: AddressLike, newExchangeCarryFeeMultiplier: BigNumberish],
+    [void],
+    'nonpayable'
+  >;
+
   setManagedAccountUpgradeBlockTimestampDelay: TypedContractMethod<
     [newManagedAccountUpgradeBlockTimestampDelayInS: BigNumberish],
     [void],
@@ -1633,58 +1588,16 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
   ): T;
 
   getFunction(
-    nameOrSignature: 'INITIAL_SHARE_PRICE',
-  ): TypedContractMethod<[], [bigint], 'view'>;
-  getFunction(
-    nameOrSignature: 'MANAGEMENT_FEE_PERIOD_IN_S',
-  ): TypedContractMethod<[], [bigint], 'view'>;
-  getFunction(
-    nameOrSignature: 'MAX_CARRY_FEE_MULTIPLIER',
-  ): TypedContractMethod<[], [bigint], 'view'>;
-  getFunction(
     nameOrSignature: 'MAX_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
-  ): TypedContractMethod<[], [bigint], 'view'>;
-  getFunction(
-    nameOrSignature: 'MAX_MANAGEMENT_FEE_MULTIPLIER',
-  ): TypedContractMethod<[], [bigint], 'view'>;
-  getFunction(
-    nameOrSignature: 'MAX_MAXIMUM_NET_DEPOSITS',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
     nameOrSignature: 'MAX_MAXIMUM_VAULT_CONFIGURATIONS',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
-    nameOrSignature: 'MAX_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
-  ): TypedContractMethod<[], [bigint], 'view'>;
-  getFunction(
-    nameOrSignature: 'MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS',
-  ): TypedContractMethod<[], [bigint], 'view'>;
-  getFunction(
-    nameOrSignature: 'MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT',
-  ): TypedContractMethod<[], [bigint], 'view'>;
-  getFunction(
-    nameOrSignature: 'MAX_WITHDRAWAL_LIMIT_WINDOW_SIZE_IN_S',
-  ): TypedContractMethod<[], [bigint], 'view'>;
-  getFunction(
-    nameOrSignature: 'MINIMUM_WITHDRAWAL_MAXIMUM_GAS_FEE',
-  ): TypedContractMethod<[], [bigint], 'view'>;
-  getFunction(
     nameOrSignature: 'MIN_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
-    nameOrSignature: 'MIN_MAXIMUM_NET_DEPOSITS',
-  ): TypedContractMethod<[], [bigint], 'view'>;
-  getFunction(
     nameOrSignature: 'MIN_MAXIMUM_VAULT_CONFIGURATIONS',
-  ): TypedContractMethod<[], [bigint], 'view'>;
-  getFunction(
-    nameOrSignature: 'MIN_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
-  ): TypedContractMethod<[], [bigint], 'view'>;
-  getFunction(
-    nameOrSignature: 'MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS',
-  ): TypedContractMethod<[], [bigint], 'view'>;
-  getFunction(
-    nameOrSignature: 'MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT',
   ): TypedContractMethod<[], [bigint], 'view'>;
   getFunction(
     nameOrSignature: 'addManagedAccount',
@@ -1752,10 +1665,28 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
       sourceWallet: AddressLike,
       depositorWallet: AddressLike,
       managerWallet: AddressLike,
-      payload: BytesLike,
+      managedAccountProviderPayload: BytesLike,
     ],
     [void],
     'nonpayable'
+  >;
+  getFunction(
+    nameOrSignature: 'domainSeparatorV4',
+  ): TypedContractMethod<[], [string], 'view'>;
+  getFunction(nameOrSignature: 'eip712Domain'): TypedContractMethod<
+    [],
+    [
+      [string, string, string, bigint, string, string, bigint[]] & {
+        fields: string;
+        name: string;
+        version: string;
+        chainId: bigint;
+        verifyingContract: string;
+        salt: string;
+        extensions: bigint[];
+      },
+    ],
+    'view'
   >;
   getFunction(
     nameOrSignature: 'emitEventsForFrontOfDepositAndWithdrawalQueues',
@@ -1867,6 +1798,13 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
     'nonpayable'
   >;
   getFunction(
+    nameOrSignature: 'setExchangeCarryFeeMultiplier',
+  ): TypedContractMethod<
+    [managerWallet: AddressLike, newExchangeCarryFeeMultiplier: BigNumberish],
+    [void],
+    'nonpayable'
+  >;
+  getFunction(
     nameOrSignature: 'setManagedAccountUpgradeBlockTimestampDelay',
   ): TypedContractMethod<
     [newManagedAccountUpgradeBlockTimestampDelayInS: BigNumberish],
@@ -1953,6 +1891,13 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
     AddManagedAccountsEnabledAdminEvent.OutputObject
   >;
   getEvent(
+    key: 'CarryFeeDepositFailed',
+  ): TypedContractEvent<
+    CarryFeeDepositFailedEvent.InputTuple,
+    CarryFeeDepositFailedEvent.OutputTuple,
+    CarryFeeDepositFailedEvent.OutputObject
+  >;
+  getEvent(
     key: 'DepositToManagedAccountReadyToApply',
   ): TypedContractEvent<
     DepositToManagedAccountReadyToApplyEvent.InputTuple,
@@ -1986,6 +1931,27 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
     DepositsEnabledAdminEvent.InputTuple,
     DepositsEnabledAdminEvent.OutputTuple,
     DepositsEnabledAdminEvent.OutputObject
+  >;
+  getEvent(
+    key: 'EIP712DomainChanged',
+  ): TypedContractEvent<
+    EIP712DomainChangedEvent.InputTuple,
+    EIP712DomainChangedEvent.OutputTuple,
+    EIP712DomainChangedEvent.OutputObject
+  >;
+  getEvent(
+    key: 'ExchangeCarryFeeDepositFailed',
+  ): TypedContractEvent<
+    ExchangeCarryFeeDepositFailedEvent.InputTuple,
+    ExchangeCarryFeeDepositFailedEvent.OutputTuple,
+    ExchangeCarryFeeDepositFailedEvent.OutputObject
+  >;
+  getEvent(
+    key: 'ExchangeCarryFeeMultiplierChanged',
+  ): TypedContractEvent<
+    ExchangeCarryFeeMultiplierChangedEvent.InputTuple,
+    ExchangeCarryFeeMultiplierChangedEvent.OutputTuple,
+    ExchangeCarryFeeMultiplierChangedEvent.OutputObject
   >;
   getEvent(
     key: 'LiquidatedVaultPendingDepositRefundFailed',
@@ -2109,6 +2075,17 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
       AddManagedAccountsEnabledAdminEvent.OutputObject
     >;
 
+    'CarryFeeDepositFailed(address,uint256,bytes)': TypedContractEvent<
+      CarryFeeDepositFailedEvent.InputTuple,
+      CarryFeeDepositFailedEvent.OutputTuple,
+      CarryFeeDepositFailedEvent.OutputObject
+    >;
+    CarryFeeDepositFailed: TypedContractEvent<
+      CarryFeeDepositFailedEvent.InputTuple,
+      CarryFeeDepositFailedEvent.OutputTuple,
+      CarryFeeDepositFailedEvent.OutputObject
+    >;
+
     'DepositToManagedAccountReadyToApply(uint64,uint64,address,address,address)': TypedContractEvent<
       DepositToManagedAccountReadyToApplyEvent.InputTuple,
       DepositToManagedAccountReadyToApplyEvent.OutputTuple,
@@ -2162,6 +2139,39 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
       DepositsEnabledAdminEvent.InputTuple,
       DepositsEnabledAdminEvent.OutputTuple,
       DepositsEnabledAdminEvent.OutputObject
+    >;
+
+    'EIP712DomainChanged()': TypedContractEvent<
+      EIP712DomainChangedEvent.InputTuple,
+      EIP712DomainChangedEvent.OutputTuple,
+      EIP712DomainChangedEvent.OutputObject
+    >;
+    EIP712DomainChanged: TypedContractEvent<
+      EIP712DomainChangedEvent.InputTuple,
+      EIP712DomainChangedEvent.OutputTuple,
+      EIP712DomainChangedEvent.OutputObject
+    >;
+
+    'ExchangeCarryFeeDepositFailed(address,address,uint256,bytes)': TypedContractEvent<
+      ExchangeCarryFeeDepositFailedEvent.InputTuple,
+      ExchangeCarryFeeDepositFailedEvent.OutputTuple,
+      ExchangeCarryFeeDepositFailedEvent.OutputObject
+    >;
+    ExchangeCarryFeeDepositFailed: TypedContractEvent<
+      ExchangeCarryFeeDepositFailedEvent.InputTuple,
+      ExchangeCarryFeeDepositFailedEvent.OutputTuple,
+      ExchangeCarryFeeDepositFailedEvent.OutputObject
+    >;
+
+    'ExchangeCarryFeeMultiplierChanged(address,uint64,uint64)': TypedContractEvent<
+      ExchangeCarryFeeMultiplierChangedEvent.InputTuple,
+      ExchangeCarryFeeMultiplierChangedEvent.OutputTuple,
+      ExchangeCarryFeeMultiplierChangedEvent.OutputObject
+    >;
+    ExchangeCarryFeeMultiplierChanged: TypedContractEvent<
+      ExchangeCarryFeeMultiplierChangedEvent.InputTuple,
+      ExchangeCarryFeeMultiplierChangedEvent.OutputTuple,
+      ExchangeCarryFeeMultiplierChangedEvent.OutputObject
     >;
 
     'LiquidatedVaultPendingDepositRefundFailed(address,uint256,bytes)': TypedContractEvent<

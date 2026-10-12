@@ -2,15 +2,26 @@ import * as chai from 'chai';
 import { ethers } from 'ethers';
 
 import {
+  createPrivateKeyTypedDataSigner,
+  getFixedIncomeVaultConfigurationSignatureTypedData,
+  getProfitShareVaultConfigurationSignatureTypedData,
+} from '#signatures';
+
+import {
   decodeDepositBridgeAdapterPayload,
   decodeDepositBridgeAdapterPayloadType,
   DepositBridgeAdapterPayloadType,
   depositBridgeAdapterPayloadLengths,
   encodeDepositBridgeAdapterPayload,
+  encodeFixedIncomeVaultAddManagedAccountPayload,
   encodeFixedIncomeVaultConfigurationFields,
+  encodeProfitShareVaultAddManagedAccountPayload,
   encodeProfitShareVaultConfigurationFields,
+  signAndEncodeFixedIncomeVaultAddManagedAccountPayload,
+  signAndEncodeProfitShareVaultAddManagedAccountPayload,
 } from '#bridge/deposit';
 import { getBridgeTargetConfig } from '#bridge/utils';
+import * as testHelpers from '#tests/testHelpers';
 import {
   FixedIncomeVaultProvider_v1__factory,
   ProfitShareVaultProvider_v1__factory,
@@ -22,17 +33,42 @@ const { expect } = chai;
 const managerWallet = ethers.getAddress(`0x${'11'.repeat(20)}`);
 const depositorWallet = ethers.getAddress(`0x${'22'.repeat(20)}`);
 const managedAccountProviderAddress = ethers.getAddress(`0x${'33'.repeat(20)}`);
+const chainId = 31337;
+const managerWalletSignature = `0x${'ab'.repeat(65)}`;
 
 const sourceConfig = getBridgeTargetConfig(BridgeTarget.KATANA_KATANA, false);
+
+const fixedIncomeVaultFields = {
+  managerWallet,
+  effectiveTimestampInS: 1_700_000_000,
+  interestMultiplierInPips: 10_000_000n,
+  maximumNetDepositsInPips: 100_000_000_000_000n,
+  maximumTotalOwedQuantityAvailableForExitWithdrawalMultiplierNeededToInitiateExitInPips:
+    150_000_000n,
+  minimumTotalOwedQuantityAvailableForExitWithdrawalMultiplierToAllowManagerWalletWithdrawalInPips:
+    110_000_000n,
+  minimumUnappliedWithdrawalAgeInSNeededToInitiateExit: 3_600,
+  withdrawalLimitPercentForDepositorsInPips: 20_000_000n,
+  withdrawalLimitPercentForVaultInPips: 5_000_000n,
+};
+
+const profitShareVaultFields = {
+  managerWallet,
+  carryFeeMultiplierInPips: 10_000_000n,
+  managementFeeMultiplierInPips: 2_000_000n,
+  maximumNetDepositsInPips: 100_000_000_000_000n,
+  minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit: 3_600,
+  withdrawalLimitPercentForDepositorsInPips: 20_000_000n,
+  withdrawalLimitPercentForVaultInPips: 5_000_000n,
+};
 
 function byteLength(hex: string): number {
   return (hex.length - 2) / 2;
 }
 
 /**
- * Decodes an encoded configuration payload using the provider contract's own
- * VaultConfigurationFields struct definition, which is what the contract's
- * addManagedAccount and initiateManagedAccountUpgrade functions abi.decode
+ * Decodes an encoded configuration payload as the provider contract's
+ * initiateManagedAccountUpgrade does
  */
 function decodeWithContractStruct(
   factory:
@@ -40,115 +76,107 @@ function decodeWithContractStruct(
     | typeof ProfitShareVaultProvider_v1__factory,
   encoded: string,
 ) {
-  const fragment = factory
-    .createInterface()
-    .getFunction('vaultConfigurationUpgradesByManagerWallet');
-  const structParam = fragment?.outputs.find(
-    (output) => output.name === 'newVaultConfigurationFields',
+  return ethers.AbiCoder.defaultAbiCoder().decode(
+    [testHelpers.getVaultConfigurationFieldsParamType(factory)],
+    encoded,
+  )[0];
+}
+
+/**
+ * Decodes an add managed account payload as the provider contract's
+ * addManagedAccount does, into the configuration and the signature
+ */
+function decodeAddManagedAccountPayload(
+  factory:
+    | typeof FixedIncomeVaultProvider_v1__factory
+    | typeof ProfitShareVaultProvider_v1__factory,
+  encoded: string,
+) {
+  return ethers.AbiCoder.defaultAbiCoder().decode(
+    [testHelpers.getVaultConfigurationFieldsParamType(factory), 'bytes'],
+    encoded,
   );
-  if (!structParam) {
-    throw new Error('VaultConfigurationFields struct not found in ABI');
-  }
-  return ethers.AbiCoder.defaultAbiCoder().decode([structParam], encoded)[0];
 }
 
 describe('encodeFixedIncomeVaultConfigurationFields', () => {
-  const fields = {
-    managerWallet,
-    effectiveTimestampInS: 1_700_000_000,
-    interestMultiplierInPips: 10_000_000n,
-    maximumNetDepositsInPips: 100_000_000_000_000n,
-    maximumTotalOwedQuantityAvailableForExitWithdrawalMultiplierNeededToInitiateExitInPips:
-      150_000_000n,
-    minimumTotalOwedQuantityAvailableForExitWithdrawalMultiplierToAllowManagerWalletWithdrawalInPips:
-      110_000_000n,
-    minimumUnappliedWithdrawalAgeInSNeededToInitiateExit: 3_600,
-    withdrawalLimitPercentForDepositorsInPips: 20_000_000n,
-    withdrawalLimitPercentForVaultInPips: 5_000_000n,
-  };
-
   it('should encode fields in the order of the contract struct', () => {
     const decoded = decodeWithContractStruct(
       FixedIncomeVaultProvider_v1__factory,
-      encodeFixedIncomeVaultConfigurationFields(fields),
+      encodeFixedIncomeVaultConfigurationFields(fixedIncomeVaultFields),
     );
 
     expect(decoded.managerWallet).to.equal(managerWallet);
     expect(decoded.effectiveTimestampInS).to.equal(
-      BigInt(fields.effectiveTimestampInS),
+      BigInt(fixedIncomeVaultFields.effectiveTimestampInS),
     );
     expect(decoded.interestMultiplier).to.equal(
-      fields.interestMultiplierInPips,
+      fixedIncomeVaultFields.interestMultiplierInPips,
     );
     expect(decoded.maximumNetDeposits).to.equal(
-      fields.maximumNetDepositsInPips,
+      fixedIncomeVaultFields.maximumNetDepositsInPips,
     );
     expect(
       decoded.maximumTotalOwedQuantityAvailableMultiplierToInitiateExit,
     ).to.equal(
-      fields.maximumTotalOwedQuantityAvailableForExitWithdrawalMultiplierNeededToInitiateExitInPips,
+      fixedIncomeVaultFields.maximumTotalOwedQuantityAvailableForExitWithdrawalMultiplierNeededToInitiateExitInPips,
     );
     expect(
       decoded.minimumTotalOwedQuantityAvailableMultiplierToAllowManagerWalletWithdrawal,
     ).to.equal(
-      fields.minimumTotalOwedQuantityAvailableForExitWithdrawalMultiplierToAllowManagerWalletWithdrawalInPips,
+      fixedIncomeVaultFields.minimumTotalOwedQuantityAvailableForExitWithdrawalMultiplierToAllowManagerWalletWithdrawalInPips,
     );
     expect(
       decoded.minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit,
     ).to.equal(
-      BigInt(fields.minimumUnappliedWithdrawalAgeInSNeededToInitiateExit),
+      BigInt(
+        fixedIncomeVaultFields.minimumUnappliedWithdrawalAgeInSNeededToInitiateExit,
+      ),
     );
     expect(decoded.withdrawalLimitPercentForDepositors).to.equal(
-      fields.withdrawalLimitPercentForDepositorsInPips,
+      fixedIncomeVaultFields.withdrawalLimitPercentForDepositorsInPips,
     );
     expect(decoded.withdrawalLimitPercentForVault).to.equal(
-      fields.withdrawalLimitPercentForVaultInPips,
+      fixedIncomeVaultFields.withdrawalLimitPercentForVaultInPips,
     );
   });
 });
 
 describe('encodeProfitShareVaultConfigurationFields', () => {
-  const fields = {
-    managerWallet,
-    carryFeeMultiplierInPips: 10_000_000n,
-    managementFeeMultiplierInPips: 2_000_000n,
-    maximumNetDepositsInPips: 100_000_000_000_000n,
-    minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit: 3_600,
-    withdrawalLimitPercentForDepositorsInPips: 20_000_000n,
-    withdrawalLimitPercentForVaultInPips: 5_000_000n,
-  };
-
   it('should encode fields in the order of the contract struct', () => {
     const decoded = decodeWithContractStruct(
       ProfitShareVaultProvider_v1__factory,
-      encodeProfitShareVaultConfigurationFields(fields),
+      encodeProfitShareVaultConfigurationFields(profitShareVaultFields),
     );
 
     expect(decoded.managerWallet).to.equal(managerWallet);
     expect(decoded.carryFeeMultiplier).to.equal(
-      fields.carryFeeMultiplierInPips,
+      profitShareVaultFields.carryFeeMultiplierInPips,
     );
     expect(decoded.managementFeeMultiplier).to.equal(
-      fields.managementFeeMultiplierInPips,
+      profitShareVaultFields.managementFeeMultiplierInPips,
     );
     expect(decoded.maximumNetDeposits).to.equal(
-      fields.maximumNetDepositsInPips,
+      profitShareVaultFields.maximumNetDepositsInPips,
     );
     expect(
       decoded.minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit,
     ).to.equal(
-      BigInt(fields.minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit),
+      BigInt(
+        profitShareVaultFields.minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit,
+      ),
     );
     expect(decoded.withdrawalLimitPercentForDepositors).to.equal(
-      fields.withdrawalLimitPercentForDepositorsInPips,
+      profitShareVaultFields.withdrawalLimitPercentForDepositorsInPips,
     );
     expect(decoded.withdrawalLimitPercentForVault).to.equal(
-      fields.withdrawalLimitPercentForVaultInPips,
+      profitShareVaultFields.withdrawalLimitPercentForVaultInPips,
     );
   });
 
   it('should not produce a payload decodable as the fixed income vault struct', () => {
-    const encoded = encodeProfitShareVaultConfigurationFields(fields);
+    const encoded = encodeProfitShareVaultConfigurationFields(
+      profitShareVaultFields,
+    );
 
     expect(() =>
       decodeWithContractStruct(FixedIncomeVaultProvider_v1__factory, encoded),
@@ -156,16 +184,124 @@ describe('encodeProfitShareVaultConfigurationFields', () => {
   });
 });
 
-describe('encodeDepositBridgeAdapterPayload', () => {
-  const addManagedAccountPayload = encodeProfitShareVaultConfigurationFields({
-    managerWallet,
-    carryFeeMultiplierInPips: 10_000_000n,
-    managementFeeMultiplierInPips: 2_000_000n,
-    maximumNetDepositsInPips: 100_000_000_000_000n,
-    minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit: 3_600,
-    withdrawalLimitPercentForDepositorsInPips: 20_000_000n,
-    withdrawalLimitPercentForVaultInPips: 5_000_000n,
+describe('encodeFixedIncomeVaultAddManagedAccountPayload', () => {
+  it('should encode the configuration as the upgrade payload does, followed by the signature', () => {
+    const [decodedFields, decodedSignature] = decodeAddManagedAccountPayload(
+      FixedIncomeVaultProvider_v1__factory,
+      encodeFixedIncomeVaultAddManagedAccountPayload(
+        fixedIncomeVaultFields,
+        managerWalletSignature,
+      ),
+    );
+
+    expect(decodedFields.toObject()).to.deep.equal(
+      decodeWithContractStruct(
+        FixedIncomeVaultProvider_v1__factory,
+        encodeFixedIncomeVaultConfigurationFields(fixedIncomeVaultFields),
+      ).toObject(),
+    );
+    expect(decodedSignature).to.equal(managerWalletSignature);
   });
+});
+
+describe('encodeProfitShareVaultAddManagedAccountPayload', () => {
+  it('should encode the configuration as the upgrade payload does, followed by the signature', () => {
+    const [decodedFields, decodedSignature] = decodeAddManagedAccountPayload(
+      ProfitShareVaultProvider_v1__factory,
+      encodeProfitShareVaultAddManagedAccountPayload(
+        profitShareVaultFields,
+        managerWalletSignature,
+      ),
+    );
+
+    expect(decodedFields.toObject()).to.deep.equal(
+      decodeWithContractStruct(
+        ProfitShareVaultProvider_v1__factory,
+        encodeProfitShareVaultConfigurationFields(profitShareVaultFields),
+      ).toObject(),
+    );
+    expect(decodedSignature).to.equal(managerWalletSignature);
+  });
+});
+
+describe('signAndEncodeFixedIncomeVaultAddManagedAccountPayload', () => {
+  it("should carry the manager wallet's signature over the encoded configuration", async () => {
+    const manager = ethers.Wallet.createRandom();
+    const fields = {
+      ...fixedIncomeVaultFields,
+      managerWallet: manager.address,
+    };
+
+    const [decodedFields, signature] = decodeAddManagedAccountPayload(
+      FixedIncomeVaultProvider_v1__factory,
+      await signAndEncodeFixedIncomeVaultAddManagedAccountPayload(
+        fields,
+        managedAccountProviderAddress,
+        chainId,
+        false,
+        createPrivateKeyTypedDataSigner(manager.privateKey),
+      ),
+    );
+    const [domain, types] = getFixedIncomeVaultConfigurationSignatureTypedData(
+      fields,
+      managedAccountProviderAddress,
+      chainId,
+      false,
+    );
+
+    expect(
+      ethers.verifyTypedData(
+        domain,
+        types,
+        decodedFields.toObject(),
+        signature,
+      ),
+    ).to.equal(manager.address);
+  });
+});
+
+describe('signAndEncodeProfitShareVaultAddManagedAccountPayload', () => {
+  it("should carry the manager wallet's signature over the encoded configuration", async () => {
+    const manager = ethers.Wallet.createRandom();
+    const fields = {
+      ...profitShareVaultFields,
+      managerWallet: manager.address,
+    };
+
+    const [decodedFields, signature] = decodeAddManagedAccountPayload(
+      ProfitShareVaultProvider_v1__factory,
+      await signAndEncodeProfitShareVaultAddManagedAccountPayload(
+        fields,
+        managedAccountProviderAddress,
+        chainId,
+        false,
+        createPrivateKeyTypedDataSigner(manager.privateKey),
+      ),
+    );
+    const [domain, types] = getProfitShareVaultConfigurationSignatureTypedData(
+      fields,
+      managedAccountProviderAddress,
+      chainId,
+      false,
+    );
+
+    expect(
+      ethers.verifyTypedData(
+        domain,
+        types,
+        decodedFields.toObject(),
+        signature,
+      ),
+    ).to.equal(manager.address);
+  });
+});
+
+describe('encodeDepositBridgeAdapterPayload', () => {
+  const addManagedAccountPayload =
+    encodeProfitShareVaultAddManagedAccountPayload(
+      profitShareVaultFields,
+      managerWalletSignature,
+    );
 
   it('should round-trip an addManagedAccount payload', () => {
     const encoded = encodeDepositBridgeAdapterPayload(sourceConfig, {
