@@ -7,6 +7,16 @@ export const EIP_712_DOMAIN_VERSION = '2.0.0';
 
 export const EIP_712_DOMAIN_VERSION_SANDBOX = '2.0.0-sandbox';
 
+export const EIP_712_DOMAIN_NAME_FIXED_INCOME_VAULT_PROVIDER =
+  'KatanaPerpsFixedIncomeVault';
+
+export const EIP_712_DOMAIN_NAME_PROFIT_SHARE_VAULT_PROVIDER =
+  'KatanaPerpsProfitShareVault';
+
+export const EIP_712_DOMAIN_VERSION_VAULT_PROVIDER = '1.0.0';
+
+export const EIP_712_DOMAIN_VERSION_VAULT_PROVIDER_SANDBOX = '1.0.0-sandbox';
+
 // sdk-js-docs-v1-perps.katana.network
 // api-docs-v1-perps.katana.network
 
