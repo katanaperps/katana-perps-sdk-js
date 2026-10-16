@@ -10,6 +10,8 @@ import {
 import {
   decodeDepositBridgeAdapterPayload,
   decodeDepositBridgeAdapterPayloadType,
+  decodeFixedIncomeVaultConfigurationFields,
+  decodeProfitShareVaultConfigurationFields,
   DepositBridgeAdapterPayloadType,
   depositBridgeAdapterPayloadLengths,
   encodeDepositBridgeAdapterPayload,
@@ -47,7 +49,7 @@ const fixedIncomeVaultFields = {
     150_000_000n,
   minimumTotalOwedQuantityAvailableForExitWithdrawalMultiplierToAllowManagerWalletWithdrawalInPips:
     110_000_000n,
-  minimumUnappliedWithdrawalAgeInSNeededToInitiateExit: 3_600,
+  minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit: 3_600,
   withdrawalLimitPercentForDepositorsInPips: 20_000_000n,
   withdrawalLimitPercentForVaultInPips: 5_000_000n,
 };
@@ -129,7 +131,7 @@ describe('encodeFixedIncomeVaultConfigurationFields', () => {
       decoded.minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit,
     ).to.equal(
       BigInt(
-        fixedIncomeVaultFields.minimumUnappliedWithdrawalAgeInSNeededToInitiateExit,
+        fixedIncomeVaultFields.minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit,
       ),
     );
     expect(decoded.withdrawalLimitPercentForDepositors).to.equal(
@@ -181,6 +183,109 @@ describe('encodeProfitShareVaultConfigurationFields', () => {
     expect(() =>
       decodeWithContractStruct(FixedIncomeVaultProvider_v1__factory, encoded),
     ).to.throw();
+  });
+});
+
+describe('decodeFixedIncomeVaultConfigurationFields', () => {
+  it("should decode the configuration carried by the provider's events", () => {
+    const providerInterface =
+      FixedIncomeVaultProvider_v1__factory.createInterface();
+    const configuration = ethers.AbiCoder.defaultAbiCoder().encode(
+      [
+        testHelpers.getVaultConfigurationFieldsParamType(
+          FixedIncomeVaultProvider_v1__factory,
+        ),
+      ],
+      [
+        {
+          managerWallet,
+          effectiveTimestampInS: fixedIncomeVaultFields.effectiveTimestampInS,
+          interestMultiplier: fixedIncomeVaultFields.interestMultiplierInPips,
+          maximumNetDeposits: fixedIncomeVaultFields.maximumNetDepositsInPips,
+          maximumTotalOwedQuantityAvailableMultiplierToInitiateExit:
+            fixedIncomeVaultFields.maximumTotalOwedQuantityAvailableForExitWithdrawalMultiplierNeededToInitiateExitInPips,
+          minimumTotalOwedQuantityAvailableMultiplierToAllowManagerWalletWithdrawal:
+            fixedIncomeVaultFields.minimumTotalOwedQuantityAvailableForExitWithdrawalMultiplierToAllowManagerWalletWithdrawalInPips,
+          minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit:
+            fixedIncomeVaultFields.minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit,
+          withdrawalLimitPercentForDepositors:
+            fixedIncomeVaultFields.withdrawalLimitPercentForDepositorsInPips,
+          withdrawalLimitPercentForVault:
+            fixedIncomeVaultFields.withdrawalLimitPercentForVaultInPips,
+        },
+      ],
+    );
+    const { data, topics } = providerInterface.encodeEventLog(
+      'ManagedAccountUpgradeFinalized',
+      [managerWallet, configuration],
+    );
+    const event = providerInterface.decodeEventLog(
+      'ManagedAccountUpgradeFinalized',
+      data,
+      topics,
+    );
+
+    expect(
+      decodeFixedIncomeVaultConfigurationFields(event.configuration),
+    ).to.deep.equal(fixedIncomeVaultFields);
+  });
+
+  it('should round-trip the encoded configuration', () => {
+    expect(
+      decodeFixedIncomeVaultConfigurationFields(
+        encodeFixedIncomeVaultConfigurationFields(fixedIncomeVaultFields),
+      ),
+    ).to.deep.equal(fixedIncomeVaultFields);
+  });
+});
+
+describe('decodeProfitShareVaultConfigurationFields', () => {
+  it("should decode the configuration carried by the provider's events", () => {
+    const providerInterface =
+      ProfitShareVaultProvider_v1__factory.createInterface();
+    const configuration = ethers.AbiCoder.defaultAbiCoder().encode(
+      [
+        testHelpers.getVaultConfigurationFieldsParamType(
+          ProfitShareVaultProvider_v1__factory,
+        ),
+      ],
+      [
+        {
+          managerWallet,
+          carryFeeMultiplier: profitShareVaultFields.carryFeeMultiplierInPips,
+          managementFeeMultiplier:
+            profitShareVaultFields.managementFeeMultiplierInPips,
+          maximumNetDeposits: profitShareVaultFields.maximumNetDepositsInPips,
+          minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit:
+            profitShareVaultFields.minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit,
+          withdrawalLimitPercentForDepositors:
+            profitShareVaultFields.withdrawalLimitPercentForDepositorsInPips,
+          withdrawalLimitPercentForVault:
+            profitShareVaultFields.withdrawalLimitPercentForVaultInPips,
+        },
+      ],
+    );
+    const { data, topics } = providerInterface.encodeEventLog(
+      'ManagedAccountAdded',
+      [managerWallet, configuration],
+    );
+    const event = providerInterface.decodeEventLog(
+      'ManagedAccountAdded',
+      data,
+      topics,
+    );
+
+    expect(
+      decodeProfitShareVaultConfigurationFields(event.configuration),
+    ).to.deep.equal(profitShareVaultFields);
+  });
+
+  it('should round-trip the encoded configuration', () => {
+    expect(
+      decodeProfitShareVaultConfigurationFields(
+        encodeProfitShareVaultConfigurationFields(profitShareVaultFields),
+      ),
+    ).to.deep.equal(profitShareVaultFields);
   });
 });
 
