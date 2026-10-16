@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { ethers, type TransactionRequest } from 'ethers';
+import { ethers, type BytesLike, type TransactionRequest } from 'ethers';
 
 import { multiplyPips } from '#pipmath';
 import {
@@ -93,7 +93,7 @@ export type FixedIncomeVaultConfigurationFields = {
   maximumNetDepositsInPips: bigint;
   maximumTotalOwedQuantityAvailableForExitWithdrawalMultiplierNeededToInitiateExitInPips: bigint;
   minimumTotalOwedQuantityAvailableForExitWithdrawalMultiplierToAllowManagerWalletWithdrawalInPips: bigint;
-  minimumUnappliedWithdrawalAgeInSNeededToInitiateExit: number;
+  minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit: number;
   withdrawalLimitPercentForDepositorsInPips: bigint;
   withdrawalLimitPercentForVaultInPips: bigint;
 };
@@ -596,7 +596,7 @@ function fixedIncomeVaultConfigurationFieldsToTuple(
     configurationFields.maximumNetDepositsInPips,
     configurationFields.maximumTotalOwedQuantityAvailableForExitWithdrawalMultiplierNeededToInitiateExitInPips,
     configurationFields.minimumTotalOwedQuantityAvailableForExitWithdrawalMultiplierToAllowManagerWalletWithdrawalInPips,
-    configurationFields.minimumUnappliedWithdrawalAgeInSNeededToInitiateExit,
+    configurationFields.minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit,
     configurationFields.withdrawalLimitPercentForDepositorsInPips,
     configurationFields.withdrawalLimitPercentForVaultInPips,
   ];
@@ -642,6 +642,60 @@ export function encodeProfitShareVaultConfigurationFields(
     [profitShareVaultConfigurationFieldsTupleType],
     [profitShareVaultConfigurationFieldsToTuple(configurationFields)],
   );
+}
+
+/**
+ * Decodes a Fixed Income Vault configuration as encoded by
+ * {@link encodeFixedIncomeVaultConfigurationFields}. Use it for the
+ * `configuration` argument of the provider's `ManagedAccountAdded`,
+ * `ManagedAccountUpgradeInitiated` and `ManagedAccountUpgradeFinalized` events
+ */
+export function decodeFixedIncomeVaultConfigurationFields(
+  configuration: BytesLike,
+): FixedIncomeVaultConfigurationFields {
+  const [fields] = ethers.AbiCoder.defaultAbiCoder().decode(
+    [fixedIncomeVaultConfigurationFieldsTupleType],
+    configuration,
+  );
+
+  return {
+    managerWallet: fields[0],
+    effectiveTimestampInS: Number(fields[1]),
+    interestMultiplierInPips: fields[2],
+    maximumNetDepositsInPips: fields[3],
+    maximumTotalOwedQuantityAvailableForExitWithdrawalMultiplierNeededToInitiateExitInPips:
+      fields[4],
+    minimumTotalOwedQuantityAvailableForExitWithdrawalMultiplierToAllowManagerWalletWithdrawalInPips:
+      fields[5],
+    minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit: Number(fields[6]),
+    withdrawalLimitPercentForDepositorsInPips: fields[7],
+    withdrawalLimitPercentForVaultInPips: fields[8],
+  };
+}
+
+/**
+ * Decodes a Profit Share Vault configuration as encoded by
+ * {@link encodeProfitShareVaultConfigurationFields}. Use it for the
+ * `configuration` argument of the provider's `ManagedAccountAdded`,
+ * `ManagedAccountUpgradeInitiated` and `ManagedAccountUpgradeFinalized` events
+ */
+export function decodeProfitShareVaultConfigurationFields(
+  configuration: BytesLike,
+): ProfitShareVaultConfigurationFields {
+  const [fields] = ethers.AbiCoder.defaultAbiCoder().decode(
+    [profitShareVaultConfigurationFieldsTupleType],
+    configuration,
+  );
+
+  return {
+    managerWallet: fields[0],
+    carryFeeMultiplierInPips: fields[1],
+    managementFeeMultiplierInPips: fields[2],
+    maximumNetDepositsInPips: fields[3],
+    minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit: Number(fields[4]),
+    withdrawalLimitPercentForDepositorsInPips: fields[5],
+    withdrawalLimitPercentForVaultInPips: fields[6],
+  };
 }
 
 /**

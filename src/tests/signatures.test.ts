@@ -38,7 +38,7 @@ describe('getFixedIncomeVaultConfigurationSignatureTypedData', () => {
       150_000_000n,
     minimumTotalOwedQuantityAvailableForExitWithdrawalMultiplierToAllowManagerWalletWithdrawalInPips:
       110_000_000n,
-    minimumUnappliedWithdrawalAgeInSNeededToInitiateExit: 3_600,
+    minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit: 3_600,
     withdrawalLimitPercentForDepositorsInPips: 20_000_000n,
     withdrawalLimitPercentForVaultInPips: 5_000_000n,
   };
@@ -81,7 +81,7 @@ describe('getFixedIncomeVaultConfigurationSignatureTypedData', () => {
       minimumTotalOwedQuantityAvailableMultiplierToAllowManagerWalletWithdrawal:
         fields.minimumTotalOwedQuantityAvailableForExitWithdrawalMultiplierToAllowManagerWalletWithdrawalInPips,
       minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit:
-        fields.minimumUnappliedWithdrawalAgeInSNeededToInitiateExit,
+        fields.minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit,
       withdrawalLimitPercentForDepositors:
         fields.withdrawalLimitPercentForDepositorsInPips,
       withdrawalLimitPercentForVault:

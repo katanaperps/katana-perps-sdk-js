@@ -483,7 +483,7 @@ export function getFixedIncomeVaultConfigurationSignatureTypedData(
       minimumTotalOwedQuantityAvailableMultiplierToAllowManagerWalletWithdrawal:
         configurationFields.minimumTotalOwedQuantityAvailableForExitWithdrawalMultiplierToAllowManagerWalletWithdrawalInPips,
       minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit:
-        configurationFields.minimumUnappliedWithdrawalAgeInSNeededToInitiateExit,
+        configurationFields.minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit,
       withdrawalLimitPercentForDepositors:
         configurationFields.withdrawalLimitPercentForDepositorsInPips,
       withdrawalLimitPercentForVault:
