@@ -933,10 +933,14 @@ export namespace LiquidatedVaultPendingDepositRefundFailedEvent {
 }
 
 export namespace ManagedAccountAddedEvent {
-  export type InputTuple = [managerWallet: AddressLike];
-  export type OutputTuple = [managerWallet: string];
+  export type InputTuple = [
+    managerWallet: AddressLike,
+    configuration: BytesLike,
+  ];
+  export type OutputTuple = [managerWallet: string, configuration: string];
   export interface OutputObject {
     managerWallet: string;
+    configuration: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -973,10 +977,14 @@ export namespace ManagedAccountUpgradeCanceledEvent {
 }
 
 export namespace ManagedAccountUpgradeFinalizedEvent {
-  export type InputTuple = [managerWallet: AddressLike];
-  export type OutputTuple = [managerWallet: string];
+  export type InputTuple = [
+    managerWallet: AddressLike,
+    configuration: BytesLike,
+  ];
+  export type OutputTuple = [managerWallet: string, configuration: string];
   export interface OutputObject {
     managerWallet: string;
+    configuration: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -988,14 +996,17 @@ export namespace ManagedAccountUpgradeInitiatedEvent {
   export type InputTuple = [
     managerWallet: AddressLike,
     blockTimestampThreshold: BigNumberish,
+    configuration: BytesLike,
   ];
   export type OutputTuple = [
     managerWallet: string,
     blockTimestampThreshold: bigint,
+    configuration: string,
   ];
   export interface OutputObject {
     managerWallet: string;
     blockTimestampThreshold: bigint;
+    configuration: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -2023,7 +2034,7 @@ export interface FixedIncomeVaultProvider_v1 extends BaseContract {
       LiquidatedVaultPendingDepositRefundFailedEvent.OutputObject
     >;
 
-    'ManagedAccountAdded(address)': TypedContractEvent<
+    'ManagedAccountAdded(address,bytes)': TypedContractEvent<
       ManagedAccountAddedEvent.InputTuple,
       ManagedAccountAddedEvent.OutputTuple,
       ManagedAccountAddedEvent.OutputObject
@@ -2056,7 +2067,7 @@ export interface FixedIncomeVaultProvider_v1 extends BaseContract {
       ManagedAccountUpgradeCanceledEvent.OutputObject
     >;
 
-    'ManagedAccountUpgradeFinalized(address)': TypedContractEvent<
+    'ManagedAccountUpgradeFinalized(address,bytes)': TypedContractEvent<
       ManagedAccountUpgradeFinalizedEvent.InputTuple,
       ManagedAccountUpgradeFinalizedEvent.OutputTuple,
       ManagedAccountUpgradeFinalizedEvent.OutputObject
@@ -2067,7 +2078,7 @@ export interface FixedIncomeVaultProvider_v1 extends BaseContract {
       ManagedAccountUpgradeFinalizedEvent.OutputObject
     >;
 
-    'ManagedAccountUpgradeInitiated(address,uint256)': TypedContractEvent<
+    'ManagedAccountUpgradeInitiated(address,uint256,bytes)': TypedContractEvent<
       ManagedAccountUpgradeInitiatedEvent.InputTuple,
       ManagedAccountUpgradeInitiatedEvent.OutputTuple,
       ManagedAccountUpgradeInitiatedEvent.OutputObject

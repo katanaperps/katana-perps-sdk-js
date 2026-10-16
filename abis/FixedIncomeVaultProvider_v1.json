@@ -15,6 +15,11 @@
         "internalType": "uint256",
         "name": "maximumVaultConfigurations_",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "withdrawalDispatcherWallet_",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -118,6 +123,11 @@
       }
     ],
     "name": "InterestMultiplierOutOfRange",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidBridgeAdapter",
     "type": "error"
   },
   {
@@ -480,6 +490,11 @@
     "type": "error"
   },
   {
+    "inputs": [],
+    "name": "VaultConfigurationUpgradeAlreadyInProgress",
+    "type": "error"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -811,6 +826,12 @@
         "internalType": "address",
         "name": "managerWallet",
         "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "configuration",
+        "type": "bytes"
       }
     ],
     "name": "ManagedAccountAdded",
@@ -856,6 +877,12 @@
         "internalType": "address",
         "name": "managerWallet",
         "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "configuration",
+        "type": "bytes"
       }
     ],
     "name": "ManagedAccountUpgradeFinalized",
@@ -875,6 +902,12 @@
         "internalType": "uint256",
         "name": "blockTimestampThreshold",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "configuration",
+        "type": "bytes"
       }
     ],
     "name": "ManagedAccountUpgradeInitiated",
