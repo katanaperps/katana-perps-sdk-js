@@ -26,6 +26,11 @@ const _abi = [
         name: 'maximumVaultConfigurations_',
         type: 'uint256',
       },
+      {
+        internalType: 'address',
+        name: 'withdrawalDispatcherWallet_',
+        type: 'address',
+      },
     ],
     stateMutability: 'nonpayable',
     type: 'constructor',
@@ -128,6 +133,11 @@ const _abi = [
       },
     ],
     name: 'InterestMultiplierOutOfRange',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'InvalidBridgeAdapter',
     type: 'error',
   },
   {
@@ -490,6 +500,11 @@ const _abi = [
     type: 'error',
   },
   {
+    inputs: [],
+    name: 'VaultConfigurationUpgradeAlreadyInProgress',
+    type: 'error',
+  },
+  {
     inputs: [
       {
         internalType: 'uint256',
@@ -822,6 +837,12 @@ const _abi = [
         name: 'managerWallet',
         type: 'address',
       },
+      {
+        indexed: false,
+        internalType: 'bytes',
+        name: 'configuration',
+        type: 'bytes',
+      },
     ],
     name: 'ManagedAccountAdded',
     type: 'event',
@@ -867,6 +888,12 @@ const _abi = [
         name: 'managerWallet',
         type: 'address',
       },
+      {
+        indexed: false,
+        internalType: 'bytes',
+        name: 'configuration',
+        type: 'bytes',
+      },
     ],
     name: 'ManagedAccountUpgradeFinalized',
     type: 'event',
@@ -885,6 +912,12 @@ const _abi = [
         internalType: 'uint256',
         name: 'blockTimestampThreshold',
         type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'bytes',
+        name: 'configuration',
+        type: 'bytes',
       },
     ],
     name: 'ManagedAccountUpgradeInitiated',

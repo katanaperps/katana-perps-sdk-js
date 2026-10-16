@@ -26,6 +26,11 @@ const _abi = [
         name: 'maximumVaultConfigurations_',
         type: 'uint256',
       },
+      {
+        internalType: 'address',
+        name: 'withdrawalDispatcherWallet_',
+        type: 'address',
+      },
     ],
     stateMutability: 'nonpayable',
     type: 'constructor',
@@ -168,19 +173,8 @@ const _abi = [
     type: 'error',
   },
   {
-    inputs: [
-      {
-        internalType: 'uint64',
-        name: 'available',
-        type: 'uint64',
-      },
-      {
-        internalType: 'uint64',
-        name: 'required',
-        type: 'uint64',
-      },
-    ],
-    name: 'InsufficientSharesForGasFee',
+    inputs: [],
+    name: 'InvalidBridgeAdapter',
     type: 'error',
   },
   {
@@ -463,6 +457,22 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: 'uint64',
+        name: 'minValue',
+        type: 'uint64',
+      },
+      {
+        internalType: 'uint64',
+        name: 'value',
+        type: 'uint64',
+      },
+    ],
+    name: 'RemainingSharesValueBelowWithdrawalMinimum',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
         internalType: 'uint8',
         name: 'bits',
         type: 'uint8',
@@ -545,6 +555,11 @@ const _abi = [
   {
     inputs: [],
     name: 'ValueCanOnlyBetSetOnce',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'VaultConfigurationUpgradeAlreadyInProgress',
     type: 'error',
   },
   {
@@ -940,6 +955,12 @@ const _abi = [
         name: 'managerWallet',
         type: 'address',
       },
+      {
+        indexed: false,
+        internalType: 'bytes',
+        name: 'configuration',
+        type: 'bytes',
+      },
     ],
     name: 'ManagedAccountAdded',
     type: 'event',
@@ -985,6 +1006,12 @@ const _abi = [
         name: 'managerWallet',
         type: 'address',
       },
+      {
+        indexed: false,
+        internalType: 'bytes',
+        name: 'configuration',
+        type: 'bytes',
+      },
     ],
     name: 'ManagedAccountUpgradeFinalized',
     type: 'event',
@@ -1003,6 +1030,12 @@ const _abi = [
         internalType: 'uint256',
         name: 'blockTimestampThreshold',
         type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'bytes',
+        name: 'configuration',
+        type: 'bytes',
       },
     ],
     name: 'ManagedAccountUpgradeInitiated',
@@ -2020,11 +2053,6 @@ const _abi = [
             type: 'bool',
           },
           {
-            internalType: 'uint64',
-            name: 'exchangeCarryFeeMultiplier',
-            type: 'uint64',
-          },
-          {
             components: [
               {
                 internalType: 'address',
@@ -2066,6 +2094,11 @@ const _abi = [
               'struct ProfitShareVaultProvider_v1.VaultConfigurationFields',
             name: 'configurationFields',
             type: 'tuple',
+          },
+          {
+            internalType: 'uint64',
+            name: 'exchangeCarryFeeMultiplier',
+            type: 'uint64',
           },
           {
             internalType: 'uint64',
