@@ -1,7 +1,12 @@
 import BigNumber from 'bignumber.js';
-import { ethers, type TransactionRequest } from 'ethers';
+import { ethers, type BytesLike, type TransactionRequest } from 'ethers';
 
 import { multiplyPips } from '#pipmath';
+import {
+  getFixedIncomeVaultConfigurationSignatureTypedData,
+  getProfitShareVaultConfigurationSignatureTypedData,
+  type SignTypedData,
+} from '#signatures';
 
 import { BridgeConfig } from '#bridge/config';
 import {
@@ -30,10 +35,10 @@ export type AddManagedAccountBridgePayloadParameters = {
   managedAccountProviderAddress: string;
   managerWallet: string;
   /**
-   * Provider-specific configuration for the new vault, encoded with the
-   * encoder matching the provider type, e.g.
-   * {@link encodeFixedIncomeVaultConfigurationFields} or
-   * {@link encodeProfitShareVaultConfigurationFields}
+   * Provider-specific configuration for the new vault, signed by the manager
+   * wallet and encoded with the function matching the provider type, e.g.
+   * {@link signAndEncodeFixedIncomeVaultAddManagedAccountPayload} or
+   * {@link signAndEncodeProfitShareVaultAddManagedAccountPayload}
    */
   addManagedAccountPayload: string;
 };
@@ -88,7 +93,7 @@ export type FixedIncomeVaultConfigurationFields = {
   maximumNetDepositsInPips: bigint;
   maximumTotalOwedQuantityAvailableForExitWithdrawalMultiplierNeededToInitiateExitInPips: bigint;
   minimumTotalOwedQuantityAvailableForExitWithdrawalMultiplierToAllowManagerWalletWithdrawalInPips: bigint;
-  minimumUnappliedWithdrawalAgeInSNeededToInitiateExit: number;
+  minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit: number;
   withdrawalLimitPercentForDepositorsInPips: bigint;
   withdrawalLimitPercentForVaultInPips: bigint;
 };
@@ -575,43 +580,209 @@ export function encodeDepositBridgeAdapterPayload(
   );
 }
 
+const fixedIncomeVaultConfigurationFieldsTupleType =
+  'tuple(address,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64)';
+
+const profitShareVaultConfigurationFieldsTupleType =
+  'tuple(address,uint64,uint64,uint64,uint64,uint64,uint64)';
+
+function fixedIncomeVaultConfigurationFieldsToTuple(
+  configurationFields: FixedIncomeVaultConfigurationFields,
+) {
+  return [
+    configurationFields.managerWallet,
+    configurationFields.effectiveTimestampInS,
+    configurationFields.interestMultiplierInPips,
+    configurationFields.maximumNetDepositsInPips,
+    configurationFields.maximumTotalOwedQuantityAvailableForExitWithdrawalMultiplierNeededToInitiateExitInPips,
+    configurationFields.minimumTotalOwedQuantityAvailableForExitWithdrawalMultiplierToAllowManagerWalletWithdrawalInPips,
+    configurationFields.minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit,
+    configurationFields.withdrawalLimitPercentForDepositorsInPips,
+    configurationFields.withdrawalLimitPercentForVaultInPips,
+  ];
+}
+
+function profitShareVaultConfigurationFieldsToTuple(
+  configurationFields: ProfitShareVaultConfigurationFields,
+) {
+  return [
+    configurationFields.managerWallet,
+    configurationFields.carryFeeMultiplierInPips,
+    configurationFields.managementFeeMultiplierInPips,
+    configurationFields.maximumNetDepositsInPips,
+    configurationFields.minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit,
+    configurationFields.withdrawalLimitPercentForDepositorsInPips,
+    configurationFields.withdrawalLimitPercentForVaultInPips,
+  ];
+}
+
+/**
+ * Encodes a Fixed Income Vault configuration as expected by
+ * `initiateManagedAccountUpgrade`. Creating a vault requires
+ * {@link signAndEncodeFixedIncomeVaultAddManagedAccountPayload}
+ */
 export function encodeFixedIncomeVaultConfigurationFields(
   configurationFields: FixedIncomeVaultConfigurationFields,
 ) {
   return ethers.AbiCoder.defaultAbiCoder().encode(
-    ['tuple(address,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64)'],
-    [
-      [
-        configurationFields.managerWallet,
-        configurationFields.effectiveTimestampInS,
-        configurationFields.interestMultiplierInPips,
-        configurationFields.maximumNetDepositsInPips,
-        configurationFields.maximumTotalOwedQuantityAvailableForExitWithdrawalMultiplierNeededToInitiateExitInPips,
-        configurationFields.minimumTotalOwedQuantityAvailableForExitWithdrawalMultiplierToAllowManagerWalletWithdrawalInPips,
-        configurationFields.minimumUnappliedWithdrawalAgeInSNeededToInitiateExit,
-        configurationFields.withdrawalLimitPercentForDepositorsInPips,
-        configurationFields.withdrawalLimitPercentForVaultInPips,
-      ],
-    ],
+    [fixedIncomeVaultConfigurationFieldsTupleType],
+    [fixedIncomeVaultConfigurationFieldsToTuple(configurationFields)],
   );
 }
 
+/**
+ * Encodes a Profit Share Vault configuration as expected by
+ * `initiateManagedAccountUpgrade`. Creating a vault requires
+ * {@link signAndEncodeProfitShareVaultAddManagedAccountPayload}
+ */
 export function encodeProfitShareVaultConfigurationFields(
   configurationFields: ProfitShareVaultConfigurationFields,
 ) {
   return ethers.AbiCoder.defaultAbiCoder().encode(
-    ['tuple(address,uint64,uint64,uint64,uint64,uint64,uint64)'],
+    [profitShareVaultConfigurationFieldsTupleType],
+    [profitShareVaultConfigurationFieldsToTuple(configurationFields)],
+  );
+}
+
+/**
+ * Decodes a Fixed Income Vault configuration as encoded by
+ * {@link encodeFixedIncomeVaultConfigurationFields}. Use it for the
+ * `configuration` argument of the provider's `ManagedAccountAdded`,
+ * `ManagedAccountUpgradeInitiated` and `ManagedAccountUpgradeFinalized` events
+ */
+export function decodeFixedIncomeVaultConfigurationFields(
+  configuration: BytesLike,
+): FixedIncomeVaultConfigurationFields {
+  const [fields] = ethers.AbiCoder.defaultAbiCoder().decode(
+    [fixedIncomeVaultConfigurationFieldsTupleType],
+    configuration,
+  );
+
+  return {
+    managerWallet: fields[0],
+    effectiveTimestampInS: Number(fields[1]),
+    interestMultiplierInPips: fields[2],
+    maximumNetDepositsInPips: fields[3],
+    maximumTotalOwedQuantityAvailableForExitWithdrawalMultiplierNeededToInitiateExitInPips:
+      fields[4],
+    minimumTotalOwedQuantityAvailableForExitWithdrawalMultiplierToAllowManagerWalletWithdrawalInPips:
+      fields[5],
+    minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit: Number(fields[6]),
+    withdrawalLimitPercentForDepositorsInPips: fields[7],
+    withdrawalLimitPercentForVaultInPips: fields[8],
+  };
+}
+
+/**
+ * Decodes a Profit Share Vault configuration as encoded by
+ * {@link encodeProfitShareVaultConfigurationFields}. Use it for the
+ * `configuration` argument of the provider's `ManagedAccountAdded`,
+ * `ManagedAccountUpgradeInitiated` and `ManagedAccountUpgradeFinalized` events
+ */
+export function decodeProfitShareVaultConfigurationFields(
+  configuration: BytesLike,
+): ProfitShareVaultConfigurationFields {
+  const [fields] = ethers.AbiCoder.defaultAbiCoder().decode(
+    [profitShareVaultConfigurationFieldsTupleType],
+    configuration,
+  );
+
+  return {
+    managerWallet: fields[0],
+    carryFeeMultiplierInPips: fields[1],
+    managementFeeMultiplierInPips: fields[2],
+    maximumNetDepositsInPips: fields[3],
+    minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit: Number(fields[4]),
+    withdrawalLimitPercentForDepositorsInPips: fields[5],
+    withdrawalLimitPercentForVaultInPips: fields[6],
+  };
+}
+
+/**
+ * Encodes the signed `addManagedAccountPayload` required to create a new Fixed
+ * Income Vault {@link getFixedIncomeVaultConfigurationSignatureTypedData}
+ */
+export function encodeFixedIncomeVaultAddManagedAccountPayload(
+  configurationFields: FixedIncomeVaultConfigurationFields,
+  managerWalletSignature: string,
+) {
+  return ethers.AbiCoder.defaultAbiCoder().encode(
+    [fixedIncomeVaultConfigurationFieldsTupleType, 'bytes'],
     [
-      [
-        configurationFields.managerWallet,
-        configurationFields.carryFeeMultiplierInPips,
-        configurationFields.managementFeeMultiplierInPips,
-        configurationFields.maximumNetDepositsInPips,
-        configurationFields.minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit,
-        configurationFields.withdrawalLimitPercentForDepositorsInPips,
-        configurationFields.withdrawalLimitPercentForVaultInPips,
-      ],
+      fixedIncomeVaultConfigurationFieldsToTuple(configurationFields),
+      managerWalletSignature,
     ],
+  );
+}
+
+/**
+ * Encodes the signed `addManagedAccountPayload` required to create a new Profit
+ * Share Vault {@link getProfitShareVaultConfigurationSignatureTypedData}
+ */
+export function encodeProfitShareVaultAddManagedAccountPayload(
+  configurationFields: ProfitShareVaultConfigurationFields,
+  managerWalletSignature: string,
+) {
+  return ethers.AbiCoder.defaultAbiCoder().encode(
+    [profitShareVaultConfigurationFieldsTupleType, 'bytes'],
+    [
+      profitShareVaultConfigurationFieldsToTuple(configurationFields),
+      managerWalletSignature,
+    ],
+  );
+}
+
+/**
+ * Signs a Fixed Income Vault configuration and encodes the
+ * `addManagedAccountPayload` that creates the vault. `signTypedData` must sign
+ * with the manager wallet's key
+ */
+export async function signAndEncodeFixedIncomeVaultAddManagedAccountPayload(
+  configurationFields: FixedIncomeVaultConfigurationFields,
+  managedAccountProviderAddress: string,
+  chainId: number,
+  sandbox: boolean,
+  signTypedData: SignTypedData,
+) {
+  const managerWalletSignature = await signTypedData(
+    ...getFixedIncomeVaultConfigurationSignatureTypedData(
+      configurationFields,
+      managedAccountProviderAddress,
+      chainId,
+      sandbox,
+    ),
+  );
+
+  return encodeFixedIncomeVaultAddManagedAccountPayload(
+    configurationFields,
+    managerWalletSignature,
+  );
+}
+
+/**
+ * Signs a Profit Share Vault configuration and encodes the
+ * `addManagedAccountPayload` that creates the vault. `signTypedData` must sign
+ * with the manager wallet's key
+ */
+export async function signAndEncodeProfitShareVaultAddManagedAccountPayload(
+  configurationFields: ProfitShareVaultConfigurationFields,
+  managedAccountProviderAddress: string,
+  chainId: number,
+  sandbox: boolean,
+  signTypedData: SignTypedData,
+) {
+  const managerWalletSignature = await signTypedData(
+    ...getProfitShareVaultConfigurationSignatureTypedData(
+      configurationFields,
+      managedAccountProviderAddress,
+      chainId,
+      sandbox,
+    ),
+  );
+
+  return encodeProfitShareVaultAddManagedAccountPayload(
+    configurationFields,
+    managerWalletSignature,
   );
 }
 

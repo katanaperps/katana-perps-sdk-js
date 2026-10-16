@@ -26,6 +26,11 @@ const _abi = [
         name: 'maximumVaultConfigurations_',
         type: 'uint256',
       },
+      {
+        internalType: 'address',
+        name: 'withdrawalDispatcherWallet_',
+        type: 'address',
+      },
     ],
     stateMutability: 'nonpayable',
     type: 'constructor',
@@ -132,6 +137,11 @@ const _abi = [
   },
   {
     inputs: [],
+    name: 'InvalidBridgeAdapter',
+    type: 'error',
+  },
+  {
+    inputs: [],
     name: 'InvalidContractAddress',
     type: 'error',
   },
@@ -169,6 +179,11 @@ const _abi = [
   {
     inputs: [],
     name: 'InvalidQuantity',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'InvalidShortString',
     type: 'error',
   },
   {
@@ -464,6 +479,17 @@ const _abi = [
     type: 'error',
   },
   {
+    inputs: [
+      {
+        internalType: 'string',
+        name: 'str',
+        type: 'string',
+      },
+    ],
+    name: 'StringTooLong',
+    type: 'error',
+  },
+  {
     inputs: [],
     name: 'UnknownBaseAssetSymbol',
     type: 'error',
@@ -471,6 +497,11 @@ const _abi = [
   {
     inputs: [],
     name: 'ValueCanOnlyBetSetOnce',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'VaultConfigurationUpgradeAlreadyInProgress',
     type: 'error',
   },
   {
@@ -768,6 +799,12 @@ const _abi = [
   },
   {
     anonymous: false,
+    inputs: [],
+    name: 'EIP712DomainChanged',
+    type: 'event',
+  },
+  {
+    anonymous: false,
     inputs: [
       {
         indexed: false,
@@ -799,6 +836,12 @@ const _abi = [
         internalType: 'address',
         name: 'managerWallet',
         type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'bytes',
+        name: 'configuration',
+        type: 'bytes',
       },
     ],
     name: 'ManagedAccountAdded',
@@ -845,6 +888,12 @@ const _abi = [
         name: 'managerWallet',
         type: 'address',
       },
+      {
+        indexed: false,
+        internalType: 'bytes',
+        name: 'configuration',
+        type: 'bytes',
+      },
     ],
     name: 'ManagedAccountUpgradeFinalized',
     type: 'event',
@@ -863,6 +912,12 @@ const _abi = [
         internalType: 'uint256',
         name: 'blockTimestampThreshold',
         type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'bytes',
+        name: 'configuration',
+        type: 'bytes',
       },
     ],
     name: 'ManagedAccountUpgradeInitiated',
@@ -1179,64 +1234,12 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'INTEREST_PERIOD_IN_S',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MAX_INTEREST_MULTIPLIER',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
     name: 'MAX_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
     outputs: [
       {
         internalType: 'uint256',
         name: '',
         type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MAX_MAXIMUM_NET_DEPOSITS',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MAX_MAXIMUM_TOTAL_OWED_QUANTITY_AVAILABLE_MULTIPLIER_TO_INITIATE_EXIT',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
       },
     ],
     stateMutability: 'view',
@@ -1257,97 +1260,6 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'MAX_MINIMUM_TOTAL_OWED_QUANTITY_AVAILABLE_MULTIPLIER_TO_ALLOW_MANAGER_WALLET_WITHDRAWAL',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MAX_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MAX_WITHDRAWAL_LIMIT_WINDOW_SIZE_IN_S',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MINIMUM_WITHDRAWAL_MAXIMUM_GAS_FEE',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MIN_INTEREST_MULTIPLIER',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
     name: 'MIN_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
     outputs: [
       {
@@ -1361,103 +1273,12 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'MIN_MAXIMUM_NET_DEPOSITS',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MIN_MAXIMUM_TOTAL_OWED_QUANTITY_AVAILABLE_MULTIPLIER_TO_INITIATE_EXIT',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
     name: 'MIN_MAXIMUM_VAULT_CONFIGURATIONS',
     outputs: [
       {
         internalType: 'uint256',
         name: '',
         type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MIN_MINIMUM_TOTAL_OWED_QUANTITY_AVAILABLE_MULTIPLIER_TO_ALLOW_MANAGER_WALLET_WITHDRAWAL',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MIN_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MIN_WITHDRAWAL_LIMIT_WINDOW_SIZE_IN_S',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
       },
     ],
     stateMutability: 'view',
@@ -1645,6 +1466,62 @@ const _abi = [
     type: 'function',
   },
   {
+    inputs: [],
+    name: 'domainSeparatorV4',
+    outputs: [
+      {
+        internalType: 'bytes32',
+        name: '',
+        type: 'bytes32',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'eip712Domain',
+    outputs: [
+      {
+        internalType: 'bytes1',
+        name: 'fields',
+        type: 'bytes1',
+      },
+      {
+        internalType: 'string',
+        name: 'name',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'version',
+        type: 'string',
+      },
+      {
+        internalType: 'uint256',
+        name: 'chainId',
+        type: 'uint256',
+      },
+      {
+        internalType: 'address',
+        name: 'verifyingContract',
+        type: 'address',
+      },
+      {
+        internalType: 'bytes32',
+        name: 'salt',
+        type: 'bytes32',
+      },
+      {
+        internalType: 'uint256[]',
+        name: 'extensions',
+        type: 'uint256[]',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [
       {
         internalType: 'address',
@@ -1688,19 +1565,6 @@ const _abi = [
     name: 'initiateManagedAccountUpgrade',
     outputs: [],
     stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'bytes',
-        name: '',
-        type: 'bytes',
-      },
-    ],
-    name: 'intervalTick',
-    outputs: [],
-    stateMutability: 'pure',
     type: 'function',
   },
   {

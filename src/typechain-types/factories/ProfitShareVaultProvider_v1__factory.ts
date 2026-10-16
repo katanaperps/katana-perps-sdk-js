@@ -26,6 +26,11 @@ const _abi = [
         name: 'maximumVaultConfigurations_',
         type: 'uint256',
       },
+      {
+        internalType: 'address',
+        name: 'withdrawalDispatcherWallet_',
+        type: 'address',
+      },
     ],
     stateMutability: 'nonpayable',
     type: 'constructor',
@@ -56,6 +61,11 @@ const _abi = [
       {
         internalType: 'uint64',
         name: 'maxValue',
+        type: 'uint64',
+      },
+      {
+        internalType: 'uint64',
+        name: 'minValue',
         type: 'uint64',
       },
     ],
@@ -97,6 +107,27 @@ const _abi = [
   {
     inputs: [],
     name: 'Duplicate',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint64',
+        name: 'value',
+        type: 'uint64',
+      },
+      {
+        internalType: 'uint64',
+        name: 'maxValue',
+        type: 'uint64',
+      },
+      {
+        internalType: 'uint64',
+        name: 'minValue',
+        type: 'uint64',
+      },
+    ],
+    name: 'ExchangeCarryFeeMultiplierOutOfRange',
     type: 'error',
   },
   {
@@ -143,6 +174,11 @@ const _abi = [
   },
   {
     inputs: [],
+    name: 'InvalidBridgeAdapter',
+    type: 'error',
+  },
+  {
+    inputs: [],
     name: 'InvalidContractAddress',
     type: 'error',
   },
@@ -184,6 +220,11 @@ const _abi = [
   },
   {
     inputs: [],
+    name: 'InvalidShortString',
+    type: 'error',
+  },
+  {
+    inputs: [],
     name: 'InvalidWalletAddress',
     type: 'error',
   },
@@ -196,12 +237,17 @@ const _abi = [
     inputs: [
       {
         internalType: 'uint64',
-        name: 'actualQuantity',
+        name: 'value',
         type: 'uint64',
       },
       {
         internalType: 'uint64',
-        name: 'expectedQuantity',
+        name: 'maxValue',
+        type: 'uint64',
+      },
+      {
+        internalType: 'uint64',
+        name: 'minValue',
         type: 'uint64',
       },
     ],
@@ -250,6 +296,11 @@ const _abi = [
       {
         internalType: 'uint64',
         name: 'maxValue',
+        type: 'uint64',
+      },
+      {
+        internalType: 'uint64',
+        name: 'minValue',
         type: 'uint64',
       },
     ],
@@ -406,6 +457,22 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: 'uint64',
+        name: 'minValue',
+        type: 'uint64',
+      },
+      {
+        internalType: 'uint64',
+        name: 'value',
+        type: 'uint64',
+      },
+    ],
+    name: 'RemainingSharesValueBelowWithdrawalMinimum',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
         internalType: 'uint8',
         name: 'bits',
         type: 'uint8',
@@ -465,6 +532,17 @@ const _abi = [
     type: 'error',
   },
   {
+    inputs: [
+      {
+        internalType: 'string',
+        name: 'str',
+        type: 'string',
+      },
+    ],
+    name: 'StringTooLong',
+    type: 'error',
+  },
+  {
     inputs: [],
     name: 'TotalAccountValueIsNegative',
     type: 'error',
@@ -477,6 +555,11 @@ const _abi = [
   {
     inputs: [],
     name: 'ValueCanOnlyBetSetOnce',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'VaultConfigurationUpgradeAlreadyInProgress',
     type: 'error',
   },
   {
@@ -594,6 +677,11 @@ const _abi = [
         name: 'maxValue',
         type: 'uint64',
       },
+      {
+        internalType: 'uint64',
+        name: 'minValue',
+        type: 'uint64',
+      },
     ],
     name: 'WithdrawalLimitWindowSizeInSOutOfRange',
     type: 'error',
@@ -631,6 +719,22 @@ const _abi = [
     type: 'error',
   },
   {
+    inputs: [
+      {
+        internalType: 'uint64',
+        name: 'minValue',
+        type: 'uint64',
+      },
+      {
+        internalType: 'uint64',
+        name: 'value',
+        type: 'uint64',
+      },
+    ],
+    name: 'WithdrawalSharesValueBelowMinimumQuantity',
+    type: 'error',
+  },
+  {
     anonymous: false,
     inputs: [],
     name: 'AddManagedAccountsDisabledAdmin',
@@ -640,6 +744,31 @@ const _abi = [
     anonymous: false,
     inputs: [],
     name: 'AddManagedAccountsEnabledAdmin',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'managerWallet',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'quantityInAssetUnits',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'bytes',
+        name: 'errorData',
+        type: 'bytes',
+      },
+    ],
+    name: 'CarryFeeDepositFailed',
     type: 'event',
   },
   {
@@ -732,6 +861,68 @@ const _abi = [
   },
   {
     anonymous: false,
+    inputs: [],
+    name: 'EIP712DomainChanged',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'managerWallet',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'feeWallet',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'quantityInAssetUnits',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'bytes',
+        name: 'errorData',
+        type: 'bytes',
+      },
+    ],
+    name: 'ExchangeCarryFeeDepositFailed',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'managerWallet',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint64',
+        name: 'previousValue',
+        type: 'uint64',
+      },
+      {
+        indexed: false,
+        internalType: 'uint64',
+        name: 'newValue',
+        type: 'uint64',
+      },
+    ],
+    name: 'ExchangeCarryFeeMultiplierChanged',
+    type: 'event',
+  },
+  {
+    anonymous: false,
     inputs: [
       {
         indexed: false,
@@ -763,6 +954,12 @@ const _abi = [
         internalType: 'address',
         name: 'managerWallet',
         type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'bytes',
+        name: 'configuration',
+        type: 'bytes',
       },
     ],
     name: 'ManagedAccountAdded',
@@ -809,6 +1006,12 @@ const _abi = [
         name: 'managerWallet',
         type: 'address',
       },
+      {
+        indexed: false,
+        internalType: 'bytes',
+        name: 'configuration',
+        type: 'bytes',
+      },
     ],
     name: 'ManagedAccountUpgradeFinalized',
     type: 'event',
@@ -827,6 +1030,12 @@ const _abi = [
         internalType: 'uint256',
         name: 'blockTimestampThreshold',
         type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'bytes',
+        name: 'configuration',
+        type: 'bytes',
       },
     ],
     name: 'ManagedAccountUpgradeInitiated',
@@ -1186,77 +1395,12 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'INITIAL_SHARE_PRICE',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MANAGEMENT_FEE_PERIOD_IN_S',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MAX_CARRY_FEE_MULTIPLIER',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
     name: 'MAX_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
     outputs: [
       {
         internalType: 'uint256',
         name: '',
         type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MAX_MANAGEMENT_FEE_MULTIPLIER',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MAX_MAXIMUM_NET_DEPOSITS',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
       },
     ],
     stateMutability: 'view',
@@ -1277,71 +1421,6 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'MAX_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MAX_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MAX_WITHDRAWAL_LIMIT_WINDOW_SIZE_IN_S',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MINIMUM_WITHDRAWAL_MAXIMUM_GAS_FEE',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
     name: 'MIN_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
     outputs: [
       {
@@ -1355,64 +1434,12 @@ const _abi = [
   },
   {
     inputs: [],
-    name: 'MIN_MAXIMUM_NET_DEPOSITS',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
     name: 'MIN_MAXIMUM_VAULT_CONFIGURATIONS',
     outputs: [
       {
         internalType: 'uint256',
         name: '',
         type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MIN_MINIMUM_UNAPPLIED_DEPOSIT_OR_WITHDRAWAL_AGE_IN_S_TO_INITIATE_EXIT',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_DEPOSITORS',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'MIN_WITHDRAWAL_LIMIT_PERCENT_FOR_VAULT',
-    outputs: [
-      {
-        internalType: 'uint64',
-        name: '',
-        type: 'uint64',
       },
     ],
     stateMutability: 'view',
@@ -1590,13 +1617,69 @@ const _abi = [
       },
       {
         internalType: 'bytes',
-        name: 'payload',
+        name: 'managedAccountProviderPayload',
         type: 'bytes',
       },
     ],
     name: 'deposit',
     outputs: [],
     stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'domainSeparatorV4',
+    outputs: [
+      {
+        internalType: 'bytes32',
+        name: '',
+        type: 'bytes32',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'eip712Domain',
+    outputs: [
+      {
+        internalType: 'bytes1',
+        name: 'fields',
+        type: 'bytes1',
+      },
+      {
+        internalType: 'string',
+        name: 'name',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'version',
+        type: 'string',
+      },
+      {
+        internalType: 'uint256',
+        name: 'chainId',
+        type: 'uint256',
+      },
+      {
+        internalType: 'address',
+        name: 'verifyingContract',
+        type: 'address',
+      },
+      {
+        internalType: 'bytes32',
+        name: 'salt',
+        type: 'bytes32',
+      },
+      {
+        internalType: 'uint256[]',
+        name: 'extensions',
+        type: 'uint256[]',
+      },
+    ],
+    stateMutability: 'view',
     type: 'function',
   },
   {
@@ -2014,6 +2097,11 @@ const _abi = [
           },
           {
             internalType: 'uint64',
+            name: 'exchangeCarryFeeMultiplier',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
             name: 'exitedAccountValue',
             type: 'uint64',
           },
@@ -2399,6 +2487,24 @@ const _abi = [
       },
     ],
     name: 'setDepositEnabledAdmin',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'managerWallet',
+        type: 'address',
+      },
+      {
+        internalType: 'uint64',
+        name: 'newExchangeCarryFeeMultiplier',
+        type: 'uint64',
+      },
+    ],
+    name: 'setExchangeCarryFeeMultiplier',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
