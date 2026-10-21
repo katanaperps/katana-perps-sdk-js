@@ -17,6 +17,8 @@ import { pipToDecimal } from './pipmath';
 
 import type * as types from '#index';
 import type { WithdrawalFromManagedAccountStruct } from './typechain-types/Exchange_v2';
+import type { FixedIncomeVaultProvider_v1 } from './typechain-types/FixedIncomeVaultProvider_v1';
+import type { ProfitShareVaultProvider_v1 } from './typechain-types/ProfitShareVaultProvider_v1';
 
 export type SignTypedData = (
   domain: ethers.TypedDataDomain,
@@ -410,6 +412,138 @@ export function getRemoveVaultXConnectionSignatureTypedData(
       wallet: data.wallet,
       manager: data.manager,
     } satisfies Record<keyof types.RestRequestRemoveVaultXConnection, unknown>,
+  ];
+}
+
+const getVaultProviderDomainSeparator = (
+  name: string,
+  managedAccountProviderAddress: string,
+  chainId: number,
+  sandbox: boolean,
+) => {
+  return {
+    name,
+    version:
+      sandbox ?
+        constants.EIP_712_DOMAIN_VERSION_VAULT_PROVIDER_SANDBOX
+      : constants.EIP_712_DOMAIN_VERSION_VAULT_PROVIDER,
+    chainId,
+    verifyingContract: managedAccountProviderAddress,
+  } satisfies ethers.TypedDataDomain;
+};
+
+/**
+ * Typed data the manager wallet signs to create a Fixed Income Vault. The
+ * provider verifies the signature under its own domain, so it is only valid for
+ * the provider at `managedAccountProviderAddress` on `chainId`
+ */
+export function getFixedIncomeVaultConfigurationSignatureTypedData(
+  configurationFields: types.FixedIncomeVaultConfigurationFields,
+  managedAccountProviderAddress: string,
+  chainId: number,
+  sandbox: boolean,
+): Parameters<SignTypedData> {
+  return [
+    getVaultProviderDomainSeparator(
+      constants.EIP_712_DOMAIN_NAME_FIXED_INCOME_VAULT_PROVIDER,
+      managedAccountProviderAddress,
+      chainId,
+      sandbox,
+    ),
+    {
+      // Members of the contract's VaultConfigurationFields struct in declaration order
+      FixedIncomeVaultConfiguration: [
+        { name: 'managerWallet', type: 'address' },
+        { name: 'effectiveTimestampInS', type: 'uint64' },
+        { name: 'interestMultiplier', type: 'uint64' },
+        { name: 'maximumNetDeposits', type: 'uint64' },
+        {
+          name: 'maximumTotalOwedQuantityAvailableMultiplierToInitiateExit',
+          type: 'uint64',
+        },
+        {
+          name: 'minimumTotalOwedQuantityAvailableMultiplierToAllowManagerWalletWithdrawal',
+          type: 'uint64',
+        },
+        {
+          name: 'minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit',
+          type: 'uint64',
+        },
+        { name: 'withdrawalLimitPercentForDepositors', type: 'uint64' },
+        { name: 'withdrawalLimitPercentForVault', type: 'uint64' },
+      ],
+    },
+    {
+      managerWallet: configurationFields.managerWallet,
+      effectiveTimestampInS: configurationFields.effectiveTimestampInS,
+      interestMultiplier: configurationFields.interestMultiplierInPips,
+      maximumNetDeposits: configurationFields.maximumNetDepositsInPips,
+      maximumTotalOwedQuantityAvailableMultiplierToInitiateExit:
+        configurationFields.maximumTotalOwedQuantityAvailableForExitWithdrawalMultiplierNeededToInitiateExitInPips,
+      minimumTotalOwedQuantityAvailableMultiplierToAllowManagerWalletWithdrawal:
+        configurationFields.minimumTotalOwedQuantityAvailableForExitWithdrawalMultiplierToAllowManagerWalletWithdrawalInPips,
+      minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit:
+        configurationFields.minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit,
+      withdrawalLimitPercentForDepositors:
+        configurationFields.withdrawalLimitPercentForDepositorsInPips,
+      withdrawalLimitPercentForVault:
+        configurationFields.withdrawalLimitPercentForVaultInPips,
+    } satisfies Record<
+      keyof FixedIncomeVaultProvider_v1.VaultConfigurationFieldsStruct,
+      unknown
+    >,
+  ];
+}
+
+/**
+ * Typed data the manager wallet signs to create a Profit Share Vault. The
+ * provider verifies the signature under its own domain, so it is only valid for
+ * the provider at `managedAccountProviderAddress` on `chainId`
+ */
+export function getProfitShareVaultConfigurationSignatureTypedData(
+  configurationFields: types.ProfitShareVaultConfigurationFields,
+  managedAccountProviderAddress: string,
+  chainId: number,
+  sandbox: boolean,
+): Parameters<SignTypedData> {
+  return [
+    getVaultProviderDomainSeparator(
+      constants.EIP_712_DOMAIN_NAME_PROFIT_SHARE_VAULT_PROVIDER,
+      managedAccountProviderAddress,
+      chainId,
+      sandbox,
+    ),
+    {
+      // Members of the contract's VaultConfigurationFields struct in declaration order
+      ProfitShareVaultConfiguration: [
+        { name: 'managerWallet', type: 'address' },
+        { name: 'carryFeeMultiplier', type: 'uint64' },
+        { name: 'managementFeeMultiplier', type: 'uint64' },
+        { name: 'maximumNetDeposits', type: 'uint64' },
+        {
+          name: 'minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit',
+          type: 'uint64',
+        },
+        { name: 'withdrawalLimitPercentForDepositors', type: 'uint64' },
+        { name: 'withdrawalLimitPercentForVault', type: 'uint64' },
+      ],
+    },
+    {
+      managerWallet: configurationFields.managerWallet,
+      carryFeeMultiplier: configurationFields.carryFeeMultiplierInPips,
+      managementFeeMultiplier:
+        configurationFields.managementFeeMultiplierInPips,
+      maximumNetDeposits: configurationFields.maximumNetDepositsInPips,
+      minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit:
+        configurationFields.minimumUnappliedDepositOrWithdrawalAgeInSToInitiateExit,
+      withdrawalLimitPercentForDepositors:
+        configurationFields.withdrawalLimitPercentForDepositorsInPips,
+      withdrawalLimitPercentForVault:
+        configurationFields.withdrawalLimitPercentForVaultInPips,
+    } satisfies Record<
+      keyof ProfitShareVaultProvider_v1.VaultConfigurationFieldsStruct,
+      unknown
+    >,
   ];
 }
 
