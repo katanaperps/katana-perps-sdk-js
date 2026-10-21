@@ -379,6 +379,7 @@ export interface ProfitShareVaultProvider_v1Interface extends Interface {
       | 'ManagedAccountUpgradeInitiated'
       | 'ManagerWalletLiquidated'
       | 'MaximumVaultConfigurationsChanged'
+      | 'QuoteAssetTransferFailed'
       | 'VaultSharesBurned'
       | 'VaultSharesMinted'
       | 'WithdrawalDispatcherChanged'
@@ -1110,6 +1111,31 @@ export namespace MaximumVaultConfigurationsChangedEvent {
   export interface OutputObject {
     previousValue: bigint;
     newValue: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace QuoteAssetTransferFailedEvent {
+  export type InputTuple = [
+    managerWallet: AddressLike,
+    depositorWallet: AddressLike,
+    quantityInAssetUnits: BigNumberish,
+    errorData: BytesLike,
+  ];
+  export type OutputTuple = [
+    managerWallet: string,
+    depositorWallet: string,
+    quantityInAssetUnits: bigint,
+    errorData: string,
+  ];
+  export interface OutputObject {
+    managerWallet: string;
+    depositorWallet: string;
+    quantityInAssetUnits: bigint;
+    errorData: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -2021,6 +2047,13 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
     MaximumVaultConfigurationsChangedEvent.OutputObject
   >;
   getEvent(
+    key: 'QuoteAssetTransferFailed',
+  ): TypedContractEvent<
+    QuoteAssetTransferFailedEvent.InputTuple,
+    QuoteAssetTransferFailedEvent.OutputTuple,
+    QuoteAssetTransferFailedEvent.OutputObject
+  >;
+  getEvent(
     key: 'VaultSharesBurned',
   ): TypedContractEvent<
     VaultSharesBurnedEvent.InputTuple,
@@ -2271,6 +2304,17 @@ export interface ProfitShareVaultProvider_v1 extends BaseContract {
       MaximumVaultConfigurationsChangedEvent.InputTuple,
       MaximumVaultConfigurationsChangedEvent.OutputTuple,
       MaximumVaultConfigurationsChangedEvent.OutputObject
+    >;
+
+    'QuoteAssetTransferFailed(address,address,uint256,bytes)': TypedContractEvent<
+      QuoteAssetTransferFailedEvent.InputTuple,
+      QuoteAssetTransferFailedEvent.OutputTuple,
+      QuoteAssetTransferFailedEvent.OutputObject
+    >;
+    QuoteAssetTransferFailed: TypedContractEvent<
+      QuoteAssetTransferFailedEvent.InputTuple,
+      QuoteAssetTransferFailedEvent.OutputTuple,
+      QuoteAssetTransferFailedEvent.OutputObject
     >;
 
     'VaultSharesBurned(address,address,uint64,uint64,uint64,uint64)': TypedContractEvent<

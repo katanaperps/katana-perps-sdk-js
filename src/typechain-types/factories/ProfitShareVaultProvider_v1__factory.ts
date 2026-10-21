@@ -101,6 +101,11 @@ const _abi = [
   },
   {
     inputs: [],
+    name: 'DepositorWalletExited',
+    type: 'error',
+  },
+  {
+    inputs: [],
     name: 'DepositorWalletNotExited',
     type: 'error',
   },
@@ -1071,6 +1076,37 @@ const _abi = [
       },
     ],
     name: 'MaximumVaultConfigurationsChanged',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'managerWallet',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'depositorWallet',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'quantityInAssetUnits',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'bytes',
+        name: 'errorData',
+        type: 'bytes',
+      },
+    ],
+    name: 'QuoteAssetTransferFailed',
     type: 'event',
   },
   {
