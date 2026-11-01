@@ -1842,6 +1842,10 @@ export class RestAuthenticatedClient {
    * @internal
    */
   public readonly [INTERNAL_SYMBOL] = Object.freeze({
+    /*
+     * Conditional TP/SL orders
+     */
+
     /**
      * Requires the public IDs (`orderIds`) of the stop loss orders' parent
      * orders. Do not provide the public IDs of the stop loss orders themselves.
@@ -1870,109 +1874,6 @@ export class RestAuthenticatedClient {
         params,
         signer,
       );
-    },
-
-    getFundingPayments: async (
-      ...[params, ...args]: Parameters<
-        RestAuthenticatedClient['getFundingPayments']
-      >
-    ) => {
-      const result = await this.getFundingPayments<
-        Paginated<katanaPerps.RestResponseGetFundingPayments>
-      >(
-        {
-          ...params,
-          page: Math.max(typeof params.page === 'number' ? params.page : 1, 1),
-        },
-        ...args,
-      );
-
-      return result;
-    },
-
-    getTakerCompetitionV3List: async (
-      params: katanaPerps.RestRequestGetTakerCompetitionV3List = {},
-    ) => {
-      return this.get<katanaPerps.RestResponseGetTakerCompetitionV3List>(
-        '/internal/takerCompetitionV3/list',
-        params,
-      );
-    },
-
-    getTakerCompetitionV3ByName: async ({
-      name,
-      ...params
-    }: katanaPerps.RestRequestGetTakerCompetitionV3ByName) => {
-      return this.get<katanaPerps.RestResponseGetTakerCompetitionV3ByName>(
-        `/internal/takerCompetitionV3/name/${encodeURIComponent(name)}`,
-        params,
-      );
-    },
-
-    registerTakerCompetitionV3: async (
-      params: katanaPerps.RestRequestRegisterTakerCompetitionV3,
-    ) => {
-      return this.post<katanaPerps.RestResponseRegisterTakerCompetitionV3>(
-        '/internal/takerCompetitionV3/register',
-        params,
-      );
-    },
-
-    setTakerCompetitionV3DisplayName: async (
-      params: katanaPerps.RestRequestSetTakerCompetitionV3DisplayName,
-    ) => {
-      return this.post<katanaPerps.RestResponseSetTakerCompetitionV3DisplayName>(
-        '/internal/takerCompetitionV3/displayName',
-        params,
-      );
-    },
-
-    getTakerCompetitionV3Payout: async (
-      params: katanaPerps.RestRequestGetTakerCompetitionV3Payout,
-    ) => {
-      return this.get<katanaPerps.RestResponseGetTakerCompetitionV3Payout>(
-        '/internal/takerCompetitionV3/payouts',
-        params,
-      );
-    },
-
-    authorizeTakerCompetitionV3Payout: async (
-      params: katanaPerps.RestRequestAuthorizeTakerCompetitionV3Payout,
-    ) => {
-      return this.post<katanaPerps.RestResponseAuthorizeTakerCompetitionV3Payout>(
-        '/internal/takerCompetitionV3/payouts',
-        params,
-      );
-    },
-
-    getBuilderRewards: async (
-      params: katanaPerps.RestRequestGetBuilderRewards,
-    ) => {
-      return this.get<katanaPerps.RestResponseGetBuilderRewards>(
-        '/internal/builderRewards',
-        params,
-      );
-    },
-
-    getBuilderRewardsDailyFees: async (
-      params: katanaPerps.RestRequestGetBuilderRewardsDailyFees,
-    ) => {
-      return this.get<katanaPerps.RestResponseGetBuilderRewardsDailyFees>(
-        '/internal/builderRewards/dailyFees',
-        params,
-      );
-    },
-
-    getXChallenge: async (
-      params: katanaPerps.RestRequestGetVaultXConnectionChallenge,
-    ) => {
-      const result =
-        await this.get<katanaPerps.RestResponseGetVaultXConnectionChallenge>(
-          '/internal/vaults/xchallenge',
-          params,
-        );
-
-      return result;
     },
 
     placeConditionalTpSlOrder: async <
@@ -2082,6 +1983,174 @@ export class RestAuthenticatedClient {
         conditionalTakeProfitOrder?: katanaPerps.RestRequestCreateOrderSigned;
         conditionalStopLossOrder?: katanaPerps.RestRequestCreateOrderSigned;
       });
+    },
+
+    /*
+     * TWAP strategies/orders
+     */
+
+    cancelTwapOrders: async (
+      params: katanaPerps.RestRequestCancelOrders,
+      signer: katanaPerps.SignTypedData | undefined = this.#signer,
+    ) => {
+      return this.makeCancelOrdersRequest(
+        '/internal/orders/twap',
+        params,
+        signer,
+      );
+    },
+
+    createTwapOrder: async (
+      params: katanaPerps.RestRequestTwapOrder,
+      twapSchedule: katanaPerps.TwapSchedule,
+      signer: katanaPerps.SignTypedData | undefined = this.#signer,
+    ) => {
+      ensureSigner(signer);
+
+      const { chainId, exchangeContractAddress } =
+        await this.getContractAndChainId();
+
+      return this.post<katanaPerps.KatanaPerpsTwapOrder>(
+        '/internal/orders/twap',
+        {
+          parameters: params,
+          signature: await signer(
+            ...getOrderSignatureTypedData(
+              params,
+              exchangeContractAddress,
+              chainId,
+              this.#config.sandbox,
+            ),
+          ),
+          twapSchedule,
+        },
+      );
+    },
+
+    getTwapOrders: async (params: katanaPerps.RestRequestGetTwapOrders) => {
+      return this.get<katanaPerps.KatanaPerpsTwapOrder[]>(
+        '/internal/orders/twap',
+        params,
+      );
+    },
+
+    /*
+     * Funding payments
+     */
+
+    getFundingPayments: async (
+      ...[params, ...args]: Parameters<
+        RestAuthenticatedClient['getFundingPayments']
+      >
+    ) => {
+      const result = await this.getFundingPayments<
+        Paginated<katanaPerps.RestResponseGetFundingPayments>
+      >(
+        {
+          ...params,
+          page: Math.max(typeof params.page === 'number' ? params.page : 1, 1),
+        },
+        ...args,
+      );
+
+      return result;
+    },
+
+    /*
+     * Taker competitions
+     */
+
+    getTakerCompetitionV3List: async (
+      params: katanaPerps.RestRequestGetTakerCompetitionV3List = {},
+    ) => {
+      return this.get<katanaPerps.RestResponseGetTakerCompetitionV3List>(
+        '/internal/takerCompetitionV3/list',
+        params,
+      );
+    },
+
+    getTakerCompetitionV3ByName: async ({
+      name,
+      ...params
+    }: katanaPerps.RestRequestGetTakerCompetitionV3ByName) => {
+      return this.get<katanaPerps.RestResponseGetTakerCompetitionV3ByName>(
+        `/internal/takerCompetitionV3/name/${encodeURIComponent(name)}`,
+        params,
+      );
+    },
+
+    registerTakerCompetitionV3: async (
+      params: katanaPerps.RestRequestRegisterTakerCompetitionV3,
+    ) => {
+      return this.post<katanaPerps.RestResponseRegisterTakerCompetitionV3>(
+        '/internal/takerCompetitionV3/register',
+        params,
+      );
+    },
+
+    setTakerCompetitionV3DisplayName: async (
+      params: katanaPerps.RestRequestSetTakerCompetitionV3DisplayName,
+    ) => {
+      return this.post<katanaPerps.RestResponseSetTakerCompetitionV3DisplayName>(
+        '/internal/takerCompetitionV3/displayName',
+        params,
+      );
+    },
+
+    getTakerCompetitionV3Payout: async (
+      params: katanaPerps.RestRequestGetTakerCompetitionV3Payout,
+    ) => {
+      return this.get<katanaPerps.RestResponseGetTakerCompetitionV3Payout>(
+        '/internal/takerCompetitionV3/payouts',
+        params,
+      );
+    },
+
+    authorizeTakerCompetitionV3Payout: async (
+      params: katanaPerps.RestRequestAuthorizeTakerCompetitionV3Payout,
+    ) => {
+      return this.post<katanaPerps.RestResponseAuthorizeTakerCompetitionV3Payout>(
+        '/internal/takerCompetitionV3/payouts',
+        params,
+      );
+    },
+
+    /*
+     * Builder rewards
+     */
+
+    getBuilderRewards: async (
+      params: katanaPerps.RestRequestGetBuilderRewards,
+    ) => {
+      return this.get<katanaPerps.RestResponseGetBuilderRewards>(
+        '/internal/builderRewards',
+        params,
+      );
+    },
+
+    getBuilderRewardsDailyFees: async (
+      params: katanaPerps.RestRequestGetBuilderRewardsDailyFees,
+    ) => {
+      return this.get<katanaPerps.RestResponseGetBuilderRewardsDailyFees>(
+        '/internal/builderRewards/dailyFees',
+        params,
+      );
+    },
+
+    /*
+     * Vaults
+     */
+
+    getXChallenge: async (
+      params: katanaPerps.RestRequestGetVaultXConnectionChallenge,
+    ) => {
+      const result =
+        await this.get<katanaPerps.RestResponseGetVaultXConnectionChallenge>(
+          '/internal/vaults/xchallenge',
+          params,
+        );
+
+      return result;
     },
 
     setVaultDetails: async (
