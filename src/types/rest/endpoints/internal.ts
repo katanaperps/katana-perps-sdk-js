@@ -1,8 +1,12 @@
 import type {
   DepositSource,
+  KatanaPerpsOrder,
   PayoutProgram,
+  RestRequestByMarketOptional,
   RestRequestByWallet,
-  RestRequestByWalletOptional,
+  RestRequestOrderTypeLimit,
+  RestRequestOrderTypeMarket,
+  RestRequestPaginationWithFromId,
 } from '#index';
 import type { RestRequestWithSignature } from '#types/utils';
 import type { KatanaPerpsDeposit } from './GetDeposits';
@@ -491,9 +495,9 @@ export interface RestResponseFarmPayout {
 /**
  * @hidden
  */
-export interface RestRequestGetTakerCompetitionV3ByName
-  extends RestRequestByWalletOptional {
+export interface RestRequestGetTakerCompetitionV3ByName {
   name: string;
+  wallet?: string;
 }
 
 /**
@@ -685,9 +689,9 @@ export interface RestResponseAuthorizeTakerCompetitionV3Payout {
 /**
  * @hidden
  */
-export interface RestRequestGetKatanaPoints
-  extends RestRequestByWalletOptional {
+export interface RestRequestGetKatanaPoints {
   seasonId?: number;
+  wallet?: string;
 }
 
 /**
@@ -843,4 +847,95 @@ export interface BuilderRewardDailyFeesRow {
  */
 export interface RestResponseGetBuilderRewardsDailyFees {
   dailyFees: BuilderRewardDailyFeesRow[];
+}
+
+/*
+ * TWAP orders
+ */
+
+/**
+ * @hidden
+ */
+export type RestRequestTwapOrder =
+  | RestRequestOrderTypeLimit
+  | RestRequestOrderTypeMarket;
+
+/**
+ * @hidden
+ */
+export interface TwapSchedule {
+  /**
+   * In seconds
+   */
+  duration: number;
+  /**
+   * In seconds, must be a divisor of the duration
+   */
+  frequency: number;
+  cancelWhenMarketClosed?: boolean;
+  /**
+   * Don't spread the unfilled quantity over the remaining executions
+   */
+  executeFixedQuantity?: boolean;
+  /**
+   * Randomize execution quantities by up to +/-20%
+   */
+  randomizeExecutionQuantity?: boolean;
+}
+
+/**
+ * @hidden
+ */
+export type KatanaPerpsTwapOrderStatus =
+  | 'creating'
+  | 'running'
+  | 'filled'
+  | 'canceled'
+  | 'expired';
+
+/**
+ * @hidden
+ */
+export type KatanaPerpsTwapOrder = Pick<
+  KatanaPerpsOrder,
+  | 'market'
+  | 'orderId'
+  | 'clientOrderId'
+  | 'wallet'
+  | 'type'
+  | 'side'
+  | 'originalQuantity'
+  | 'executedQuantity'
+  | 'cumulativeQuoteQuantity'
+  | 'avgExecutionPrice'
+  | 'price'
+  | 'reduceOnly'
+> & {
+  status: KatanaPerpsTwapOrderStatus;
+  /**
+   * In seconds
+   */
+  duration: number;
+  /**
+   * In seconds
+   */
+  frequency: number;
+  /**
+   * Timestamp in ms
+   */
+  startsAt: number;
+  cancelWhenMarketClosed: boolean;
+  executeFixedQuantity: boolean;
+  randomizeExecutionQuantity: boolean;
+  lastExecutionError?: string;
+  cancellationReason?: 'ExecutionError' | 'Expired' | 'UserAction';
+};
+
+/**
+ * @hidden
+ */
+export interface RestRequestGetTwapOrders
+  extends RestRequestByMarketOptional,
+    RestRequestPaginationWithFromId {
+  wallet: string;
 }
