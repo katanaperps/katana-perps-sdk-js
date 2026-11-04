@@ -17,6 +17,15 @@ export const EIP_712_DOMAIN_VERSION_VAULT_PROVIDER = '1.0.0';
 
 export const EIP_712_DOMAIN_VERSION_VAULT_PROVIDER_SANDBOX = '1.0.0-sandbox';
 
+/**
+ * The maximum number of TWAP orders/strategies that have not yet ended that a
+ * wallet can have across all markets.
+ */
+export const TWAP_MAX_RUNNING_ORDERS_PER_WALLET = 5;
+
+export const TWAP_MAX_DURATION_IN_S = 7 * 24 * 3_600;
+export const TWAP_MIN_FREQUENCY_IN_S = 5;
+
 // sdk-js-docs-v1-perps.katana.network
 // api-docs-v1-perps.katana.network
 

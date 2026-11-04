@@ -2001,7 +2001,9 @@ export class RestAuthenticatedClient {
     },
 
     createTwapOrder: async (
-      params: katanaPerps.RestRequestTwapOrder,
+      params: katanaPerps.RestRequestTwapOrder & {
+        selfTradePrevention: typeof katanaPerps.SelfTradePrevention.co;
+      },
       twapSchedule: katanaPerps.TwapSchedule,
       signer: katanaPerps.SignTypedData | undefined = this.#signer,
     ) => {
@@ -2030,6 +2032,27 @@ export class RestAuthenticatedClient {
     getTwapOrders: async (params: katanaPerps.RestRequestGetTwapOrders) => {
       return this.get<katanaPerps.KatanaPerpsTwapOrder[]>(
         '/internal/orders/twap',
+        params,
+      );
+    },
+
+    getTwapOrderExecutionLog: async ({
+      orderId,
+      ...params
+    }: katanaPerps.RestRequestGetTwapOrderExecutionLog) => {
+      return this.get<katanaPerps.KatanaPerpsTwapOrderExecutionLogEntry[]>(
+        `/internal/orders/twap/${encodeURIComponent(orderId)}/executionLog`,
+        params,
+      );
+    },
+
+    /*
+     * Fills
+     */
+
+    getFills: async (params: katanaPerps.RestRequestGetInternalFills) => {
+      return this.get<Paginated<katanaPerps.RestResponseGetFills>>(
+        '/internal/fills',
         params,
       );
     },

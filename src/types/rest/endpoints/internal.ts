@@ -6,6 +6,7 @@ import type {
   RestRequestByWallet,
   RestRequestOrderTypeLimit,
   RestRequestOrderTypeMarket,
+  RestRequestPagination,
   RestRequestPaginationWithFromId,
 } from '#index';
 import type { RestRequestWithSignature } from '#types/utils';
@@ -850,6 +851,35 @@ export interface RestResponseGetBuilderRewardsDailyFees {
 }
 
 /*
+ * Fills
+ */
+
+/**
+ * @see related {@link RestRequestGetFills}
+ * @see response {@link RestResponseGetFills}
+ *
+ * @hidden
+ */
+export interface RestRequestGetInternalFills
+  extends Omit<RestRequestGetFills, 'nonce'> {
+  /**
+   * Base-quote pairs e.g. `['ETH-USD', 'BTC-USD']`. Ignored if `market` is
+   * provided.
+   */
+  markets?: string[];
+  /**
+   * Public ID or `client:`-prefixed client order ID of the maker or taker
+   * order. If present, only fills that involve the order as the maker or taker
+   * are returned.
+   */
+  orderId?: string;
+  /**
+   * Paginate by order executions instead of individual fills
+   */
+  paginateByExecutions?: boolean;
+}
+
+/*
  * TWAP orders
  */
 
@@ -872,6 +902,10 @@ export interface TwapSchedule {
    * In seconds, must be a divisor of the duration
    */
   frequency: number;
+  /**
+   * If an execution is attempted while a market is closed, the TWAP strategy/
+   * order gets canceled.
+   */
   cancelWhenMarketClosed?: boolean;
   /**
    * Don't spread the unfilled quantity over the remaining executions
@@ -938,4 +972,34 @@ export interface RestRequestGetTwapOrders
   extends RestRequestByMarketOptional,
     RestRequestPaginationWithFromId {
   wallet: string;
+}
+
+/**
+ * @hidden
+ */
+export interface RestRequestGetTwapOrderExecutionLog
+  extends RestRequestPagination {
+  wallet: string;
+  orderId: string;
+}
+
+/**
+ * @hidden
+ */
+export interface KatanaPerpsTwapOrderExecutionLogEntry {
+  tick: number;
+  /**
+   * Timestamp in ms
+   */
+  executionTimestamp: number;
+  executionQuantity: string;
+  filledBaseQuantityBeforeExecution: string;
+  filledQuoteQuantityBeforeExecution: string;
+  filledBaseQuantityAfterExecution?: string;
+  filledQuoteQuantityAfterExecution?: string;
+  fillIds: string[];
+  /**
+   * Name of the trading engine's order placement error code
+   */
+  executionError?: string;
 }
