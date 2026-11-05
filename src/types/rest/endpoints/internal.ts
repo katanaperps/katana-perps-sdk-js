@@ -962,7 +962,12 @@ export type KatanaPerpsTwapOrder = Pick<
   executeFixedQuantity: boolean;
   randomizeExecutionQuantity: boolean;
   lastExecutionError?: string;
-  cancellationReason?: 'ExecutionError' | 'Expired' | 'UserAction';
+  cancellationReason?:
+    | 'ExecutionDidNotCrossSpread'
+    | 'ExecutionError'
+    | 'Expired'
+    | 'UserAction'
+    | string;
 };
 
 /**
