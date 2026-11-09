@@ -754,6 +754,16 @@ export const SubscriptionNameAuthenticated = {
   /**
    * **Subscription Update Events:**
    *
+   * - Receives {@link _types.KatanaPerpsTwapOrderEvent KatanaPerpsTwapOrderEvent} WebSocket updates via
+   *   the {@link _types.WebSocketClient.onMessage WebSocketClient.onMessage} handler.
+   * - `event.data` will match {@link _types.KatanaPerpsTwapOrderEventData KatanaPerpsTwapOrderEventData}
+   *
+   * @internal
+   */
+  twapOrders: 'twapOrders',
+  /**
+   * **Subscription Update Events:**
+   *
    * - Receives {@link _types.KatanaPerpsWithdrawalEvent KatanaPerpsWithdrawalEvent} WebSocket updates via
    *   the {@link _types.WebSocketClient.onMessage WebSocketClient.onMessage} handler.
    * - `event.data` will match {@link _types.KatanaPerpsWithdrawalEventData KatanaPerpsWithdrawalEventData}

@@ -8,5 +8,6 @@ export * from './orders.js';
 export * from './positions.js';
 export * from './tickers.js';
 export * from './trades.js';
+export * from './twapOrders.js';
 export * from './withdrawals.js';
 export * from './webclient/index.js';

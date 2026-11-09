@@ -392,6 +392,22 @@ export type MessageEventType =
 /**
  * @internal
  */
+export const TwapOrderEventType = {
+  added: 'added',
+  /**
+   * A partial execution of a TWAP order
+   */
+  execution: 'execution',
+  canceled: 'canceled',
+  filled: 'filled',
+} as const;
+
+export type TwapOrderEventType =
+  (typeof TwapOrderEventType)[keyof typeof TwapOrderEventType];
+
+/**
+ * @internal
+ */
 export const WebClientEvent = {
   reload_banners: 'reload_banners',
   exchange_status_updated: 'exchange_status_updated',

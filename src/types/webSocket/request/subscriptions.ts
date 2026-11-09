@@ -22,6 +22,7 @@ export type KatanaPerpsSubscriptionEvent =
   | ResponseTypes.KatanaPerpsWithdrawalEvent
   | ResponseTypes.KatanaPerpsPositionEvent
   | ResponseTypes.KatanaPerpsFundingPaymentEvent
+  | ResponseTypes.KatanaPerpsTwapOrderEvent
   | ResponseTypes.KatanaPerpsWebClientEvent;
 
 /**
@@ -41,6 +42,7 @@ export type WebSocketResponseSubscriptionMessageShort =
   | ResponseTypes.WebSocketResponseSubscriptionMessageShortWithdrawals
   | ResponseTypes.WebSocketResponseSubscriptionMessageShortPositions
   | ResponseTypes.WebSocketResponseSubscriptionMessageShortFundingPayments
+  | ResponseTypes.WebSocketResponseSubscriptionMessageShortTwapOrders
   | ResponseTypes.WebSocketResponseSubscriptionMessageShortWebClient;
 
 /**
@@ -498,6 +500,30 @@ export interface KatanaPerpsSubscribePositions
 }
 
 /**
+ * Provides real-time TWAP order updates for a wallet.
+ *
+ * ---
+ * **Subscription Parameters**
+ *
+ * > - **Subscription:**       {@link SubscriptionNameAuthenticated.twapOrders twapOrders}
+ * > - **Authentication:**     **Authenticated**
+ * > - **Update Speed:**       Real-time
+ * >   - updates on TWAP order placement, executions, cancellation, and fill
+ * > - **Request Parameters:** None
+ * ---
+ *
+ * @category WebSocket - Subscribe
+ * @internal
+ */
+export interface KatanaPerpsSubscribeTwapOrders
+  extends KatanaPerpsSubscribeAuthenticatedBase {
+  /**
+   * @inheritDoc
+   */
+  name: typeof SubscriptionNameAuthenticated.twapOrders;
+}
+
+/**
  * Provides real-time `funding payments` information for a wallet.
  *
  * ---
@@ -548,6 +574,7 @@ export type KatanaPerpsSubscribeTypeAuthenticated =
   | KatanaPerpsSubscribeWithdrawals
   | KatanaPerpsSubscribePositions
   | KatanaPerpsSubscribeFundingPayments
+  | KatanaPerpsSubscribeTwapOrders
   | KatanaPerpsSubscribeWebClient;
 
 /**

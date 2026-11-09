@@ -1,6 +1,10 @@
 import { UnreachableCaseError } from '#utils';
 
-import { FillType, MessageEventType } from '#types/enums/response';
+import {
+  FillType,
+  MessageEventType,
+  TwapOrderEventType,
+} from '#types/enums/response';
 
 import type * as katanaPerps from '#types/index';
 import type { AnyObj } from '#types/utils';
@@ -251,6 +255,54 @@ const transformFundingPaymentsMessage = (
     time: short.t,
   });
 
+const transformTwapOrderFields = (
+  short:
+    | katanaPerps.WebSocketResponseTwapOrderShortAdded
+    | katanaPerps.WebSocketResponseTwapOrderShortExecution,
+) => ({
+  clientOrderId: short.c,
+  type: short.o,
+  side: short.s,
+  originalQuantity: short.q,
+  executedQuantity: short.z,
+  cumulativeQuoteQuantity: short.Z,
+  avgExecutionPrice: short.v,
+  price: short.p,
+  reduceOnly: short.r,
+});
+
+const transformTwapOrdersMessage = (
+  short: katanaPerps.WebSocketResponseTwapOrderShort,
+): katanaPerps.KatanaPerpsTwapOrderEventData => {
+  const base = {
+    wallet: short.w,
+    market: short.m,
+    orderId: short.i,
+    time: short.t,
+  };
+  switch (short.e) {
+    case TwapOrderEventType.added:
+      return removeUndefinedFromObj({
+        event: short.e,
+        ...base,
+        ...transformTwapOrderFields(short),
+      });
+    case TwapOrderEventType.execution:
+      return removeUndefinedFromObj({
+        event: short.e,
+        ...base,
+        ...transformTwapOrderFields(short),
+        isFilled: short.F,
+      });
+    case TwapOrderEventType.canceled:
+      return { event: short.e, ...base, cancellationReason: short.R };
+    case TwapOrderEventType.filled:
+      return { event: short.e, ...base };
+    default:
+      throw new UnreachableCaseError(short, 'transformTwapOrdersMessage');
+  }
+};
+
 export const transformWebsocketShortResponseMessage = (
   message:
     | katanaPerps.KatanaPerpsErrorEvent
@@ -292,6 +344,8 @@ export const transformWebsocketShortResponseMessage = (
         ...message,
         data: transformFundingPaymentsMessage(message.data),
       };
+    case MessageEventType.twapOrders:
+      return { ...message, data: transformTwapOrdersMessage(message.data) };
     // due to their dynamic and internal nature, webclient events
     // are not transformed like other messages
     case MessageEventType.webclient:
