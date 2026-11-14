@@ -207,6 +207,8 @@ export declare namespace FixedIncomeVaultProvider_v1 {
     totalOwedQuantity: BigNumberish;
     depositorPendingDepositQuantity: BigNumberish;
     configurationFields: FixedIncomeVaultProvider_v1.VaultConfigurationFieldsStruct;
+    managerWalletExitValue: BigNumberish;
+    managerWalletExitValueThreshold: BigNumberish;
   };
 
   export type VaultSummaryStructOutput = [
@@ -225,6 +227,8 @@ export declare namespace FixedIncomeVaultProvider_v1 {
     totalOwedQuantity: bigint,
     depositorPendingDepositQuantity: bigint,
     configurationFields: FixedIncomeVaultProvider_v1.VaultConfigurationFieldsStructOutput,
+    managerWalletExitValue: bigint,
+    managerWalletExitValueThreshold: bigint,
   ] & {
     isDepositEnabled: boolean;
     isExited: boolean;
@@ -241,6 +245,8 @@ export declare namespace FixedIncomeVaultProvider_v1 {
     totalOwedQuantity: bigint;
     depositorPendingDepositQuantity: bigint;
     configurationFields: FixedIncomeVaultProvider_v1.VaultConfigurationFieldsStructOutput;
+    managerWalletExitValue: bigint;
+    managerWalletExitValueThreshold: bigint;
   };
 }
 
@@ -359,7 +365,9 @@ export interface FixedIncomeVaultProvider_v1Interface extends Interface {
       | 'WithdrawalFromManagedAccountApplied'
       | 'WithdrawalFromManagedAccountCanceled'
       | 'WithdrawalFromManagedAccountForExitedDepositorWalletCanceled'
-      | 'WithdrawalFromManagedAccountReadyToApply',
+      | 'WithdrawalFromManagedAccountReadyToApply'
+      | 'WithdrawalFromManagedAccountRedepositFailed'
+      | 'WithdrawalFromManagedAccountRedeposited',
   ): EventFragment;
 
   encodeFunctionData(
@@ -1175,6 +1183,41 @@ export namespace WithdrawalFromManagedAccountReadyToApplyEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
+export namespace WithdrawalFromManagedAccountRedepositFailedEvent {
+  export type InputTuple = [
+    managerWallet: AddressLike,
+    quantityInAssetUnits: BigNumberish,
+    depositErrorData: BytesLike,
+  ];
+  export type OutputTuple = [
+    managerWallet: string,
+    quantityInAssetUnits: bigint,
+    depositErrorData: string,
+  ];
+  export interface OutputObject {
+    managerWallet: string;
+    quantityInAssetUnits: bigint;
+    depositErrorData: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace WithdrawalFromManagedAccountRedepositedEvent {
+  export type InputTuple = [managerWallet: AddressLike, quantity: BigNumberish];
+  export type OutputTuple = [managerWallet: string, quantity: bigint];
+  export interface OutputObject {
+    managerWallet: string;
+    quantity: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
 export interface FixedIncomeVaultProvider_v1 extends BaseContract {
   connect(runner?: ContractRunner | null): FixedIncomeVaultProvider_v1;
   waitForDeployment(): Promise<this>;
@@ -1955,6 +1998,20 @@ export interface FixedIncomeVaultProvider_v1 extends BaseContract {
     WithdrawalFromManagedAccountReadyToApplyEvent.OutputTuple,
     WithdrawalFromManagedAccountReadyToApplyEvent.OutputObject
   >;
+  getEvent(
+    key: 'WithdrawalFromManagedAccountRedepositFailed',
+  ): TypedContractEvent<
+    WithdrawalFromManagedAccountRedepositFailedEvent.InputTuple,
+    WithdrawalFromManagedAccountRedepositFailedEvent.OutputTuple,
+    WithdrawalFromManagedAccountRedepositFailedEvent.OutputObject
+  >;
+  getEvent(
+    key: 'WithdrawalFromManagedAccountRedeposited',
+  ): TypedContractEvent<
+    WithdrawalFromManagedAccountRedepositedEvent.InputTuple,
+    WithdrawalFromManagedAccountRedepositedEvent.OutputTuple,
+    WithdrawalFromManagedAccountRedepositedEvent.OutputObject
+  >;
 
   filters: {
     'AddManagedAccountsDisabledAdmin()': TypedContractEvent<
@@ -2208,6 +2265,28 @@ export interface FixedIncomeVaultProvider_v1 extends BaseContract {
       WithdrawalFromManagedAccountReadyToApplyEvent.InputTuple,
       WithdrawalFromManagedAccountReadyToApplyEvent.OutputTuple,
       WithdrawalFromManagedAccountReadyToApplyEvent.OutputObject
+    >;
+
+    'WithdrawalFromManagedAccountRedepositFailed(address,uint256,bytes)': TypedContractEvent<
+      WithdrawalFromManagedAccountRedepositFailedEvent.InputTuple,
+      WithdrawalFromManagedAccountRedepositFailedEvent.OutputTuple,
+      WithdrawalFromManagedAccountRedepositFailedEvent.OutputObject
+    >;
+    WithdrawalFromManagedAccountRedepositFailed: TypedContractEvent<
+      WithdrawalFromManagedAccountRedepositFailedEvent.InputTuple,
+      WithdrawalFromManagedAccountRedepositFailedEvent.OutputTuple,
+      WithdrawalFromManagedAccountRedepositFailedEvent.OutputObject
+    >;
+
+    'WithdrawalFromManagedAccountRedeposited(address,uint64)': TypedContractEvent<
+      WithdrawalFromManagedAccountRedepositedEvent.InputTuple,
+      WithdrawalFromManagedAccountRedepositedEvent.OutputTuple,
+      WithdrawalFromManagedAccountRedepositedEvent.OutputObject
+    >;
+    WithdrawalFromManagedAccountRedeposited: TypedContractEvent<
+      WithdrawalFromManagedAccountRedepositedEvent.InputTuple,
+      WithdrawalFromManagedAccountRedepositedEvent.OutputTuple,
+      WithdrawalFromManagedAccountRedepositedEvent.OutputObject
     >;
   };
 }

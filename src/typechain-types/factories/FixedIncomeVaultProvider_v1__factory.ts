@@ -1269,6 +1269,50 @@ const _abi = [
     type: 'event',
   },
   {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'managerWallet',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'quantityInAssetUnits',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'bytes',
+        name: 'depositErrorData',
+        type: 'bytes',
+      },
+    ],
+    name: 'WithdrawalFromManagedAccountRedepositFailed',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'managerWallet',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint64',
+        name: 'quantity',
+        type: 'uint64',
+      },
+    ],
+    name: 'WithdrawalFromManagedAccountRedeposited',
+    type: 'event',
+  },
+  {
     inputs: [],
     name: 'MAX_MANAGED_ACCOUNT_UPGRADE_BLOCK_TIMESTAMP_DELAY_IN_S',
     outputs: [
@@ -2039,6 +2083,16 @@ const _abi = [
               'struct FixedIncomeVaultProvider_v1.VaultConfigurationFields',
             name: 'configurationFields',
             type: 'tuple',
+          },
+          {
+            internalType: 'int64',
+            name: 'managerWalletExitValue',
+            type: 'int64',
+          },
+          {
+            internalType: 'uint256',
+            name: 'managerWalletExitValueThreshold',
+            type: 'uint256',
           },
         ],
         internalType: 'struct FixedIncomeVaultProvider_v1.VaultSummary',
