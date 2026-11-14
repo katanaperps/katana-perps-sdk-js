@@ -148,6 +148,22 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: 'uint64',
+        name: 'minValue',
+        type: 'uint64',
+      },
+      {
+        internalType: 'uint64',
+        name: 'value',
+        type: 'uint64',
+      },
+    ],
+    name: 'InitialDepositBelowMinimum',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
         internalType: 'uint256',
         name: 'actual',
         type: 'uint256',

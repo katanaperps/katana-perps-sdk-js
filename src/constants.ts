@@ -64,8 +64,10 @@ export const FIXED_INCOME_VAULT_PROVIDER_CONSTANTS = Object.freeze({
 export const PROFIT_SHARE_VAULT_PROVIDER_CONSTANTS = Object.freeze({
   profitShareVaultInitialSharePrice: 100_000_000n, // $1
   profitShareVaultManagementFeePeriodInS: 31_536_000n, // 1 year
+  profitShareVaultMinInitialDepositQuantity: 200_000_000n, // $2
   profitShareVaultMinWithdrawalMaximumGasFee: 1_000_000n, // $0.01
   profitShareVaultMaxTotalShares: 18_446_744_073_709_551_615n, // type(uint64).max
+  profitShareVaultMinTotalShares: 100_000_000n, // 1.00000000 shares
   profitShareVaultMaxCarryFeeMultiplier: 50_000_000n, // 50%
   profitShareVaultMinCarryFeeMultiplier: 0n, // 0%
   profitShareVaultMaxExchangeCarryFeeMultiplier: 100_000_000n, // 100% of the carry fee
