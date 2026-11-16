@@ -913,7 +913,7 @@ export interface TwapSchedule {
    * A TWAP order's total quantity may not be divisible by the fixed execution
    * quantity (due to integer precision limitations and step size adjustments),
    * in which case it has an unfilled remainder left when it ends. The TWAP
-   * strategy is then canceled with status "expired".
+   * strategy is then canceled with status "filled".
    */
   executeFixedQuantity?: boolean;
   /**
@@ -971,6 +971,7 @@ export type KatanaPerpsTwapOrder = Pick<
     | 'ExecutionDidNotCrossSpread'
     | 'ExecutionError'
     | 'Expired'
+    | 'Filled'
     | 'UserAction'
     | string;
 };
