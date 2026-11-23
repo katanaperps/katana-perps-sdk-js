@@ -110,6 +110,38 @@ const runEstimate = (
     ...args,
   });
 
+/** A standing 3-unit ETH-USD sell order at the given price. */
+const sellStandingOrder = (
+  price: string,
+): NonNullable<BuySellPanelEstimateArgs['walletsStandingOrders']>[number] => ({
+  market: 'ETH-USD',
+  side: OrderSide.sell,
+  price,
+  originalQuantity: '3.00000000',
+  executedQuantity: '0.00000000',
+  status: 'open',
+});
+
+/**
+ * A non-crossing reduce-only sell at 110 against {@link longEthPosition}, with
+ * a standing sell of 3 at the given price.
+ */
+const runReduceOnlyRestingScenario = (
+  standingOrderPrice: string,
+  baseQuantity: string,
+): orderbook.BuySellPanelEstimate =>
+  runEstimate({
+    wallet: longEthWallet,
+    walletsStandingOrders: [sellStandingOrder(standingOrderPrice)],
+    order: {
+      side: OrderSide.sell,
+      baseQuantity: decimalToPip(baseQuantity),
+      limitPrice: decimalToPip('110'),
+      reduceOnly: true,
+      timeInForce: TimeInForce.gtc,
+    },
+  });
+
 describe('orderbook/buySellPanelEstimate', () => {
   describe('calculateBuySellPanelEstimate', () => {
     it('estimates a market buy that crosses multiple levels (base quantity)', () => {
@@ -781,6 +813,54 @@ describe('orderbook/buySellPanelEstimate', () => {
         decimalToPip('8'),
       );
       expect(estimate.reduceOnlyOpenPositionSizeExceeded).to.equal(true);
+    });
+
+    it('deducts better-priced same-side standing orders from the resting reduce-only quantity', () => {
+      expect(
+        runReduceOnlyRestingScenario('105.00000000', '3')
+          .reduceOnlyOpenPositionSizeExceeded,
+      ).to.equal(true);
+    });
+
+    it('deducts equally priced same-side standing orders from the resting reduce-only quantity', () => {
+      expect(
+        runReduceOnlyRestingScenario('110.00000000', '3')
+          .reduceOnlyOpenPositionSizeExceeded,
+      ).to.equal(true);
+    });
+
+    it('ignores worse-priced same-side standing orders for the resting reduce-only quantity', () => {
+      expect(
+        runReduceOnlyRestingScenario('115.00000000', '3')
+          .reduceOnlyOpenPositionSizeExceeded,
+      ).to.equal(false);
+    });
+
+    it('accepts a resting reduce-only order that fits beside better-priced same-side standing orders', () => {
+      expect(
+        runReduceOnlyRestingScenario('105.00000000', '2')
+          .reduceOnlyOpenPositionSizeExceeded,
+      ).to.equal(false);
+    });
+
+    it('limits a resting reduce-only slider order to the quantity left by better-priced standing orders', () => {
+      const estimate = runEstimate({
+        wallet: longEthWallet,
+        orderBook: { asks: [], bids: [] },
+        walletsStandingOrders: [sellStandingOrder('105.00000000')],
+        order: {
+          side: OrderSide.sell,
+          availableCollateralRatio: oneInPips,
+          limitPrice: decimalToPip('110'),
+          reduceOnly: true,
+          timeInForce: TimeInForce.gtc,
+        },
+      });
+      testHelpers.assertBigintsEqual(
+        estimate.makerBaseQuantity,
+        decimalToPip('2'),
+      );
+      expect(estimate.reduceOnlyOpenPositionSizeExceeded).to.equal(false);
     });
 
     it('fills a reduce-only market order up to the full position size regardless of same-side standing orders', () => {
