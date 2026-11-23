@@ -560,6 +560,15 @@ export interface KatanaPerpsTakerCompetitionV3MilestoneCompetition {
   walletCount: number;
   pnlRewardPool: string;
   pnlMaxWinners: number;
+  /**
+   * Metric used to order the PnL leaderboard and assign PnL prizes.
+   * - `pnlPercent` — rank by return % (default)
+   * - `pnl` — rank by absolute PnL
+   *
+   * Optional for compatibility with older API responses that omit this field
+   * (treat as `pnlPercent`).
+   */
+  pnlRankBy?: 'pnlPercent' | 'pnl';
   volumeRewardPool: string;
   totalVolume: string;
   qualifyingVolume: string;
