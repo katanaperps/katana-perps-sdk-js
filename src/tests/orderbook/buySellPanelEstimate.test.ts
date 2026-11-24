@@ -110,17 +110,37 @@ const runEstimate = (
     ...args,
   });
 
-/** A standing 3-unit ETH-USD sell order at the given price. */
+/** A standing ETH-USD sell order. */
 const sellStandingOrder = (
   price: string,
+  quantity = '3.00000000',
+  reduceOnly = false,
 ): NonNullable<BuySellPanelEstimateArgs['walletsStandingOrders']>[number] => ({
   market: 'ETH-USD',
   side: OrderSide.sell,
   price,
-  originalQuantity: '3.00000000',
+  originalQuantity: quantity,
   executedQuantity: '0.00000000',
   status: 'open',
+  reduceOnly,
 });
+
+/**
+ * A market sell against {@link longEthPosition} into a bid of 10 at 100, with
+ * the given standing orders.
+ */
+const runReducingMarketSellScenario = (
+  baseQuantity: string,
+  walletsStandingOrders: NonNullable<
+    BuySellPanelEstimateArgs['walletsStandingOrders']
+  >,
+): orderbook.BuySellPanelEstimate =>
+  runEstimate({
+    wallet: longEthWallet,
+    orderBook: { asks: [], bids: [level('100', '10')] },
+    walletsStandingOrders,
+    order: { side: OrderSide.sell, baseQuantity: decimalToPip(baseQuantity) },
+  });
 
 /**
  * A non-crossing reduce-only sell at 110 against {@link longEthPosition}, with
@@ -462,6 +482,7 @@ describe('orderbook/buySellPanelEstimate', () => {
             originalQuantity: '3.00000000',
             executedQuantity: '0.00000000',
             status: 'open',
+            reduceOnly: false,
           },
         ],
         order: { side: OrderSide.buy, baseQuantity: decimalToPip('5') },
@@ -863,6 +884,55 @@ describe('orderbook/buySellPanelEstimate', () => {
       expect(estimate.reduceOnlyOpenPositionSizeExceeded).to.equal(false);
     });
 
+    it('releases a reduce-only standing order from held collateral once the position is closed', () => {
+      testHelpers.assertBigintsEqual(
+        runReducingMarketSellScenario('5', [
+          sellStandingOrder('110.00000000', '5.00000000', true),
+        ]).cost,
+        runReducingMarketSellScenario('5', []).cost,
+      );
+    });
+
+    it('holds collateral for a regular standing order once the position is closed', () => {
+      // 5 * 110 * IMF 0.1 = 55
+      testHelpers.assertBigintsEqual(
+        runReducingMarketSellScenario('5', [
+          sellStandingOrder('110.00000000', '5.00000000'),
+        ]).cost,
+        runReducingMarketSellScenario('5', []).cost + decimalToPip('55'),
+      );
+    });
+
+    it('holds no collateral for the excess quantity of a reduce-only standing order', () => {
+      // The regular order at 105 offsets the remaining position of 2; the
+      // reduce-only order at 110 exceeds it
+      testHelpers.assertBigintsEqual(
+        runReducingMarketSellScenario('3', [
+          sellStandingOrder('105.00000000', '2.00000000'),
+          sellStandingOrder('110.00000000', '3.00000000', true),
+        ]).cost,
+        runReducingMarketSellScenario('3', []).cost,
+      );
+    });
+
+    it('offsets the position with a reduce-only standing order before worse-priced regular orders', () => {
+      // Before and after the trade, the reduce-only order at 105 offsets the
+      // position, and the regular order at 110 holds 2 * 110 * IMF 0.1 = 22
+      const estimate = runEstimate({
+        wallet: { ...longEthWallet, heldCollateral: '22.00000000' },
+        orderBook: { asks: [], bids: [level('100', '10')] },
+        walletsStandingOrders: [
+          sellStandingOrder('105.00000000', '5.00000000', true),
+          sellStandingOrder('110.00000000', '2.00000000'),
+        ],
+        order: { side: OrderSide.sell, baseQuantity: decimalToPip('3') },
+      });
+      testHelpers.assertBigintsEqual(
+        estimate.cost,
+        runReducingMarketSellScenario('3', []).cost,
+      );
+    });
+
     it('fills a reduce-only market order up to the full position size regardless of same-side standing orders', () => {
       const estimate = runEstimate({
         wallet: longEthWallet,
@@ -875,6 +945,7 @@ describe('orderbook/buySellPanelEstimate', () => {
             originalQuantity: '3.00000000',
             executedQuantity: '0.00000000',
             status: 'open',
+            reduceOnly: false,
           },
         ],
         order: {
@@ -908,6 +979,7 @@ describe('orderbook/buySellPanelEstimate', () => {
             originalQuantity: '8.00000000',
             executedQuantity: '0.00000000',
             status: 'open',
+            reduceOnly: false,
           },
         ],
         order: {
@@ -956,6 +1028,7 @@ describe('orderbook/buySellPanelEstimate', () => {
             originalQuantity: '3.00000000',
             executedQuantity: '0.00000000',
             status: 'active', // untriggered stop order
+            reduceOnly: false,
           },
         ],
         order: { side: OrderSide.buy, baseQuantity: decimalToPip('5') },

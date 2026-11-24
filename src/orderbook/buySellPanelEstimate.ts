@@ -115,11 +115,12 @@ export interface BuySellPanelEstimateArgs {
   walletsStandingOrders?: Pick<
     KatanaPerpsOrder,
     | 'market'
+    | 'status'
     | 'side'
-    | 'price'
     | 'originalQuantity'
     | 'executedQuantity'
-    | 'status'
+    | 'price'
+    | 'reduceOnly'
   >[];
   /**
    * The wallet's initial margin fraction overrides, as returned by the "Get
@@ -198,6 +199,7 @@ type StandingOrderBigInt = {
   isBuy: boolean;
   price: bigint;
   openQuantity: bigint;
+  isReduceOnly: boolean;
 };
 
 type EstimateContext = {
@@ -270,6 +272,16 @@ function wasPositionReduced(before: bigint, after: bigint): boolean {
 
 /**
  * @private
+ * Sorts the given orders (lowest sell first, highest buy first).
+ */
+function sortByBestPrice(orders: StandingOrderBigInt[]): StandingOrderBigInt[] {
+  return orders.sort((a, b) =>
+    a.isBuy ? Number(b.price - a.price) : Number(a.price - b.price),
+  );
+}
+
+/**
+ * @private
  * Combined open quantity of the wallet's standing orders on the order's side
  * that are priced better than or equal to its limit price.
  */
@@ -304,8 +316,9 @@ function calculateMarginRequirementForOpenOrderQuantity(
   >,
   openBaseQuantity: bigint,
   limitPrice: bigint,
+  isReduceOnly: boolean,
 ): bigint {
-  if (openBaseQuantity === BigInt(0)) {
+  if (openBaseQuantity === BigInt(0) || isReduceOnly) {
     return BigInt(0);
   }
   const orderOpenQuoteQuantity = multiplyPips(openBaseQuantity, limitPrice);
@@ -323,7 +336,9 @@ function calculateMarginRequirementForOpenOrderQuantity(
  * @private
  * Held collateral required for a set of standing orders in a single market,
  * given a signed position quantity. Orders that reduce the position do not
- * require margin, up to a combined quantity that equals the position size.
+ * require margin, up to a combined quantity that equals the position size
+ * (reduce-only orders never require margin, including any open qty that
+ * exceeds the position size).
  */
 function calculateHeldCollateralForMarket(
   context: Pick<
@@ -338,15 +353,12 @@ function calculateHeldCollateralForMarket(
   // The reducing side (sells for a long position, buys for a short position),
   // processed best price first, offsets against the position.
   const positionIsLong = positionQuantity > BigInt(0);
-  const reducingOrders = orders
-    .filter(
+  const reducingOrders = sortByBestPrice(
+    orders.filter(
       (order) =>
         order.isBuy === !positionIsLong && order.openQuantity > BigInt(0),
-    )
-    .sort((a, b) =>
-      // Sells: lowest price first; buys: highest price first
-      a.isBuy ? Number(b.price - a.price) : Number(a.price - b.price),
-    );
+    ),
+  );
   const nonReducingOrders = orders.filter(
     (order) => order.isBuy === positionIsLong && order.openQuantity > BigInt(0),
   );
@@ -367,6 +379,7 @@ function calculateHeldCollateralForMarket(
       context,
       openBaseQuantity,
       order.price,
+      order.isReduceOnly,
     );
   }
   for (const order of nonReducingOrders) {
@@ -374,6 +387,7 @@ function calculateHeldCollateralForMarket(
       context,
       order.openQuantity,
       order.price,
+      order.isReduceOnly,
     );
   }
   return marginRequirement;
@@ -901,6 +915,7 @@ function runEstimate(
       isBuy: context.isBuy,
       price: context.limitPrice,
       openQuantity: makerBaseQuantity,
+      isReduceOnly: context.reduceOnly,
     });
   }
   const heldAfterForMarket = calculateHeldCollateralForMarket(
@@ -1241,6 +1256,7 @@ function buildContext(args: BuySellPanelEstimateArgs): EstimateContext {
       openQuantity:
         decimalToPip(standingOrder.originalQuantity) -
         decimalToPip(standingOrder.executedQuantity),
+      isReduceOnly: standingOrder.reduceOnly,
     }))
     .filter((standingOrder) => standingOrder.openQuantity > BigInt(0));
 

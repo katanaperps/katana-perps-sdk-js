@@ -37,6 +37,7 @@ interface BookLevel {
   price: string;
   size: string;
   own: boolean;
+  reduceOnly: boolean;
 }
 
 interface OtherPosition {
@@ -118,12 +119,12 @@ function defaultState(): State {
     currentPositionQuantity: '0',
     otherPositions: [],
     levels: [
-      { id: id(), side: 'sell', price: '103', size: '10', own: false },
-      { id: id(), side: 'sell', price: '102', size: '10', own: false },
-      { id: id(), side: 'sell', price: '101', size: '10', own: false },
-      { id: id(), side: 'buy', price: '99', size: '10', own: false },
-      { id: id(), side: 'buy', price: '98', size: '10', own: false },
-      { id: id(), side: 'buy', price: '97', size: '10', own: false },
+      { id: id(), side: 'sell', price: '103', size: '10', own: false, reduceOnly: false },
+      { id: id(), side: 'sell', price: '102', size: '10', own: false, reduceOnly: false },
+      { id: id(), side: 'sell', price: '101', size: '10', own: false, reduceOnly: false },
+      { id: id(), side: 'buy', price: '99', size: '10', own: false, reduceOnly: false },
+      { id: id(), side: 'buy', price: '98', size: '10', own: false, reduceOnly: false },
+      { id: id(), side: 'buy', price: '97', size: '10', own: false, reduceOnly: false },
     ],
     order: {
       side: 'buy',
@@ -417,6 +418,7 @@ function compute(): ComputeResult {
       originalQuantity: l.size,
       executedQuantity: '0',
       status: 'open' as const,
+      reduceOnly: l.reduceOnly,
     }));
 
   const args: BuySellPanelEstimateArgs = {
@@ -596,7 +598,7 @@ function rebuildAll(): void {
     h(
       'div',
       { class: 'panel-note' },
-      'Editable price/size per level. "Own" marks the level as the wallet’s own resting order (drives self-trades & held funds). Crossable levels are outlined.',
+      'Editable price/size per level. "Own" marks the level as the wallet’s own resting order (drives self-trades & held funds); "RO" marks an own order as reduce-only. Crossable levels are outlined.',
     ),
     bookBody,
   );
@@ -979,6 +981,7 @@ function renderBook(): void {
       h('th', { style: 'text-align:left' }, 'Price'),
       h('th', { style: 'text-align:left' }, 'Size'),
       h('th', {}, 'Own'),
+      h('th', {}, 'RO'),
       h('th', {}, ''),
     ),
   );
@@ -988,7 +991,7 @@ function renderBook(): void {
     table.append(levelRow(l, maxSize));
   }
 
-  const spreadRow = h('tr', {}, h('td', { colspan: '4', class: 'spread' }, ''));
+  const spreadRow = h('tr', {}, h('td', { colspan: '5', class: 'spread' }, ''));
   spreadRowEl = spreadRow;
   table.append(spreadRow);
 
@@ -1100,6 +1103,16 @@ function levelRow(l: BookLevel, maxSize: bigint): HTMLElement {
       }),
       h('span', { class: 'badge' }),
     ),
+    h('td', { class: 'own-cell' },
+      h('input', {
+        type: 'checkbox',
+        checked: l.reduceOnly,
+        onchange: (e: Event) => {
+          l.reduceOnly = (e.target as HTMLInputElement).checked;
+          recompute();
+        },
+      }),
+    ),
     h('td', {},
       h(
         'button',
@@ -1128,7 +1141,7 @@ function addLevel(side: Side): void {
   } else {
     price = sideLevels.length ? sideLevels.reduce((a, b) => (a < b ? a : b)) - toPip('1') : toPip('99');
   }
-  state.levels.push({ id: id(), side, price: fmt(price), size: '10', own: false });
+  state.levels.push({ id: id(), side, price: fmt(price), size: '10', own: false, reduceOnly: false });
   renderBook();
   recompute();
 }
